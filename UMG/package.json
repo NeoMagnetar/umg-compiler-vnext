@@ -1,0 +1,5 @@
+{
+  "name": "umg",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"]
+}
