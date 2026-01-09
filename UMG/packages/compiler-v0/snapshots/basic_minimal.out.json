@@ -25,8 +25,24 @@
       "philosophy": [],
       "blueprint": []
     },
+    "bundles": [
+      {
+        "segmentId": "implicit_bundle_stack_support_blk_primary_support",
+        "stackId": "stack_support",
+        "blockIds": [
+          "blk_primary_support"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_support_blk_instr_safe",
+        "stackId": "stack_support",
+        "blockIds": [
+          "blk_instr_safe"
+        ]
+      }
+    ],
     "meta": {
-      "compiledAt": "2026-01-09T16:06:22.707Z",
+      "compiledAt": "2026-01-09T16:13:56.804Z",
       "compilerVersion": "v0"
     }
   },
@@ -39,7 +55,95 @@
         "code": "INFO_START",
         "message": "compileSleeve(v0) started.",
         "id": "evt_00001",
-        "timestamp": "2026-01-09T16:06:22.696Z"
+        "timestamp": "2026-01-09T16:13:56.795Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_VALIDATE_DONE",
+        "message": "Validation passed.",
+        "id": "evt_00002",
+        "timestamp": "2026-01-09T16:13:56.795Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_primary_support in stack stack_support.",
+        "relatedStackIds": [
+          "stack_support"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_support"
+        ],
+        "id": "evt_00003",
+        "timestamp": "2026-01-09T16:13:56.796Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_instr_safe in stack stack_support.",
+        "relatedStackIds": [
+          "stack_support"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_safe"
+        ],
+        "id": "evt_00004",
+        "timestamp": "2026-01-09T16:13:56.796Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_NORMALIZE_DONE",
+        "message": "Segments normalized.",
+        "id": "evt_00005",
+        "timestamp": "2026-01-09T16:13:56.796Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_MERGE_DONE",
+        "message": "Merges applied. 0 merge operation(s).",
+        "id": "evt_00006",
+        "timestamp": "2026-01-09T16:13:56.796Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_support_blk_primary_support recorded with 1 block(s) in stack stack_support.",
+        "relatedStackIds": [
+          "stack_support"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_support"
+        ],
+        "id": "evt_00007",
+        "timestamp": "2026-01-09T16:13:56.796Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_support_blk_instr_safe recorded with 1 block(s) in stack stack_support.",
+        "relatedStackIds": [
+          "stack_support"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_safe"
+        ],
+        "id": "evt_00008",
+        "timestamp": "2026-01-09T16:13:56.796Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BUNDLE_DONE",
+        "message": "Bundles recorded. 2 bundle(s).",
+        "id": "evt_00009",
+        "timestamp": "2026-01-09T16:13:56.796Z"
       },
       {
         "kind": "pipeline_stage",
@@ -47,8 +151,8 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00002",
-        "timestamp": "2026-01-09T16:06:22.707Z"
+        "id": "evt_00010",
+        "timestamp": "2026-01-09T16:13:56.804Z"
       }
     ]
   },

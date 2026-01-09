@@ -1,0 +1,129 @@
+{
+  "runtime": {
+    "sleeveId": "sleeve_merge_demo",
+    "sleeveName": "Merge Example",
+    "stacks": [
+      {
+        "stackId": "stack_main",
+        "domainKey": "main",
+        "orderedBlockIds": [
+          "blk_merged_instr",
+          "blk_primary_main"
+        ]
+      }
+    ],
+    "blocksByMoltType": {
+      "trigger": [],
+      "directive": [],
+      "instruction": [
+        "blk_instr_1",
+        "blk_instr_2",
+        "blk_merged_instr"
+      ],
+      "subject": [],
+      "primary": [
+        "blk_primary_main"
+      ],
+      "philosophy": [],
+      "blueprint": []
+    },
+    "bundles": [
+      {
+        "segmentId": "seg_bundle_primary",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_primary_main"
+        ]
+      }
+    ],
+    "meta": {
+      "compiledAt": "2026-01-09T16:14:13.663Z",
+      "compilerVersion": "v0"
+    }
+  },
+  "trace": {
+    "sleeveId": "sleeve_merge_demo",
+    "events": [
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "id": "evt_00001",
+        "timestamp": "2026-01-09T16:14:13.653Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_VALIDATE_DONE",
+        "message": "Validation passed.",
+        "id": "evt_00002",
+        "timestamp": "2026-01-09T16:14:13.654Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_NORMALIZE_DONE",
+        "message": "Segments normalized.",
+        "id": "evt_00003",
+        "timestamp": "2026-01-09T16:14:13.654Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_MERGE_APPLIED",
+        "message": "Merge seg_merge_instr: replaced [blk_instr_1, blk_instr_2] with blk_merged_instr in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_merged_instr",
+          "blk_instr_1",
+          "blk_instr_2"
+        ],
+        "id": "evt_00004",
+        "timestamp": "2026-01-09T16:14:13.654Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_MERGE_DONE",
+        "message": "Merges applied. 1 merge operation(s).",
+        "id": "evt_00005",
+        "timestamp": "2026-01-09T16:14:13.654Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_bundle_primary recorded with 1 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_main"
+        ],
+        "id": "evt_00006",
+        "timestamp": "2026-01-09T16:14:13.654Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BUNDLE_DONE",
+        "message": "Bundles recorded. 1 bundle(s).",
+        "id": "evt_00007",
+        "timestamp": "2026-01-09T16:14:13.654Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
+        "relatedTriggerIds": [],
+        "id": "evt_00008",
+        "timestamp": "2026-01-09T16:14:13.663Z"
+      }
+    ]
+  },
+  "hasErrors": false
+}

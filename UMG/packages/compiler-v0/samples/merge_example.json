@@ -1,0 +1,37 @@
+{
+  "sleeve": {
+    "id": "sleeve_merge_demo",
+    "name": "Merge Example",
+    "version": "v0",
+    "blocks": [
+      { "id": "blk_instr_1", "moltType": "instruction", "content": "First instruction block.", "priorityOrder": 1 },
+      { "id": "blk_instr_2", "moltType": "instruction", "content": "Second instruction block.", "priorityOrder": 2 },
+      { "id": "blk_merged_instr", "moltType": "instruction", "content": "Merged instruction result.", "priorityOrder": 10 },
+      { "id": "blk_primary_main", "moltType": "primary", "content": "Main primary block.", "priorityOrder": 5 }
+    ],
+    "stacks": [
+      {
+        "id": "stack_main",
+        "domainKey": "main",
+        "blockIds": ["blk_instr_1", "blk_instr_2", "blk_primary_main"],
+        "segments": [
+          {
+            "id": "seg_merge_instr",
+            "kind": "merge",
+            "stackId": "stack_main",
+            "blockIds": ["blk_instr_1", "blk_instr_2"],
+            "resultBlockId": "blk_merged_instr"
+          },
+          {
+            "id": "seg_bundle_primary",
+            "kind": "bundle",
+            "stackId": "stack_main",
+            "blockIds": ["blk_primary_main"]
+          }
+        ]
+      }
+    ],
+    "triggers": []
+  },
+  "triggerState": { "activeTriggerIds": [] }
+}

@@ -1,5 +1,8 @@
-import type { CompileResult, Sleeve, TriggerState, TraceEvent, MoltType } from "./types.js";
+import type { CompileResult, Sleeve, TriggerState, TraceEvent, MoltType, Block } from "./types.js";
 import { ROLE_SET } from "./roles.js";
+import { normalizeSegments } from "./normalizeSegments.js";
+import { applyMerges } from "./applyMerges.js";
+import { applyBundles } from "./applyBundles.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -27,6 +30,12 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     events.push({ ...evt, id: mkEventId(++i), timestamp: isoNow() });
   };
 
+  const pushAll = (evts: Array<Omit<TraceEvent, "id" | "timestamp">>) => {
+    for (const evt of evts) {
+      push(evt);
+    }
+  };
+
   const fail = (code: string, message: string, extra?: Partial<TraceEvent>) => {
     push({
       kind: "validation_failed",
@@ -37,6 +46,8 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     });
   };
 
+  const hasErrors = () => events.some(e => e.severity === "error");
+
   push({
     kind: "pipeline_stage",
     severity: "info",
@@ -44,14 +55,14 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: "compileSleeve(v0) started.",
   });
 
-  // Basic schema checks
+  // Step 1: Basic schema validation
   if (!sleeve?.id || !Array.isArray(sleeve.blocks) || !Array.isArray(sleeve.stacks)) {
     fail("ERR_INVALID_SLEEVE_SCHEMA", "Sleeve requires id, blocks[], stacks[].");
     return { trace: { sleeveId: sleeve?.id ?? "unknown", events }, hasErrors: true };
   }
 
   // Dedup blocks + validate molt + role
-  const blocksById = new Map<string, Sleeve["blocks"][number]>();
+  const blocksById = new Map<string, Block>();
   for (const b of sleeve.blocks) {
     if (!b?.id) {
       fail("ERR_INVALID_BLOCK", "Block missing id.");
@@ -76,7 +87,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     blocksById.set(b.id, b);
   }
 
-  if (events.some(e => e.severity === "error")) {
+  if (hasErrors()) {
     return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
   }
 
@@ -96,14 +107,59 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     }
   }
 
-  if (events.some(e => e.severity === "error")) {
+  if (hasErrors()) {
     return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
   }
 
-  // Deterministic compiled views
-  const blocksByMoltType: Record<MoltType, string[]> = Object.fromEntries(
-    MOLT_ORDER.map(t => [t, []])
-  ) as any;
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_VALIDATE_DONE",
+    message: "Validation passed.",
+  });
+
+  // Step 2: Normalize segments
+  const normalizeResult = normalizeSegments(sleeve.stacks, blocksById);
+  pushAll(normalizeResult.errors);
+  pushAll(normalizeResult.notes);
+
+  if (hasErrors()) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_NORMALIZE_DONE",
+    message: "Segments normalized.",
+  });
+
+  // Step 3: Apply merges (substitution)
+  const mergeResult = applyMerges(normalizeResult.normalizedStacks, blocksById);
+  pushAll(mergeResult.notes);
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_MERGE_DONE",
+    message: `Merges applied. ${mergeResult.notes.length} merge operation(s).`,
+  });
+
+  // Step 4: Apply bundles (record only)
+  const bundleResult = applyBundles(mergeResult.mergedStacks, blocksById);
+  pushAll(bundleResult.notes);
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_BUNDLE_DONE",
+    message: `Bundles recorded. ${bundleResult.bundles.length} bundle(s).`,
+  });
+
+  // Step 5: Build runtime from post-merge stack ordering
+  const blocksByMoltType = Object.fromEntries(
+    MOLT_ORDER.map(t => [t, [] as string[]])
+  ) as Record<MoltType, string[]>;
 
   const liveBlockIds = Array.from(blocksById.values())
     .filter(b => b.role !== "off")
@@ -115,7 +171,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     blocksByMoltType[b.moltType].push(id);
   }
 
-  const stacks = sleeve.stacks.map(st => ({
+  const runtimeStacks = mergeResult.mergedStacks.map(st => ({
     stackId: st.id,
     domainKey: st.domainKey,
     orderedBlockIds: st.blockIds.filter(id => blocksById.get(id)?.role !== "off"),
@@ -133,8 +189,9 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     runtime: {
       sleeveId: sleeve.id,
       sleeveName: sleeve.name,
-      stacks,
+      stacks: runtimeStacks,
       blocksByMoltType,
+      bundles: bundleResult.bundles,
       meta: {
         compiledAt: isoNow(),
         compilerVersion: "v0",

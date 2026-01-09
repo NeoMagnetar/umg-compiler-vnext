@@ -18,11 +18,33 @@ export interface Block {
   tags?: string[];
 }
 
+export type SegmentKind = "bundle" | "merge";
+
+export interface BundleSegment {
+  id: string;
+  kind: "bundle";
+  stackId: string;
+  blockIds: string[]; // ordered
+}
+
+export interface MergeSegment {
+  id: string;
+  kind: "merge";
+  stackId: string;
+  blockIds: string[]; // ordered span to merge
+  resultBlockId: string; // must exist in sleeve.blocks
+  resultMoltType?: MoltType; // required when cross-MOLT
+  override?: { allowAdvanced?: boolean }; // reserved (v0+)
+}
+
+export type Segment = BundleSegment | MergeSegment;
+
 export interface Stack {
   id: string;
   name?: string;
   domainKey?: string;
   blockIds: string[];
+  segments?: Segment[];
 }
 
 export interface Trigger {
@@ -66,11 +88,16 @@ export interface Trace {
   events: TraceEvent[];
 }
 
+export interface RuntimeBundle {
+  segmentId: string;
+  stackId: string;
+  blockIds: string[];
+}
+
 export interface RuntimeSpec {
   sleeveId: string;
   sleeveName?: string;
 
-  // Minimal v0 compiled views (no governance/merge/bundle yet)
   stacks: Array<{
     stackId: string;
     domainKey?: string;
@@ -78,6 +105,8 @@ export interface RuntimeSpec {
   }>;
 
   blocksByMoltType: Record<MoltType, string[]>;
+
+  bundles?: RuntimeBundle[];
 
   meta: {
     compiledAt: string;
