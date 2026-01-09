@@ -1,0 +1,273 @@
+{
+  "runtime": {
+    "sleeveId": "sleeve_governance_demo",
+    "sleeveName": "Governance Example",
+    "stacks": [
+      {
+        "stackId": "stack_main",
+        "domainKey": "main",
+        "orderedBlockIds": [
+          "blk_instr_a",
+          "blk_primary_main",
+          "blk_instr_b"
+        ]
+      }
+    ],
+    "blocksByMoltType": {
+      "trigger": [],
+      "directive": [],
+      "instruction": [
+        "blk_instr_a",
+        "blk_instr_b"
+      ],
+      "subject": [],
+      "primary": [
+        "blk_primary_main"
+      ],
+      "philosophy": [],
+      "blueprint": []
+    },
+    "bundles": [
+      {
+        "segmentId": "implicit_bundle_stack_main_blk_instr_a",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_instr_a"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_main_blk_instr_b",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_instr_b"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_main_blk_instr_forbidden",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_instr_forbidden"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_main_blk_primary_main",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_primary_main"
+        ]
+      }
+    ],
+    "meta": {
+      "compiledAt": "2026-01-09T18:42:59.794Z",
+      "compilerVersion": "v0"
+    }
+  },
+  "trace": {
+    "sleeveId": "sleeve_governance_demo",
+    "events": [
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "id": "evt_00001",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_VALIDATE_DONE",
+        "message": "Validation passed.",
+        "id": "evt_00002",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_instr_a in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_a"
+        ],
+        "id": "evt_00003",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_instr_b in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_b"
+        ],
+        "id": "evt_00004",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_instr_forbidden in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00005",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_primary_main in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_main"
+        ],
+        "id": "evt_00006",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_NORMALIZE_DONE",
+        "message": "Segments normalized.",
+        "id": "evt_00007",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_MERGE_DONE",
+        "message": "Merges applied. 0 merge operation(s).",
+        "id": "evt_00008",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_main_blk_instr_a recorded with 1 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_a"
+        ],
+        "id": "evt_00009",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_main_blk_instr_b recorded with 1 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_b"
+        ],
+        "id": "evt_00010",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_main_blk_instr_forbidden recorded with 1 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00011",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_main_blk_primary_main recorded with 1 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_main"
+        ],
+        "id": "evt_00012",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BUNDLE_DONE",
+        "message": "Bundles recorded. 4 bundle(s).",
+        "id": "evt_00013",
+        "timestamp": "2026-01-09T18:42:59.793Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_APPLIED",
+        "message": "Rule rule_forbid_instr_forbidden (forbid) applied to 1 block(s).",
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00014",
+        "timestamp": "2026-01-09T18:42:59.794Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_APPLIED",
+        "message": "Rule rule_prefer_instr_a (prefer, boost=5000) applied to 1 block(s).",
+        "relatedBlockIds": [
+          "blk_instr_a"
+        ],
+        "id": "evt_00015",
+        "timestamp": "2026-01-09T18:42:59.794Z"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_APPLIED",
+        "message": "Rule rule_require_primary (require) applied to 1 block(s).",
+        "relatedBlockIds": [
+          "blk_primary_main"
+        ],
+        "id": "evt_00016",
+        "timestamp": "2026-01-09T18:42:59.794Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_DONE",
+        "message": "Governance applied. 3 rule(s) executed.",
+        "id": "evt_00017",
+        "timestamp": "2026-01-09T18:42:59.794Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
+        "relatedTriggerIds": [],
+        "id": "evt_00018",
+        "timestamp": "2026-01-09T18:42:59.794Z"
+      }
+    ]
+  },
+  "hasErrors": false
+}
