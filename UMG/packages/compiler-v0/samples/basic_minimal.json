@@ -1,0 +1,20 @@
+{
+  "sleeve": {
+    "id": "sleeve_basic",
+    "name": "Basic Minimal",
+    "version": "v0",
+    "blocks": [
+      { "id": "blk_primary_support", "moltType": "primary", "content": "Handle support requests.", "priorityOrder": 10 },
+      { "id": "blk_instr_safe", "moltType": "instruction", "content": "Be safe and honest.", "priorityOrder": 5 }
+    ],
+    "stacks": [
+      {
+        "id": "stack_support",
+        "domainKey": "support",
+        "blockIds": ["blk_primary_support", "blk_instr_safe"]
+      }
+    ],
+    "triggers": []
+  },
+  "triggerState": { "activeTriggerIds": [] }
+}

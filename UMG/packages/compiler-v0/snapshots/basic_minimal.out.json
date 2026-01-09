@@ -1,0 +1,56 @@
+{
+  "runtime": {
+    "sleeveId": "sleeve_basic",
+    "sleeveName": "Basic Minimal",
+    "stacks": [
+      {
+        "stackId": "stack_support",
+        "domainKey": "support",
+        "orderedBlockIds": [
+          "blk_primary_support",
+          "blk_instr_safe"
+        ]
+      }
+    ],
+    "blocksByMoltType": {
+      "trigger": [],
+      "directive": [],
+      "instruction": [
+        "blk_instr_safe"
+      ],
+      "subject": [],
+      "primary": [
+        "blk_primary_support"
+      ],
+      "philosophy": [],
+      "blueprint": []
+    },
+    "meta": {
+      "compiledAt": "2026-01-09T16:06:22.707Z",
+      "compilerVersion": "v0"
+    }
+  },
+  "trace": {
+    "sleeveId": "sleeve_basic",
+    "events": [
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "id": "evt_00001",
+        "timestamp": "2026-01-09T16:06:22.696Z"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
+        "relatedTriggerIds": [],
+        "id": "evt_00002",
+        "timestamp": "2026-01-09T16:06:22.707Z"
+      }
+    ]
+  },
+  "hasErrors": false
+}
