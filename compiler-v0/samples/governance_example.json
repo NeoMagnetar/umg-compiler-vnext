@@ -1,0 +1,94 @@
+{
+  "sleeve": {
+    "id": "sleeve_governance_demo",
+    "name": "Governance Example",
+    "blocks": [
+      {
+        "id": "blk_primary_main",
+        "moltType": "primary",
+        "priorityOrder": 100,
+        "content": "Main primary block - required by governance."
+      },
+      {
+        "id": "blk_instr_a",
+        "moltType": "instruction",
+        "priorityOrder": 1,
+        "content": "Instruction A - will be boosted by prefer."
+      },
+      {
+        "id": "blk_instr_b",
+        "moltType": "instruction",
+        "priorityOrder": 2,
+        "content": "Instruction B - normal priority."
+      },
+      {
+        "id": "blk_instr_forbidden",
+        "moltType": "instruction",
+        "priorityOrder": 999,
+        "content": "Forbidden instruction - will be removed by governance."
+      }
+    ],
+    "stacks": [
+      {
+        "id": "stack_main",
+        "name": "Main Stack",
+        "domainKey": "main",
+        "blockIds": [
+          "blk_instr_a",
+          "blk_instr_b",
+          "blk_instr_forbidden",
+          "blk_primary_main"
+        ]
+      }
+    ],
+    "triggers": [],
+    "governance": [
+      {
+        "id": "gov_sleeve",
+        "scope": { "type": "sleeve" },
+        "rules": [
+          {
+            "id": "rule_forbid_instr_forbidden",
+            "name": "Forbid the forbidden instruction",
+            "description": "Hard forbid a specific block",
+            "target": {
+              "blockIds": ["blk_instr_forbidden"]
+            },
+            "effect": {
+              "type": "forbid",
+              "severity": "hard"
+            }
+          },
+          {
+            "id": "rule_prefer_instr_a",
+            "name": "Prefer instruction A",
+            "description": "Boost priority of instruction A",
+            "target": {
+              "blockIds": ["blk_instr_a"]
+            },
+            "effect": {
+              "type": "prefer",
+              "severity": "soft",
+              "boost": 5000
+            }
+          },
+          {
+            "id": "rule_require_primary",
+            "name": "Require primary block",
+            "description": "Ensure primary block survives",
+            "target": {
+              "blockIds": ["blk_primary_main"]
+            },
+            "effect": {
+              "type": "require",
+              "severity": "hard"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

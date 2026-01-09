@@ -3,6 +3,7 @@ import { ROLE_SET } from "./roles.js";
 import { normalizeSegments } from "./normalizeSegments.js";
 import { applyMerges } from "./applyMerges.js";
 import { applyBundles } from "./applyBundles.js";
+import { applyGovernance } from "./applyGovernance.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -156,14 +157,67 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: `Bundles recorded. ${bundleResult.bundles.length} bundle(s).`,
   });
 
-  // Step 5: Build runtime from post-merge stack ordering
+  // Step 5: Apply governance
+  const governanceResult = applyGovernance(sleeve, triggerState, blocksById);
+  pushAll(governanceResult.errors);
+  pushAll(governanceResult.notes);
+
+  if (hasErrors()) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_GOVERNANCE_DONE",
+    message: `Governance applied. ${governanceResult.appliedGovernance.length} rule(s) executed.`,
+  });
+
+  // Step 6: Validate required blocks survive (not forbidden, exist in sleeve)
+  for (const reqId of governanceResult.requiredBlockIds) {
+    if (!blocksById.has(reqId)) {
+      fail("ERR_GOVERNANCE_UNSATISFIABLE", `Required block ${reqId} does not exist in sleeve.`, {
+        relatedBlockIds: [reqId],
+      });
+    } else if (governanceResult.forbiddenBlockIds.has(reqId)) {
+      fail("ERR_GOVERNANCE_FORBIDDEN_BLOCK", `Required block ${reqId} is also forbidden.`, {
+        relatedBlockIds: [reqId],
+      });
+    }
+  }
+
+  if (hasErrors()) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  // Step 7: Build runtime from post-merge stack ordering (excluding forbidden + off)
+  const isLiveBlock = (id: string): boolean => {
+    if (governanceResult.forbiddenBlockIds.has(id)) return false;
+    const b = blocksById.get(id);
+    if (!b || b.role === "off") return false;
+    return true;
+  };
+
+  const getEffectivePriority = (id: string): number => {
+    if (governanceResult.priorityOverrides.has(id)) {
+      return governanceResult.priorityOverrides.get(id)!;
+    }
+    const b = blocksById.get(id);
+    return b?.priorityOrder ?? 0;
+  };
+
   const blocksByMoltType = Object.fromEntries(
     MOLT_ORDER.map(t => [t, [] as string[]])
   ) as Record<MoltType, string[]>;
 
   const liveBlockIds = Array.from(blocksById.values())
-    .filter(b => b.role !== "off")
-    .sort((a, b) => a.id.localeCompare(b.id))
+    .filter(b => isLiveBlock(b.id))
+    .sort((a, b) => {
+      const prioA = getEffectivePriority(a.id);
+      const prioB = getEffectivePriority(b.id);
+      if (prioB !== prioA) return prioB - prioA;
+      return a.id.localeCompare(b.id);
+    })
     .map(b => b.id);
 
   for (const id of liveBlockIds) {
@@ -171,10 +225,23 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     blocksByMoltType[b.moltType].push(id);
   }
 
+  // Check for at least one primary
+  if (blocksByMoltType.primary.length === 0) {
+    fail("ERR_NO_PRIMARY_DEFINED", "No primary blocks remain after governance.");
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
   const runtimeStacks = mergeResult.mergedStacks.map(st => ({
     stackId: st.id,
     domainKey: st.domainKey,
-    orderedBlockIds: st.blockIds.filter(id => blocksById.get(id)?.role !== "off"),
+    orderedBlockIds: st.blockIds
+      .filter(id => isLiveBlock(id))
+      .sort((a, b) => {
+        const prioA = getEffectivePriority(a);
+        const prioB = getEffectivePriority(b);
+        if (prioB !== prioA) return prioB - prioA;
+        return a.localeCompare(b);
+      }),
   }));
 
   push({
