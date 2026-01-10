@@ -1,0 +1,103 @@
+{
+  "sleeve": {
+    "id": "sleeve_neoblocks_demo",
+    "name": "NeoBlocks Example",
+    "blocks": [
+      {
+        "id": "blk_primary_ops",
+        "moltType": "primary",
+        "priorityOrder": 100,
+        "content": "Primary block for ops domain."
+      },
+      {
+        "id": "blk_instr_1",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "Instruction 1 - will be merged."
+      },
+      {
+        "id": "blk_instr_2",
+        "moltType": "instruction",
+        "priorityOrder": 20,
+        "content": "Instruction 2 - will be merged."
+      },
+      {
+        "id": "blk_merged_instr",
+        "moltType": "instruction",
+        "priorityOrder": 50,
+        "content": "Merged instruction result."
+      },
+      {
+        "id": "blk_instr_forbidden",
+        "moltType": "instruction",
+        "priorityOrder": 999,
+        "content": "This instruction will be forbidden by governance."
+      },
+      {
+        "id": "blk_directive_ops",
+        "moltType": "directive",
+        "priorityOrder": 5,
+        "content": "Directive for ops."
+      }
+    ],
+    "stacks": [
+      {
+        "id": "stack_ops_a",
+        "name": "Ops Stack A",
+        "domainKey": "ops",
+        "blockIds": [
+          "blk_instr_1",
+          "blk_instr_2",
+          "blk_primary_ops"
+        ],
+        "segments": [
+          {
+            "id": "seg_merge_instr",
+            "kind": "merge",
+            "stackId": "stack_ops_a",
+            "blockIds": ["blk_instr_1", "blk_instr_2"],
+            "resultBlockId": "blk_merged_instr"
+          },
+          {
+            "id": "seg_bundle_primary",
+            "kind": "bundle",
+            "stackId": "stack_ops_a",
+            "blockIds": ["blk_primary_ops"]
+          }
+        ]
+      },
+      {
+        "id": "stack_ops_b",
+        "name": "Ops Stack B",
+        "domainKey": "ops",
+        "blockIds": [
+          "blk_directive_ops",
+          "blk_instr_forbidden"
+        ]
+      }
+    ],
+    "triggers": [],
+    "governance": [
+      {
+        "id": "gov_sleeve",
+        "scope": { "type": "sleeve" },
+        "rules": [
+          {
+            "id": "rule_forbid_instr",
+            "name": "Forbid the forbidden instruction",
+            "target": {
+              "blockIds": ["blk_instr_forbidden"]
+            },
+            "effect": {
+              "type": "forbid",
+              "severity": "hard"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

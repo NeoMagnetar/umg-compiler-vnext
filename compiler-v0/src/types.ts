@@ -154,6 +154,29 @@ export interface RuntimeBundle {
   blockIds: string[];
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// NeoBlock / NeoStack Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface RuntimeNeoBlock {
+  id: string;
+  stackId: string;
+  orderedBlockIds: string[];
+  byMoltType: Record<MoltType, string[]>;
+  bundleIds: string[];
+  mergeIds: string[];
+}
+
+export interface RuntimeNeoStack {
+  id: string;
+  domainKey?: string;
+  neoBlockIds: string[];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RuntimeSpec
+// ─────────────────────────────────────────────────────────────────────────────
+
 export interface RuntimeSpec {
   sleeveId: string;
   sleeveName?: string;
@@ -167,6 +190,10 @@ export interface RuntimeSpec {
   blocksByMoltType: Record<MoltType, string[]>;
 
   bundles?: RuntimeBundle[];
+
+  neoBlocks: RuntimeNeoBlock[];
+  neoStacks: RuntimeNeoStack[];
+  neoBlockIdByStackId: Record<string, string>;
 
   meta: {
     compiledAt: string;
