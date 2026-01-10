@@ -190,6 +190,23 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary": "blk_primary",
+        "blk_instruction_bundled_1": "blk_instruction_bundled_1",
+        "blk_instruction_bundled_2": "blk_instruction_bundled_2",
+        "blk_instruction_bundled_3": "blk_instruction_bundled_3",
+        "blk_instruction_unbundled_high": "blk_instruction_unbundled_high",
+        "blk_instruction_unbundled_low": "blk_instruction_unbundled_low"
+      },
+      "stackNameById": {
+        "stack_main": "Main Stack with Mixed Instructions"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

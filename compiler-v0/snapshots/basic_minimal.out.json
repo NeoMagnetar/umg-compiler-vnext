@@ -147,6 +147,19 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_support": "blk_primary_support",
+        "blk_instr_safe": "blk_instr_safe"
+      },
+      "stackNameById": {
+        "stack_support": "stack_support"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

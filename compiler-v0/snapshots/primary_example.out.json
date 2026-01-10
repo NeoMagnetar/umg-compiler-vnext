@@ -157,6 +157,21 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_instr_base": "blk_instr_base",
+        "blk_primary_alpha": "blk_primary_alpha",
+        "blk_primary_beta": "blk_primary_beta",
+        "blk_primary_gamma": "blk_primary_gamma"
+      },
+      "stackNameById": {
+        "stack_main": "Main Stack"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

@@ -261,6 +261,22 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_ops": "blk_primary_ops",
+        "blk_merged_instr": "blk_merged_instr",
+        "blk_directive_ops": "blk_directive_ops",
+        "blk_primary_ops_b": "blk_primary_ops_b"
+      },
+      "stackNameById": {
+        "stack_ops_a": "Ops Stack A",
+        "stack_ops_b": "Ops Stack B"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

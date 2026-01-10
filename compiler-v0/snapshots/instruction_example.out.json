@@ -284,6 +284,24 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_a": "blk_primary_a",
+        "blk_primary_b": "blk_primary_b",
+        "blk_instruction_a1": "blk_instruction_a1",
+        "blk_instruction_a2": "blk_instruction_a2",
+        "blk_instruction_b1": "blk_instruction_b1",
+        "blk_instruction_b2": "blk_instruction_b2"
+      },
+      "stackNameById": {
+        "stack_a": "Stack A - bundled instructions",
+        "stack_b": "Stack B - unbundled instructions"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

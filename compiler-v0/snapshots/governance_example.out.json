@@ -169,6 +169,20 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_main": "blk_primary_main",
+        "blk_instr_a": "blk_instr_a",
+        "blk_instr_b": "blk_instr_b"
+      },
+      "stackNameById": {
+        "stack_main": "Main Stack"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

@@ -284,6 +284,24 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_a": "blk_primary_a",
+        "blk_primary_b": "blk_primary_b",
+        "blk_directive_a1": "blk_directive_a1",
+        "blk_directive_a2": "blk_directive_a2",
+        "blk_directive_b1": "blk_directive_b1",
+        "blk_directive_b2": "blk_directive_b2"
+      },
+      "stackNameById": {
+        "stack_a": "Stack A - bundled directives",
+        "stack_b": "Stack B - unbundled directives"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

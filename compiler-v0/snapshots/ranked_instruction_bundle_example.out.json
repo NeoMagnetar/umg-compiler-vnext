@@ -176,6 +176,23 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary": "blk_primary",
+        "blk_instruction_1": "blk_instruction_1",
+        "blk_instruction_2": "blk_instruction_2",
+        "blk_instruction_3": "blk_instruction_3",
+        "blk_instruction_4": "blk_instruction_4",
+        "blk_instruction_5": "blk_instruction_5"
+      },
+      "stackNameById": {
+        "stack_main": "Main Stack with Ranked Instructions"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

@@ -316,6 +316,26 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_a": "blk_primary_a",
+        "blk_primary_b": "blk_primary_b",
+        "blk_blueprint_a1": "blk_blueprint_a1",
+        "blk_blueprint_a2": "blk_blueprint_a2",
+        "blk_blueprint_b1": "blk_blueprint_b1",
+        "blk_blueprint_b2": "blk_blueprint_b2",
+        "blk_philosophy_b1": "blk_philosophy_b1",
+        "blk_philosophy_b2": "blk_philosophy_b2"
+      },
+      "stackNameById": {
+        "stack_a": "Stack A - bundled blueprints",
+        "stack_b": "Stack B - unbundled blueprints + multiple philosophy"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

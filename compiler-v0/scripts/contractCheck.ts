@@ -10,6 +10,7 @@ import type {
   Block,
   MoltType,
   GovernanceBinding,
+  Stack,
 } from "../src/types.js";
 
 interface Violation {
@@ -311,10 +312,57 @@ function checkRuntimeIndexes(sample: string, result: CompileResult): void {
 
 function extractForbiddenIds(sleeve: Sleeve): Set<string> {
   const forbidden = new Set<string>();
+  const blocksById = new Map(sleeve.blocks.map((b) => [b.id, b]));
+  const stacksById = new Map(sleeve.stacks.map((s) => [s.id, s]));
+
   for (const binding of sleeve.governance ?? []) {
     for (const rule of binding.rules) {
-      if (rule.effect.type === "forbid") {
-        for (const blockId of rule.target.blockIds ?? []) {
+      if (rule.effect.type !== "forbid") continue;
+
+      let scopeBlockIds: string[];
+      if (binding.scope.type === "sleeve") {
+        scopeBlockIds = [...blocksById.keys()];
+      } else if (binding.scope.type === "stack") {
+        const stack = stacksById.get(binding.scope.stackId);
+        scopeBlockIds = stack?.blockIds ?? [];
+      } else if (binding.scope.type === "stacks") {
+        const allIds: string[] = [];
+        for (const stackId of binding.scope.stackIds) {
+          const stack = stacksById.get(stackId);
+          if (stack) allIds.push(...stack.blockIds);
+        }
+        scopeBlockIds = [...new Set(allIds)];
+      } else if (binding.scope.type === "block") {
+        scopeBlockIds = [binding.scope.blockId];
+      } else {
+        scopeBlockIds = [];
+      }
+
+      for (const blockId of scopeBlockIds) {
+        const block = blocksById.get(blockId);
+        if (!block) continue;
+
+        let matches = true;
+
+        if (rule.target.blockIds && rule.target.blockIds.length > 0) {
+          if (!rule.target.blockIds.includes(blockId)) matches = false;
+        }
+
+        if (matches && rule.target.moltTypes && rule.target.moltTypes.length > 0) {
+          if (!rule.target.moltTypes.includes(block.moltType)) matches = false;
+        }
+
+        if (matches && rule.target.tagsAny && rule.target.tagsAny.length > 0) {
+          const blockTags = new Set(block.tags ?? []);
+          const anyTag = rule.target.tagsAny.some((t) => blockTags.has(t));
+          if (!anyTag) matches = false;
+        }
+
+        if (matches && rule.target.roles && rule.target.roles.length > 0) {
+          if (!block.role || !rule.target.roles.includes(block.role)) matches = false;
+        }
+
+        if (matches) {
           forbidden.add(blockId);
         }
       }

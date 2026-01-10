@@ -319,6 +319,26 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_a": "blk_primary_a",
+        "blk_primary_b": "blk_primary_b",
+        "blk_subject_a1": "blk_subject_a1",
+        "blk_subject_a2": "blk_subject_a2",
+        "blk_subject_b1": "blk_subject_b1",
+        "blk_subject_b2": "blk_subject_b2",
+        "blk_directive_a": "blk_directive_a",
+        "blk_directive_b": "blk_directive_b"
+      },
+      "stackNameById": {
+        "stack_a": "Stack A - bundled subjects",
+        "stack_b": "Stack B - unbundled subjects"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

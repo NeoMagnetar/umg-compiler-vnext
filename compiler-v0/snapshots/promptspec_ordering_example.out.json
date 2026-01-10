@@ -190,6 +190,23 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary": "blk_primary",
+        "blk_instr_bundle_a": "blk_instr_bundle_a",
+        "blk_instr_bundle_b": "blk_instr_bundle_b",
+        "blk_instr_bundle_c": "blk_instr_bundle_c",
+        "blk_instr_unbundled_high": "blk_instr_unbundled_high",
+        "blk_instr_unbundled_low": "blk_instr_unbundled_low"
+      },
+      "stackNameById": {
+        "stack_main": "Main Stack"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

@@ -141,6 +141,19 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_merged_instr": "blk_merged_instr",
+        "blk_primary_main": "blk_primary_main"
+      },
+      "stackNameById": {
+        "stack_main": "stack_main"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

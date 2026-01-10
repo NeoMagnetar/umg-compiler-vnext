@@ -273,6 +273,28 @@
         }
       ]
     },
+    "indexes": {
+      "blockTitleById": {
+        "blk_primary_1": "blk_primary_1",
+        "blk_primary_2": "blk_primary_2",
+        "blk_instr_ranked_a": "blk_instr_ranked_a",
+        "blk_instr_ranked_b": "blk_instr_ranked_b",
+        "blk_instr_ranked_c": "blk_instr_ranked_c",
+        "blk_directive_alt_1": "blk_directive_alt_1",
+        "blk_directive_alt_2": "blk_directive_alt_2",
+        "blk_subject_allowed": "blk_subject_allowed",
+        "blk_merge_result": "blk_merge_result",
+        "blk_philosophy_1": "blk_philosophy_1",
+        "blk_philosophy_2": "blk_philosophy_2"
+      },
+      "stackNameById": {
+        "stack_torture": "Torture Stack"
+      },
+      "tags": {
+        "blockIdsByTag": {},
+        "tagsByBlockId": {}
+      }
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
