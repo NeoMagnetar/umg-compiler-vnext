@@ -25,23 +25,57 @@ export function parseSleeve(json: string): ParsedSleeve {
   }
 }
 
+export function findBlockInSleeveById(sleeve: any, blockId: string): { block: any | null; stackId?: string } {
+  if (!sleeve) return { block: null };
+
+  const blocks = sleeve.blocks;
+  if (Array.isArray(blocks)) {
+    for (const block of blocks) {
+      if (block.id === blockId) {
+        const stackId = findStackForBlockId(sleeve, blockId);
+        return { block, stackId };
+      }
+    }
+  }
+
+  const stacks = sleeve.stacks;
+  if (Array.isArray(stacks)) {
+    for (const stack of stacks) {
+      if (Array.isArray(stack.blocks)) {
+        for (const block of stack.blocks) {
+          if (block.id === blockId) {
+            return { block, stackId: stack.id };
+          }
+        }
+      }
+    }
+  }
+
+  return { block: null };
+}
+
+function findStackForBlockId(sleeve: any, blockId: string): string | undefined {
+  const stacks = sleeve.stacks;
+  if (!Array.isArray(stacks)) return undefined;
+
+  for (const stack of stacks) {
+    if (Array.isArray(stack.blockIds) && stack.blockIds.includes(blockId)) {
+      return stack.id;
+    }
+  }
+  return undefined;
+}
+
 export function updateBlock(json: string, blockId: string, patch: BlockPatch): UpdateResult {
   const { sleeve, error } = parseSleeve(json);
   if (error || !sleeve) {
     return { error: error ?? "Failed to parse sleeve" };
   }
 
-  const stacks = sleeve.stacks;
-  if (!Array.isArray(stacks)) {
-    return { error: "No stacks array found in sleeve" };
-  }
-
   let found = false;
 
-  for (const stack of stacks) {
-    const blocks = stack.blocks;
-    if (!Array.isArray(blocks)) continue;
-
+  const blocks = sleeve.blocks;
+  if (Array.isArray(blocks)) {
     for (let i = 0; i < blocks.length; i++) {
       if (blocks[i].id === blockId) {
         if (patch.title !== undefined) blocks[i].title = patch.title;
@@ -53,7 +87,27 @@ export function updateBlock(json: string, blockId: string, patch: BlockPatch): U
         break;
       }
     }
-    if (found) break;
+  }
+
+  if (!found) {
+    const stacks = sleeve.stacks;
+    if (Array.isArray(stacks)) {
+      for (const stack of stacks) {
+        if (!Array.isArray(stack.blocks)) continue;
+        for (let i = 0; i < stack.blocks.length; i++) {
+          if (stack.blocks[i].id === blockId) {
+            if (patch.title !== undefined) stack.blocks[i].title = patch.title;
+            if (patch.content !== undefined) stack.blocks[i].content = patch.content;
+            if (patch.tags !== undefined) stack.blocks[i].tags = patch.tags;
+            if (patch.moltType !== undefined) stack.blocks[i].moltType = patch.moltType;
+            if (patch.priorityOrder !== undefined) stack.blocks[i].priorityOrder = patch.priorityOrder;
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+    }
   }
 
   if (!found) {
@@ -71,20 +125,10 @@ export function updateBlock(json: string, blockId: string, patch: BlockPatch): U
 export function findBlockInSleeve(json: string, blockId: string): { block: any | null; stackId?: string } {
   const { sleeve, error } = parseSleeve(json);
   if (error || !sleeve) return { block: null };
+  return findBlockInSleeveById(sleeve, blockId);
+}
 
-  const stacks = sleeve.stacks;
-  if (!Array.isArray(stacks)) return { block: null };
-
-  for (const stack of stacks) {
-    const blocks = stack.blocks;
-    if (!Array.isArray(blocks)) continue;
-
-    for (const block of blocks) {
-      if (block.id === blockId) {
-        return { block, stackId: stack.id };
-      }
-    }
-  }
-
-  return { block: null };
+export function blockExistsInSleeve(json: string, blockId: string): boolean {
+  const { block } = findBlockInSleeve(json, blockId);
+  return block !== null;
 }

@@ -15,6 +15,7 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
   const [moltType, setMoltType] = useState("");
   const [stackId, setStackId] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [blockFound, setBlockFound] = useState(false);
 
   useEffect(() => {
     if (!selectedBlockId) {
@@ -24,6 +25,8 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setPriorityOrder(0);
       setMoltType("");
       setStackId("");
+      setBlockFound(false);
+      setError(null);
       return;
     }
 
@@ -34,10 +37,12 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setTagsInput((block.tags ?? []).join(", "));
       setPriorityOrder(block.priorityOrder ?? 0);
       setMoltType(block.moltType ?? "instruction");
-      setStackId(foundStackId ?? "");
+      setStackId(foundStackId ?? "(unknown)");
+      setBlockFound(true);
       setError(null);
     } else {
-      setError(`Block not found: ${selectedBlockId}`);
+      setBlockFound(false);
+      setError(`Block "${selectedBlockId}" not found in sleeve JSON`);
     }
   }, [selectedBlockId, sleeveJson]);
 
@@ -45,6 +50,25 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
     return (
       <div style={{ padding: 16, opacity: 0.5, textAlign: "center" }}>
         <p>Select a block to inspect</p>
+      </div>
+    );
+  }
+
+  if (!blockFound) {
+    return (
+      <div style={{ padding: 16 }}>
+        <div style={{ 
+          padding: 12, 
+          background: "rgba(239, 68, 68, 0.15)", 
+          borderRadius: 6,
+          borderLeft: "3px solid #ef4444"
+        }}>
+          <div style={{ fontWeight: 600, color: "#ef4444", marginBottom: 4 }}>Block Not Found</div>
+          <div className="mono small" style={{ opacity: 0.8 }}>{selectedBlockId}</div>
+          <div className="small" style={{ marginTop: 8, opacity: 0.6 }}>
+            This block ID exists in the compiled output but could not be found in the input sleeve JSON.
+          </div>
+        </div>
       </div>
     );
   }

@@ -6,6 +6,7 @@ import GraphCanvas from "@/components/GraphCanvas";
 import RightPanel from "@/components/RightPanel";
 import { compileFromJson } from "@/lib/compile";
 import { loadSleeveJson, saveSleeveJson } from "@/lib/storage";
+import { blockExistsInSleeve } from "@/lib/sleeveEdit";
 import fixture from "@/fixtures/sleeve.minimal.json?raw";
 
 export default function App() {
@@ -23,6 +24,11 @@ export default function App() {
   }, [resultJson]);
 
   const isDirty = sleeveJson !== lastCompiledJsonRef.current;
+
+  const blockFoundInSleeve = useMemo(() => {
+    if (!selectedBlockId) return false;
+    return blockExistsInSleeve(sleeveJson, selectedBlockId);
+  }, [sleeveJson, selectedBlockId]);
 
   const onCompile = () => {
     saveSleeveJson(sleeveJson);
@@ -50,6 +56,7 @@ export default function App() {
           onReset={onReset} 
           selectedBlockId={selectedBlockId}
           isDirty={isDirty}
+          blockFoundInSleeve={blockFoundInSleeve}
         />
       }
       left={

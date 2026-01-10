@@ -20,6 +20,8 @@ const MOLT_COLORS: Record<string, { bg: string; border: string }> = {
   blueprint: { bg: "rgba(59, 130, 246, 0.15)", border: "#3b82f6" }
 };
 
+const MAX_VISIBLE_TAGS = 2;
+
 interface GraphCanvasProps {
   compiled: any;
   selectedTag?: string | null;
@@ -34,6 +36,7 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
 
   const stackNameById = indexes.stackNameById ?? {};
   const blockTitleById = indexes.blockTitleById ?? {};
+  const moltTypeByBlockId = indexes.moltTypeByBlockId ?? {};
   const tagsByBlockId = indexes.tags?.tagsByBlockId ?? {};
 
   const getBlocksGroupedByMolt = (nb: any) => {
@@ -41,15 +44,17 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
     MOLT_ORDER.forEach(molt => { blocksByMolt[molt] = []; });
 
     const orderedBlockIds = nb.orderedBlockIds ?? [];
-    const moltTypeByBlockId = indexes.moltTypeByBlockId ?? {};
 
     orderedBlockIds.forEach((blockId: string) => {
-      const molt = moltTypeByBlockId[blockId] ?? "instruction";
+      const molt = moltTypeByBlockId[blockId];
+      if (!molt) return;
+      
       if (blocksByMolt[molt]) {
         blocksByMolt[molt].push({
           id: blockId,
           title: blockTitleById[blockId] ?? blockId,
-          tags: tagsByBlockId[blockId] ?? []
+          tags: tagsByBlockId[blockId] ?? [],
+          moltType: molt
         });
       }
     });
@@ -113,8 +118,7 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
                           background: colors.bg,
                           borderLeft: `3px solid ${colors.border}`,
                           borderRadius: "0 4px 4px 0",
-                          minHeight: 32,
-                          pointerEvents: "none"
+                          minHeight: 32
                         }}
                       >
                         <div style={{ 
@@ -135,6 +139,8 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
                           blocks.map((block: any) => {
                             const isSelected = block.id === selectedBlockId;
                             const isHighlightedByTag = isBlockHighlightedByTag(block.id);
+                            const visibleTags = block.tags.slice(0, MAX_VISIBLE_TAGS);
+                            const hiddenTagCount = block.tags.length - MAX_VISIBLE_TAGS;
 
                             return (
                               <div 
@@ -149,7 +155,6 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
                                   background: "rgba(0,0,0,0.25)",
                                   borderRadius: 10,
                                   cursor: "pointer",
-                                  pointerEvents: "auto",
                                   border: isSelected 
                                     ? "2px solid rgba(255,255,255,0.65)" 
                                     : isHighlightedByTag 
@@ -170,8 +175,14 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
                                   {block.id}
                                 </div>
                                 {block.tags.length > 0 && (
-                                  <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
-                                    {block.tags.map((tag: string) => (
+                                  <div style={{ 
+                                    marginTop: 4, 
+                                    display: "flex", 
+                                    flexWrap: "nowrap", 
+                                    gap: 4,
+                                    overflow: "hidden"
+                                  }}>
+                                    {visibleTags.map((tag: string) => (
                                       <span 
                                         key={tag}
                                         style={{
@@ -183,12 +194,25 @@ export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, on
                                           borderRadius: 10,
                                           border: selectedTag === tag 
                                             ? "1px solid #ff69b4" 
-                                            : "1px solid transparent"
+                                            : "1px solid transparent",
+                                          whiteSpace: "nowrap"
                                         }}
                                       >
                                         {tag}
                                       </span>
                                     ))}
+                                    {hiddenTagCount > 0 && (
+                                      <span style={{
+                                        fontSize: 9,
+                                        padding: "2px 6px",
+                                        background: "rgba(255,255,255,0.05)",
+                                        borderRadius: 10,
+                                        opacity: 0.6,
+                                        whiteSpace: "nowrap"
+                                      }}>
+                                        +{hiddenTagCount}
+                                      </span>
+                                    )}
                                   </div>
                                 )}
                               </div>
