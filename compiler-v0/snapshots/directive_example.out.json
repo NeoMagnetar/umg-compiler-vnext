@@ -475,10 +475,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_BLUEPRINT_SELECTION_DONE",
+        "message": "Blueprint selection complete for 2 stack(s).",
+        "id": "evt_00025",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00025",
+        "id": "evt_00026",
         "timestamp": "TEST_TIME"
       }
     ]

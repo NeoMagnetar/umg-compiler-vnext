@@ -8,6 +8,7 @@ import { resolveAuthority } from "./resolveAuthority.js";
 import { selectPrimary } from "./selectPrimary.js";
 import { selectDirective } from "./selectDirective.js";
 import { selectInstruction } from "./selectInstruction.js";
+import { selectBlueprint } from "./selectBlueprint.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 
@@ -292,7 +293,49 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: `Instruction selection complete for ${instructionResult.selections.length} stack(s).`,
   });
 
-  // Step 12: Build global blocksByMoltType from authority-resolved stacks
+  // Step 12: Select blueprints for each stack
+  const blueprintResult = selectBlueprint(
+    authorityResult.stacks.map(st => ({
+      stackId: st.stackId,
+      orderedBlockIds: st.orderedBlockIds,
+    })),
+    blocksById,
+    bundleResult.bundles,
+    governanceResult.priorityOverrides
+  );
+  pushAll(blueprintResult.notes);
+  pushAll(blueprintResult.errors);
+
+  if (blueprintResult.errors.length > 0) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_BLUEPRINT_SELECTION_DONE",
+    message: `Blueprint selection complete for ${blueprintResult.selections.length} stack(s).`,
+  });
+
+  // Step 13: Philosophy warnings (no selection, keep all)
+  for (const st of authorityResult.stacks) {
+    const philosophyIds = st.orderedBlockIds.filter(id => {
+      const block = blocksById.get(id);
+      return block?.moltType === "philosophy";
+    });
+    if (philosophyIds.length > 1) {
+      push({
+        kind: "pipeline_stage",
+        severity: "warning",
+        code: "WARN_MULTIPLE_PHILOSOPHY_ACTIVE",
+        message: `Stack ${st.stackId} has ${philosophyIds.length} philosophy blocks; all remain active.`,
+        relatedStackIds: [st.stackId],
+        relatedBlockIds: philosophyIds,
+      });
+    }
+  }
+
+  // Step 14: Build global blocksByMoltType from authority-resolved stacks
   const blocksByMoltType = Object.fromEntries(
     MOLT_ORDER.map(t => [t, [] as string[]])
   ) as Record<MoltType, string[]>;
@@ -339,6 +382,11 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     instructionByStackId[sel.stackId] = sel.activeInstructionIds;
   }
 
+  const blueprintByStackId: Record<string, string[]> = {};
+  for (const sel of blueprintResult.selections) {
+    blueprintByStackId[sel.stackId] = sel.activeBlueprintIds;
+  }
+
   const neoBlocksResult = buildNeoBlocks({
     runtimeStacks,
     bundles: bundleResult.bundles,
@@ -347,6 +395,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     primaryByStackId,
     directiveByStackId,
     instructionByStackId,
+    blueprintByStackId,
   });
 
   const neoStacks = buildNeoStacks({

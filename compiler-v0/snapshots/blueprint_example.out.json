@@ -1,51 +1,56 @@
 {
   "runtime": {
-    "sleeveId": "sleeve_instruction_demo",
-    "sleeveName": "Instruction Selection Demo",
+    "sleeveId": "sleeve_blueprint_demo",
+    "sleeveName": "Blueprint Selection Demo",
     "stacks": [
       {
         "stackId": "stack_a",
         "domainKey": "domain_a",
         "orderedBlockIds": [
-          "blk_instruction_a2",
-          "blk_instruction_a1",
-          "blk_primary_a"
+          "blk_primary_a",
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
         ]
       },
       {
         "stackId": "stack_b",
         "domainKey": "domain_b",
         "orderedBlockIds": [
-          "blk_instruction_b2",
-          "blk_instruction_b1",
-          "blk_primary_b"
+          "blk_primary_b",
+          "blk_philosophy_b1",
+          "blk_philosophy_b2",
+          "blk_blueprint_b2",
+          "blk_blueprint_b1"
         ]
       }
     ],
     "blocksByMoltType": {
       "trigger": [],
       "directive": [],
-      "instruction": [
-        "blk_instruction_a2",
-        "blk_instruction_a1",
-        "blk_instruction_b2",
-        "blk_instruction_b1"
-      ],
+      "instruction": [],
       "subject": [],
       "primary": [
         "blk_primary_a",
         "blk_primary_b"
       ],
-      "philosophy": [],
-      "blueprint": []
+      "philosophy": [
+        "blk_philosophy_b1",
+        "blk_philosophy_b2"
+      ],
+      "blueprint": [
+        "blk_blueprint_a2",
+        "blk_blueprint_a1",
+        "blk_blueprint_b2",
+        "blk_blueprint_b1"
+      ]
     },
     "bundles": [
       {
-        "segmentId": "seg_bundle_instructions_a",
+        "segmentId": "seg_bundle_blueprints_a",
         "stackId": "stack_a",
         "blockIds": [
-          "blk_instruction_a1",
-          "blk_instruction_a2"
+          "blk_blueprint_a1",
+          "blk_blueprint_a2"
         ]
       },
       {
@@ -63,17 +68,31 @@
         ]
       },
       {
-        "segmentId": "implicit_bundle_stack_b_blk_instruction_b1",
+        "segmentId": "implicit_bundle_stack_b_blk_blueprint_b1",
         "stackId": "stack_b",
         "blockIds": [
-          "blk_instruction_b1"
+          "blk_blueprint_b1"
         ]
       },
       {
-        "segmentId": "implicit_bundle_stack_b_blk_instruction_b2",
+        "segmentId": "implicit_bundle_stack_b_blk_blueprint_b2",
         "stackId": "stack_b",
         "blockIds": [
-          "blk_instruction_b2"
+          "blk_blueprint_b2"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_b_blk_philosophy_b1",
+        "stackId": "stack_b",
+        "blockIds": [
+          "blk_philosophy_b1"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_b_blk_philosophy_b2",
+        "stackId": "stack_b",
+        "blockIds": [
+          "blk_philosophy_b2"
         ]
       }
     ],
@@ -82,67 +101,74 @@
         "id": "nb_stack_a",
         "stackId": "stack_a",
         "orderedBlockIds": [
-          "blk_instruction_a2",
-          "blk_instruction_a1",
-          "blk_primary_a"
+          "blk_primary_a",
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
-          "instruction": [
-            "blk_instruction_a2",
-            "blk_instruction_a1"
-          ],
+          "instruction": [],
           "subject": [],
           "primary": [
             "blk_primary_a"
           ],
           "philosophy": [],
-          "blueprint": []
+          "blueprint": [
+            "blk_blueprint_a2",
+            "blk_blueprint_a1"
+          ]
         },
         "bundleIds": [
           "implicit_bundle_stack_a_blk_primary_a",
-          "seg_bundle_instructions_a"
+          "seg_bundle_blueprints_a"
         ],
         "mergeIds": [],
         "selectedPrimaryId": "blk_primary_a",
         "active": {
           "triggerIds": [],
           "directiveIds": [],
-          "instructionIds": [
-            "blk_instruction_a2"
-          ],
+          "instructionIds": [],
           "subjectIds": [],
           "primaryId": "blk_primary_a",
           "philosophyIds": [],
-          "blueprintIds": []
+          "blueprintIds": [
+            "blk_blueprint_a2"
+          ]
         }
       },
       {
         "id": "nb_stack_b",
         "stackId": "stack_b",
         "orderedBlockIds": [
-          "blk_instruction_b2",
-          "blk_instruction_b1",
-          "blk_primary_b"
+          "blk_primary_b",
+          "blk_philosophy_b1",
+          "blk_philosophy_b2",
+          "blk_blueprint_b2",
+          "blk_blueprint_b1"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
-          "instruction": [
-            "blk_instruction_b2",
-            "blk_instruction_b1"
-          ],
+          "instruction": [],
           "subject": [],
           "primary": [
             "blk_primary_b"
           ],
-          "philosophy": [],
-          "blueprint": []
+          "philosophy": [
+            "blk_philosophy_b1",
+            "blk_philosophy_b2"
+          ],
+          "blueprint": [
+            "blk_blueprint_b2",
+            "blk_blueprint_b1"
+          ]
         },
         "bundleIds": [
-          "implicit_bundle_stack_b_blk_instruction_b1",
-          "implicit_bundle_stack_b_blk_instruction_b2",
+          "implicit_bundle_stack_b_blk_blueprint_b1",
+          "implicit_bundle_stack_b_blk_blueprint_b2",
+          "implicit_bundle_stack_b_blk_philosophy_b1",
+          "implicit_bundle_stack_b_blk_philosophy_b2",
           "implicit_bundle_stack_b_blk_primary_b"
         ],
         "mergeIds": [],
@@ -150,14 +176,17 @@
         "active": {
           "triggerIds": [],
           "directiveIds": [],
-          "instructionIds": [
-            "blk_instruction_b2",
-            "blk_instruction_b1"
-          ],
+          "instructionIds": [],
           "subjectIds": [],
           "primaryId": "blk_primary_b",
-          "philosophyIds": [],
-          "blueprintIds": []
+          "philosophyIds": [
+            "blk_philosophy_b1",
+            "blk_philosophy_b2"
+          ],
+          "blueprintIds": [
+            "blk_blueprint_b2",
+            "blk_blueprint_b1"
+          ]
         }
       }
     ],
@@ -191,7 +220,7 @@
     }
   },
   "trace": {
-    "sleeveId": "sleeve_instruction_demo",
+    "sleeveId": "sleeve_blueprint_demo",
     "events": [
       {
         "kind": "pipeline_stage",
@@ -241,12 +270,12 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_IMPLICIT_BUNDLE",
-        "message": "Created implicit singleton bundle for block blk_instruction_b1 in stack stack_b.",
+        "message": "Created implicit singleton bundle for block blk_blueprint_b1 in stack stack_b.",
         "relatedStackIds": [
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_instruction_b1"
+          "blk_blueprint_b1"
         ],
         "id": "evt_00005",
         "timestamp": "TEST_TIME"
@@ -255,14 +284,42 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_IMPLICIT_BUNDLE",
-        "message": "Created implicit singleton bundle for block blk_instruction_b2 in stack stack_b.",
+        "message": "Created implicit singleton bundle for block blk_blueprint_b2 in stack stack_b.",
         "relatedStackIds": [
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_instruction_b2"
+          "blk_blueprint_b2"
         ],
         "id": "evt_00006",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_philosophy_b1 in stack stack_b.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_b1"
+        ],
+        "id": "evt_00007",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_philosophy_b2 in stack stack_b.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_b2"
+        ],
+        "id": "evt_00008",
         "timestamp": "TEST_TIME"
       },
       {
@@ -270,7 +327,7 @@
         "severity": "info",
         "code": "INFO_NORMALIZE_DONE",
         "message": "Segments normalized.",
-        "id": "evt_00007",
+        "id": "evt_00009",
         "timestamp": "TEST_TIME"
       },
       {
@@ -278,22 +335,22 @@
         "severity": "info",
         "code": "INFO_MERGE_DONE",
         "message": "Merges applied. 0 merge operation(s).",
-        "id": "evt_00008",
+        "id": "evt_00010",
         "timestamp": "TEST_TIME"
       },
       {
         "kind": "note",
         "severity": "info",
         "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle seg_bundle_instructions_a recorded with 2 block(s) in stack stack_a.",
+        "message": "Bundle seg_bundle_blueprints_a recorded with 2 block(s) in stack stack_a.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_instruction_a1",
-          "blk_instruction_a2"
+          "blk_blueprint_a1",
+          "blk_blueprint_a2"
         ],
-        "id": "evt_00009",
+        "id": "evt_00011",
         "timestamp": "TEST_TIME"
       },
       {
@@ -307,7 +364,7 @@
         "relatedBlockIds": [
           "blk_primary_a"
         ],
-        "id": "evt_00010",
+        "id": "evt_00012",
         "timestamp": "TEST_TIME"
       },
       {
@@ -321,43 +378,71 @@
         "relatedBlockIds": [
           "blk_primary_b"
         ],
-        "id": "evt_00011",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "note",
-        "severity": "info",
-        "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle implicit_bundle_stack_b_blk_instruction_b1 recorded with 1 block(s) in stack stack_b.",
-        "relatedStackIds": [
-          "stack_b"
-        ],
-        "relatedBlockIds": [
-          "blk_instruction_b1"
-        ],
-        "id": "evt_00012",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "note",
-        "severity": "info",
-        "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle implicit_bundle_stack_b_blk_instruction_b2 recorded with 1 block(s) in stack stack_b.",
-        "relatedStackIds": [
-          "stack_b"
-        ],
-        "relatedBlockIds": [
-          "blk_instruction_b2"
-        ],
         "id": "evt_00013",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_b_blk_blueprint_b1 recorded with 1 block(s) in stack stack_b.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_blueprint_b1"
+        ],
+        "id": "evt_00014",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_b_blk_blueprint_b2 recorded with 1 block(s) in stack stack_b.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_blueprint_b2"
+        ],
+        "id": "evt_00015",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_b_blk_philosophy_b1 recorded with 1 block(s) in stack stack_b.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_b1"
+        ],
+        "id": "evt_00016",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_b_blk_philosophy_b2 recorded with 1 block(s) in stack stack_b.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_b2"
+        ],
+        "id": "evt_00017",
         "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
         "severity": "info",
         "code": "INFO_BUNDLE_DONE",
-        "message": "Bundles recorded. 5 bundle(s).",
-        "id": "evt_00014",
+        "message": "Bundles recorded. 7 bundle(s).",
+        "id": "evt_00018",
         "timestamp": "TEST_TIME"
       },
       {
@@ -365,7 +450,7 @@
         "severity": "info",
         "code": "INFO_GOVERNANCE_DONE",
         "message": "Governance applied. 0 rule(s) executed.",
-        "id": "evt_00015",
+        "id": "evt_00019",
         "timestamp": "TEST_TIME"
       },
       {
@@ -373,7 +458,7 @@
         "severity": "info",
         "code": "INFO_RESOLVE_AUTHORITY_DONE",
         "message": "Authority resolved for 2 stack(s).",
-        "id": "evt_00016",
+        "id": "evt_00020",
         "timestamp": "TEST_TIME"
       },
       {
@@ -387,7 +472,7 @@
         "relatedBlockIds": [
           "blk_primary_a"
         ],
-        "id": "evt_00017",
+        "id": "evt_00021",
         "timestamp": "TEST_TIME"
       },
       {
@@ -401,7 +486,7 @@
         "relatedBlockIds": [
           "blk_primary_b"
         ],
-        "id": "evt_00018",
+        "id": "evt_00022",
         "timestamp": "TEST_TIME"
       },
       {
@@ -409,7 +494,7 @@
         "severity": "info",
         "code": "INFO_PRIMARY_SELECTION_DONE",
         "message": "Primary selection complete for 2 stack(s).",
-        "id": "evt_00019",
+        "id": "evt_00023",
         "timestamp": "TEST_TIME"
       },
       {
@@ -417,51 +502,7 @@
         "severity": "info",
         "code": "INFO_DIRECTIVE_SELECTION_DONE",
         "message": "Directive selection complete for 2 stack(s).",
-        "id": "evt_00020",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "pipeline_stage",
-        "severity": "warning",
-        "code": "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
-        "message": "Stack stack_a has 2 bundled instruction alternates; selecting highest priority.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
-        "relatedBlockIds": [
-          "blk_instruction_a2",
-          "blk_instruction_a1"
-        ],
-        "id": "evt_00021",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "pipeline_stage",
-        "severity": "info",
-        "code": "INFO_INSTRUCTION_SELECTED",
-        "message": "Stack stack_a: selected instruction blk_instruction_a2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
-        "relatedBlockIds": [
-          "blk_instruction_a2"
-        ],
-        "id": "evt_00022",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "pipeline_stage",
-        "severity": "warning",
-        "code": "WARN_MULTIPLE_INSTRUCTION_ACTIVE",
-        "message": "Stack stack_b has 2 instructions without explicit alternates bundle; all remain active.",
-        "relatedStackIds": [
-          "stack_b"
-        ],
-        "relatedBlockIds": [
-          "blk_instruction_b2",
-          "blk_instruction_b1"
-        ],
-        "id": "evt_00023",
+        "id": "evt_00024",
         "timestamp": "TEST_TIME"
       },
       {
@@ -469,7 +510,51 @@
         "severity": "info",
         "code": "INFO_INSTRUCTION_SELECTION_DONE",
         "message": "Instruction selection complete for 2 stack(s).",
-        "id": "evt_00024",
+        "id": "evt_00025",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
+        "message": "Stack stack_a has 2 bundled blueprint alternates; selecting highest priority.",
+        "relatedStackIds": [
+          "stack_a"
+        ],
+        "relatedBlockIds": [
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
+        ],
+        "id": "evt_00026",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BLUEPRINT_SELECTED",
+        "message": "Stack stack_a: selected blueprint blk_blueprint_a2 from 2 candidates.",
+        "relatedStackIds": [
+          "stack_a"
+        ],
+        "relatedBlockIds": [
+          "blk_blueprint_a2"
+        ],
+        "id": "evt_00027",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_BLUEPRINT_ACTIVE",
+        "message": "Stack stack_b has 2 blueprints without explicit alternates bundle; all remain active.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_blueprint_b2",
+          "blk_blueprint_b1"
+        ],
+        "id": "evt_00028",
         "timestamp": "TEST_TIME"
       },
       {
@@ -477,7 +562,22 @@
         "severity": "info",
         "code": "INFO_BLUEPRINT_SELECTION_DONE",
         "message": "Blueprint selection complete for 2 stack(s).",
-        "id": "evt_00025",
+        "id": "evt_00029",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_PHILOSOPHY_ACTIVE",
+        "message": "Stack stack_b has 2 philosophy blocks; all remain active.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_b1",
+          "blk_philosophy_b2"
+        ],
+        "id": "evt_00030",
         "timestamp": "TEST_TIME"
       },
       {
@@ -486,7 +586,7 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00026",
+        "id": "evt_00031",
         "timestamp": "TEST_TIME"
       }
     ]

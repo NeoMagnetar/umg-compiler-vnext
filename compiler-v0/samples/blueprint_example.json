@@ -1,0 +1,94 @@
+{
+  "sleeve": {
+    "id": "sleeve_blueprint_demo",
+    "name": "Blueprint Selection Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "moltType": "primary",
+        "content": "Primary for stack A"
+      },
+      {
+        "id": "blk_primary_b",
+        "moltType": "primary",
+        "content": "Primary for stack B"
+      },
+      {
+        "id": "blk_blueprint_a1",
+        "moltType": "blueprint",
+        "priorityOrder": 10,
+        "content": "Blueprint A1 - lower priority"
+      },
+      {
+        "id": "blk_blueprint_a2",
+        "moltType": "blueprint",
+        "priorityOrder": 50,
+        "content": "Blueprint A2 - highest priority, should be selected"
+      },
+      {
+        "id": "blk_blueprint_b1",
+        "moltType": "blueprint",
+        "priorityOrder": 20,
+        "content": "Blueprint B1 - not bundled"
+      },
+      {
+        "id": "blk_blueprint_b2",
+        "moltType": "blueprint",
+        "priorityOrder": 40,
+        "content": "Blueprint B2 - not bundled"
+      },
+      {
+        "id": "blk_philosophy_b1",
+        "moltType": "philosophy",
+        "content": "Philosophy B1"
+      },
+      {
+        "id": "blk_philosophy_b2",
+        "moltType": "philosophy",
+        "content": "Philosophy B2"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Stack A - bundled blueprints",
+        "domainKey": "domain_a",
+        "blockIds": [
+          "blk_primary_a",
+          "blk_blueprint_a1",
+          "blk_blueprint_a2"
+        ],
+        "segments": [
+          {
+            "id": "seg_bundle_blueprints_a",
+            "kind": "bundle",
+            "stackId": "stack_a",
+            "blockIds": ["blk_blueprint_a1", "blk_blueprint_a2"]
+          }
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Stack B - unbundled blueprints + multiple philosophy",
+        "domainKey": "domain_b",
+        "blockIds": [
+          "blk_primary_b",
+          "blk_blueprint_b1",
+          "blk_blueprint_b2",
+          "blk_philosophy_b1",
+          "blk_philosophy_b2"
+        ],
+        "segments": []
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}
