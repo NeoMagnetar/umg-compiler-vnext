@@ -31,6 +31,7 @@ export interface BuildNeoBlocksInput {
   bundles: RuntimeBundle[];
   appliedMerges: AppliedMerge[];
   blocksById: Map<string, Block>;
+  primaryByStackId: Record<string, string>;
 }
 
 export interface BuildNeoBlocksResult {
@@ -39,7 +40,7 @@ export interface BuildNeoBlocksResult {
 }
 
 export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult {
-  const { runtimeStacks, bundles, appliedMerges, blocksById } = input;
+  const { runtimeStacks, bundles, appliedMerges, blocksById, primaryByStackId } = input;
 
   const neoBlocks: RuntimeNeoBlock[] = [];
   const neoBlockIdByStackId: Record<string, string> = {};
@@ -68,6 +69,8 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
       .map(m => m.segmentId)
       .sort((a, b) => a.localeCompare(b));
 
+    const selectedPrimaryId = primaryByStackId[st.stackId];
+
     neoBlocks.push({
       id: neoBlockId,
       stackId: st.stackId,
@@ -75,6 +78,7 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
       byMoltType,
       bundleIds,
       mergeIds,
+      selectedPrimaryId,
     });
 
     neoBlockIdByStackId[st.stackId] = neoBlockId;

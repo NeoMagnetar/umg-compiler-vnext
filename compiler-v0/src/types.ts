@@ -165,6 +165,7 @@ export interface RuntimeNeoBlock {
   byMoltType: Record<MoltType, string[]>;
   bundleIds: string[];
   mergeIds: string[];
+  selectedPrimaryId?: string;
 }
 
 export interface RuntimeNeoStack {
@@ -194,6 +195,7 @@ export interface RuntimeSpec {
   neoBlocks: RuntimeNeoBlock[];
   neoStacks: RuntimeNeoStack[];
   neoBlockIdByStackId: Record<string, string>;
+  primaryByStackId?: Record<string, string>;
 
   meta: {
     compiledAt: string;

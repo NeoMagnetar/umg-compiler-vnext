@@ -279,11 +279,17 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     )
     .sort((a, b) => a.segmentId.localeCompare(b.segmentId));
 
+  const primaryByStackId: Record<string, string> = {};
+  for (const sel of primaryResult.selections) {
+    primaryByStackId[sel.stackId] = sel.selectedPrimaryId;
+  }
+
   const neoBlocksResult = buildNeoBlocks({
     runtimeStacks,
     bundles: bundleResult.bundles,
     appliedMerges,
     blocksById,
+    primaryByStackId,
   });
 
   const neoStacks = buildNeoStacks({
@@ -309,6 +315,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
       neoBlocks: neoBlocksResult.neoBlocks,
       neoStacks,
       neoBlockIdByStackId: neoBlocksResult.neoBlockIdByStackId,
+      primaryByStackId,
       meta: {
         compiledAt: isoNow(),
         compilerVersion: "v0",

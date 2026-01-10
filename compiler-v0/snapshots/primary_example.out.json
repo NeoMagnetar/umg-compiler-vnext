@@ -76,7 +76,8 @@
           "implicit_bundle_stack_main_blk_instr_base",
           "seg_bundle_primaries"
         ],
-        "mergeIds": []
+        "mergeIds": [],
+        "selectedPrimaryId": "blk_primary_beta"
       }
     ],
     "neoStacks": [
@@ -90,6 +91,9 @@
     ],
     "neoBlockIdByStackId": {
       "stack_main": "nb_stack_main"
+    },
+    "primaryByStackId": {
+      "stack_main": "blk_primary_beta"
     },
     "meta": {
       "compiledAt": "TEST_TIME",

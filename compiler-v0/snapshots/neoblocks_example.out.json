@@ -92,7 +92,8 @@
         ],
         "mergeIds": [
           "seg_merge_instr"
-        ]
+        ],
+        "selectedPrimaryId": "blk_primary_ops"
       },
       {
         "id": "nb_stack_ops_b",
@@ -119,7 +120,8 @@
           "implicit_bundle_stack_ops_b_blk_instr_forbidden",
           "implicit_bundle_stack_ops_b_blk_primary_ops_b"
         ],
-        "mergeIds": []
+        "mergeIds": [],
+        "selectedPrimaryId": "blk_primary_ops_b"
       }
     ],
     "neoStacks": [
@@ -135,6 +137,10 @@
     "neoBlockIdByStackId": {
       "stack_ops_a": "nb_stack_ops_a",
       "stack_ops_b": "nb_stack_ops_b"
+    },
+    "primaryByStackId": {
+      "stack_ops_a": "blk_primary_ops",
+      "stack_ops_b": "blk_primary_ops_b"
     },
     "meta": {
       "compiledAt": "TEST_TIME",

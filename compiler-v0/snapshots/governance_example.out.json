@@ -86,7 +86,8 @@
           "implicit_bundle_stack_main_blk_instr_forbidden",
           "implicit_bundle_stack_main_blk_primary_main"
         ],
-        "mergeIds": []
+        "mergeIds": [],
+        "selectedPrimaryId": "blk_primary_main"
       }
     ],
     "neoStacks": [
@@ -100,6 +101,9 @@
     ],
     "neoBlockIdByStackId": {
       "stack_main": "nb_stack_main"
+    },
+    "primaryByStackId": {
+      "stack_main": "blk_primary_main"
     },
     "meta": {
       "compiledAt": "TEST_TIME",
