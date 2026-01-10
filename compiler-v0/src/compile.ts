@@ -5,6 +5,7 @@ import { applyMerges } from "./applyMerges.js";
 import { applyBundles } from "./applyBundles.js";
 import { applyGovernance } from "./applyGovernance.js";
 import { resolveAuthority } from "./resolveAuthority.js";
+import { selectPrimary } from "./selectPrimary.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 
@@ -222,7 +223,31 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: `Authority resolved for ${authorityResult.stacks.length} stack(s).`,
   });
 
-  // Step 9: Build global blocksByMoltType from authority-resolved stacks
+  // Step 9: Select primary for each stack
+  const primaryResult = selectPrimary(
+    authorityResult.stacks.map(st => ({
+      stackId: st.stackId,
+      orderedBlockIds: st.orderedBlockIds,
+    })),
+    blocksById,
+    bundleResult.bundles,
+    governanceResult.priorityOverrides
+  );
+  pushAll(primaryResult.notes);
+  pushAll(primaryResult.errors);
+
+  if (primaryResult.errors.length > 0) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_PRIMARY_SELECTION_DONE",
+    message: `Primary selection complete for ${primaryResult.selections.length} stack(s).`,
+  });
+
+  // Step 10: Build global blocksByMoltType from authority-resolved stacks
   const blocksByMoltType = Object.fromEntries(
     MOLT_ORDER.map(t => [t, [] as string[]])
   ) as Record<MoltType, string[]>;
@@ -239,19 +264,13 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     }
   }
 
-  // Check for at least one primary
-  if (blocksByMoltType.primary.length === 0) {
-    fail("ERR_NO_PRIMARY_DEFINED", "No primary blocks remain after governance.");
-    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
-  }
-
   const runtimeStacks = authorityResult.stacks.map(st => ({
     stackId: st.stackId,
     domainKey: st.domainKey,
     orderedBlockIds: st.orderedBlockIds,
   }));
 
-  // Step 10: Build NeoBlocks and NeoStacks
+  // Step 11: Build NeoBlocks and NeoStacks
   const appliedMerges = sleeve.stacks
     .flatMap(st =>
       (st.segments ?? [])
