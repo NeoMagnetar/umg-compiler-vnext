@@ -1,0 +1,727 @@
+{
+  "runtime": {
+    "sleeveId": "sleeve_torture",
+    "sleeveName": "Torture Test: Ranked + Alternates + Forbid + Override + Merge",
+    "stacks": [
+      {
+        "stackId": "stack_torture",
+        "domainKey": "domain_torture",
+        "orderedBlockIds": [
+          "blk_directive_alt_1",
+          "blk_directive_alt_2",
+          "blk_instr_ranked_c",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_a",
+          "blk_subject_allowed",
+          "blk_primary_2",
+          "blk_primary_1",
+          "blk_philosophy_1",
+          "blk_philosophy_2",
+          "blk_merge_result",
+          "blk_merge_result"
+        ]
+      }
+    ],
+    "blocksByMoltType": {
+      "trigger": [],
+      "directive": [
+        "blk_directive_alt_1",
+        "blk_directive_alt_2"
+      ],
+      "instruction": [
+        "blk_instr_ranked_c",
+        "blk_instr_ranked_b",
+        "blk_instr_ranked_a"
+      ],
+      "subject": [
+        "blk_subject_allowed"
+      ],
+      "primary": [
+        "blk_primary_2",
+        "blk_primary_1"
+      ],
+      "philosophy": [
+        "blk_philosophy_1",
+        "blk_philosophy_2"
+      ],
+      "blueprint": [
+        "blk_merge_result"
+      ]
+    },
+    "bundles": [
+      {
+        "segmentId": "seg_primary_alternates",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_primary_1",
+          "blk_primary_2"
+        ],
+        "intent": "alternates"
+      },
+      {
+        "segmentId": "seg_instr_ranked",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_instr_ranked_a",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_c"
+        ],
+        "intent": "ranked"
+      },
+      {
+        "segmentId": "seg_directive_alternates",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_directive_alt_1",
+          "blk_directive_alt_2"
+        ],
+        "intent": "alternates"
+      },
+      {
+        "segmentId": "implicit_bundle_stack_torture_blk_subject_forbidden",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_subject_forbidden"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_torture_blk_subject_allowed",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_subject_allowed"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_torture_blk_merge_result",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_merge_result"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_torture_blk_philosophy_1",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_philosophy_1"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_torture_blk_philosophy_2",
+        "stackId": "stack_torture",
+        "blockIds": [
+          "blk_philosophy_2"
+        ]
+      }
+    ],
+    "neoBlocks": [
+      {
+        "id": "nb_stack_torture",
+        "stackId": "stack_torture",
+        "orderedBlockIds": [
+          "blk_directive_alt_1",
+          "blk_directive_alt_2",
+          "blk_instr_ranked_c",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_a",
+          "blk_subject_allowed",
+          "blk_primary_2",
+          "blk_primary_1",
+          "blk_philosophy_1",
+          "blk_philosophy_2",
+          "blk_merge_result",
+          "blk_merge_result"
+        ],
+        "byMoltType": {
+          "trigger": [],
+          "directive": [
+            "blk_directive_alt_1",
+            "blk_directive_alt_2"
+          ],
+          "instruction": [
+            "blk_instr_ranked_c",
+            "blk_instr_ranked_b",
+            "blk_instr_ranked_a"
+          ],
+          "subject": [
+            "blk_subject_allowed"
+          ],
+          "primary": [
+            "blk_primary_2",
+            "blk_primary_1"
+          ],
+          "philosophy": [
+            "blk_philosophy_1",
+            "blk_philosophy_2"
+          ],
+          "blueprint": [
+            "blk_merge_result",
+            "blk_merge_result"
+          ]
+        },
+        "bundleIds": [
+          "implicit_bundle_stack_torture_blk_merge_result",
+          "implicit_bundle_stack_torture_blk_philosophy_1",
+          "implicit_bundle_stack_torture_blk_philosophy_2",
+          "implicit_bundle_stack_torture_blk_subject_allowed",
+          "implicit_bundle_stack_torture_blk_subject_forbidden",
+          "seg_directive_alternates",
+          "seg_instr_ranked",
+          "seg_primary_alternates"
+        ],
+        "mergeIds": [
+          "seg_merge_blueprints"
+        ],
+        "selectedPrimaryId": "blk_primary_2",
+        "active": {
+          "triggerIds": [],
+          "directiveIds": [
+            "blk_directive_alt_1"
+          ],
+          "instructionIds": [
+            "blk_instr_ranked_a",
+            "blk_instr_ranked_b",
+            "blk_instr_ranked_c"
+          ],
+          "subjectIds": [
+            "blk_subject_allowed"
+          ],
+          "primaryId": "blk_primary_2",
+          "philosophyIds": [
+            "blk_philosophy_1",
+            "blk_philosophy_2"
+          ],
+          "blueprintIds": [
+            "blk_merge_result"
+          ]
+        }
+      }
+    ],
+    "neoStacks": [
+      {
+        "id": "ns_domain_torture",
+        "domainKey": "domain_torture",
+        "neoBlockIds": [
+          "nb_stack_torture"
+        ]
+      }
+    ],
+    "neoBlockIdByStackId": {
+      "stack_torture": "nb_stack_torture"
+    },
+    "primaryByStackId": {
+      "stack_torture": "blk_primary_2"
+    },
+    "promptSpec": {
+      "sleeveId": "sleeve_torture",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_torture",
+          "stackId": "stack_torture",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [
+                "blk_directive_alt_1"
+              ],
+              "text": "Directive Alt 1 (low priority, but boosted by governance)"
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_instr_ranked_a",
+                "blk_instr_ranked_b",
+                "blk_instr_ranked_c"
+              ],
+              "text": "Ranked Instruction A\n\nRanked Instruction B\n\nRanked Instruction C"
+            },
+            {
+              "type": "subject",
+              "blockIds": [
+                "blk_subject_allowed"
+              ],
+              "text": "Subject ALLOWED - should be active"
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_2"
+              ],
+              "text": "Primary 2 (higher priority, should win)"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [
+                "blk_philosophy_1",
+                "blk_philosophy_2"
+              ],
+              "text": "Philosophy 1\n\nPhilosophy 2"
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [
+                "blk_merge_result"
+              ],
+              "text": "MERGED: source 1 + source 2 combined."
+            }
+          ],
+          "fullText": "Directive Alt 1 (low priority, but boosted by governance)\n\n---\n\nRanked Instruction A\n\nRanked Instruction B\n\nRanked Instruction C\n\n---\n\nSubject ALLOWED - should be active\n\n---\n\nPrimary 2 (higher priority, should win)\n\n---\n\nPhilosophy 1\n\nPhilosophy 2\n\n---\n\nMERGED: source 1 + source 2 combined."
+        }
+      ]
+    },
+    "meta": {
+      "compiledAt": "TEST_TIME",
+      "compilerVersion": "v0"
+    }
+  },
+  "trace": {
+    "sleeveId": "sleeve_torture",
+    "events": [
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "id": "evt_00001",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_VALIDATE_DONE",
+        "message": "Validation passed.",
+        "id": "evt_00002",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_subject_forbidden in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_subject_forbidden"
+        ],
+        "id": "evt_00003",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_subject_allowed in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_subject_allowed"
+        ],
+        "id": "evt_00004",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_merge_result in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_merge_result"
+        ],
+        "id": "evt_00005",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_philosophy_1 in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_1"
+        ],
+        "id": "evt_00006",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_philosophy_2 in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_2"
+        ],
+        "id": "evt_00007",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_NORMALIZE_DONE",
+        "message": "Segments normalized.",
+        "id": "evt_00008",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_MERGE_APPLIED",
+        "message": "Merge seg_merge_blueprints: replaced [blk_merge_source_1, blk_merge_source_2] with blk_merge_result in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_merge_result",
+          "blk_merge_source_1",
+          "blk_merge_source_2"
+        ],
+        "id": "evt_00009",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_MERGE_DONE",
+        "message": "Merges applied. 1 merge operation(s).",
+        "id": "evt_00010",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_primary_alternates recorded with 2 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_1",
+          "blk_primary_2"
+        ],
+        "id": "evt_00011",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_instr_ranked recorded with 3 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_ranked_a",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_c"
+        ],
+        "id": "evt_00012",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_directive_alternates recorded with 2 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_directive_alt_1",
+          "blk_directive_alt_2"
+        ],
+        "id": "evt_00013",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_torture_blk_subject_forbidden recorded with 1 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_subject_forbidden"
+        ],
+        "id": "evt_00014",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_torture_blk_subject_allowed recorded with 1 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_subject_allowed"
+        ],
+        "id": "evt_00015",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_torture_blk_merge_result recorded with 1 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_merge_result"
+        ],
+        "id": "evt_00016",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_torture_blk_philosophy_1 recorded with 1 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_1"
+        ],
+        "id": "evt_00017",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_torture_blk_philosophy_2 recorded with 1 block(s) in stack stack_torture.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_2"
+        ],
+        "id": "evt_00018",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BUNDLE_DONE",
+        "message": "Bundles recorded. 8 bundle(s).",
+        "id": "evt_00019",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_APPLIED",
+        "message": "Rule rule_forbid_subject (forbid) applied to 1 block(s).",
+        "relatedBlockIds": [
+          "blk_subject_forbidden"
+        ],
+        "id": "evt_00020",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_APPLIED",
+        "message": "Rule rule_prefer_directive_1 (prefer, boost=200) applied to 1 block(s).",
+        "relatedBlockIds": [
+          "blk_directive_alt_1"
+        ],
+        "id": "evt_00021",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_DONE",
+        "message": "Governance applied. 2 rule(s) executed.",
+        "id": "evt_00022",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_RESOLVE_AUTHORITY_DONE",
+        "message": "Authority resolved for 1 stack(s).",
+        "id": "evt_00023",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_PRIMARY_BUNDLED",
+        "message": "Stack stack_torture has 2 bundled primary alternates; selecting highest priority.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_2",
+          "blk_primary_1"
+        ],
+        "id": "evt_00024",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTED",
+        "message": "Stack stack_torture: selected primary blk_primary_2 from 2 candidates.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_2"
+        ],
+        "id": "evt_00025",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTION_DONE",
+        "message": "Primary selection complete for 1 stack(s).",
+        "id": "evt_00026",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
+        "message": "Stack stack_torture has 2 bundled directive alternates; selecting highest priority.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_directive_alt_1",
+          "blk_directive_alt_2"
+        ],
+        "id": "evt_00027",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DIRECTIVE_SELECTED",
+        "message": "Stack stack_torture: selected directive blk_directive_alt_1 from 2 candidates.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_directive_alt_1"
+        ],
+        "id": "evt_00028",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DIRECTIVE_SELECTION_DONE",
+        "message": "Directive selection complete for 1 stack(s).",
+        "id": "evt_00029",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_INSTRUCTION_RANKED_BUNDLE",
+        "message": "Stack stack_torture: 3 instructions in ranked bundle; all remain active.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_ranked_a",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_c"
+        ],
+        "id": "evt_00030",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_INSTRUCTION_SELECTION_DONE",
+        "message": "Instruction selection complete for 1 stack(s).",
+        "id": "evt_00031",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_SUBJECT_SELECTION_DONE",
+        "message": "Subject selection complete for 1 stack(s).",
+        "id": "evt_00032",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BLUEPRINT_RANKED_BUNDLE",
+        "message": "Stack stack_torture: 1 blueprints in ranked bundle; all remain active.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_merge_result"
+        ],
+        "id": "evt_00033",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BLUEPRINT_SELECTION_DONE",
+        "message": "Blueprint selection complete for 1 stack(s).",
+        "id": "evt_00034",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_PHILOSOPHY_ACTIVE",
+        "message": "Stack stack_torture has 2 philosophy blocks; all remain active.",
+        "relatedStackIds": [
+          "stack_torture"
+        ],
+        "relatedBlockIds": [
+          "blk_philosophy_1",
+          "blk_philosophy_2"
+        ],
+        "id": "evt_00035",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 1 neoBlocks.",
+        "id": "evt_00036",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
+        "relatedTriggerIds": [],
+        "id": "evt_00037",
+        "timestamp": "TEST_TIME"
+      }
+    ]
+  },
+  "hasErrors": false
+}

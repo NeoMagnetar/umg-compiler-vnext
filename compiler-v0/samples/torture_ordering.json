@@ -1,0 +1,187 @@
+{
+  "sleeve": {
+    "id": "sleeve_torture",
+    "name": "Torture Test: Ranked + Alternates + Forbid + Override + Merge",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_1",
+        "moltType": "primary",
+        "priorityOrder": 10,
+        "content": "Primary 1 (lower priority)"
+      },
+      {
+        "id": "blk_primary_2",
+        "moltType": "primary",
+        "priorityOrder": 50,
+        "content": "Primary 2 (higher priority, should win)"
+      },
+
+      {
+        "id": "blk_instr_ranked_a",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "Ranked Instruction A"
+      },
+      {
+        "id": "blk_instr_ranked_b",
+        "moltType": "instruction",
+        "priorityOrder": 20,
+        "content": "Ranked Instruction B"
+      },
+      {
+        "id": "blk_instr_ranked_c",
+        "moltType": "instruction",
+        "priorityOrder": 30,
+        "content": "Ranked Instruction C"
+      },
+
+      {
+        "id": "blk_directive_alt_1",
+        "moltType": "directive",
+        "priorityOrder": 10,
+        "content": "Directive Alt 1 (low priority, but boosted by governance)"
+      },
+      {
+        "id": "blk_directive_alt_2",
+        "moltType": "directive",
+        "priorityOrder": 100,
+        "content": "Directive Alt 2 (high priority, should lose to boosted alt_1)"
+      },
+
+      {
+        "id": "blk_subject_forbidden",
+        "moltType": "subject",
+        "priorityOrder": 100,
+        "content": "Subject FORBIDDEN - should not appear anywhere"
+      },
+      {
+        "id": "blk_subject_allowed",
+        "moltType": "subject",
+        "priorityOrder": 50,
+        "content": "Subject ALLOWED - should be active"
+      },
+
+      {
+        "id": "blk_merge_source_1",
+        "moltType": "blueprint",
+        "priorityOrder": 10,
+        "content": "Merge source 1 content."
+      },
+      {
+        "id": "blk_merge_source_2",
+        "moltType": "blueprint",
+        "priorityOrder": 20,
+        "content": "Merge source 2 content."
+      },
+      {
+        "id": "blk_merge_result",
+        "moltType": "blueprint",
+        "priorityOrder": 30,
+        "content": "MERGED: source 1 + source 2 combined."
+      },
+
+      {
+        "id": "blk_philosophy_1",
+        "moltType": "philosophy",
+        "content": "Philosophy 1"
+      },
+      {
+        "id": "blk_philosophy_2",
+        "moltType": "philosophy",
+        "content": "Philosophy 2"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_torture",
+        "name": "Torture Stack",
+        "domainKey": "domain_torture",
+        "blockIds": [
+          "blk_primary_1",
+          "blk_primary_2",
+          "blk_instr_ranked_a",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_c",
+          "blk_directive_alt_1",
+          "blk_directive_alt_2",
+          "blk_subject_forbidden",
+          "blk_subject_allowed",
+          "blk_merge_source_1",
+          "blk_merge_source_2",
+          "blk_merge_result",
+          "blk_philosophy_1",
+          "blk_philosophy_2"
+        ],
+        "segments": [
+          {
+            "id": "seg_primary_alternates",
+            "kind": "bundle",
+            "stackId": "stack_torture",
+            "blockIds": ["blk_primary_1", "blk_primary_2"],
+            "intent": "alternates"
+          },
+          {
+            "id": "seg_instr_ranked",
+            "kind": "bundle",
+            "stackId": "stack_torture",
+            "blockIds": ["blk_instr_ranked_a", "blk_instr_ranked_b", "blk_instr_ranked_c"],
+            "intent": "ranked"
+          },
+          {
+            "id": "seg_directive_alternates",
+            "kind": "bundle",
+            "stackId": "stack_torture",
+            "blockIds": ["blk_directive_alt_1", "blk_directive_alt_2"],
+            "intent": "alternates"
+          },
+          {
+            "id": "seg_merge_blueprints",
+            "kind": "merge",
+            "stackId": "stack_torture",
+            "blockIds": ["blk_merge_source_1", "blk_merge_source_2"],
+            "resultBlockId": "blk_merge_result"
+          }
+        ]
+      }
+    ],
+
+    "triggers": [],
+    "governance": [
+      {
+        "id": "gov_torture",
+        "scope": { "type": "sleeve" },
+        "rules": [
+          {
+            "id": "rule_forbid_subject",
+            "name": "Forbid the forbidden subject",
+            "target": {
+              "blockIds": ["blk_subject_forbidden"]
+            },
+            "effect": {
+              "type": "forbid",
+              "severity": "hard"
+            }
+          },
+          {
+            "id": "rule_prefer_directive_1",
+            "name": "Boost directive_alt_1 to win",
+            "target": {
+              "blockIds": ["blk_directive_alt_1"]
+            },
+            "effect": {
+              "type": "prefer",
+              "severity": "soft",
+              "boost": 200
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}
