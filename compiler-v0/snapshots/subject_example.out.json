@@ -184,8 +184,8 @@
           ],
           "instructionIds": [],
           "subjectIds": [
-            "blk_subject_b2",
-            "blk_subject_b1"
+            "blk_subject_b1",
+            "blk_subject_b2"
           ],
           "primaryId": "blk_primary_b",
           "philosophyIds": [],
@@ -292,10 +292,10 @@
             {
               "type": "subject",
               "blockIds": [
-                "blk_subject_b2",
-                "blk_subject_b1"
+                "blk_subject_b1",
+                "blk_subject_b2"
               ],
-              "text": "Subject B2 - not bundled\n\nSubject B1 - not bundled"
+              "text": "Subject B1 - not bundled\n\nSubject B2 - not bundled"
             },
             {
               "type": "primary",
@@ -315,7 +315,7 @@
               "text": ""
             }
           ],
-          "fullText": "Directive for stack B\n\n---\n\nSubject B2 - not bundled\n\nSubject B1 - not bundled\n\n---\n\nPrimary for stack B"
+          "fullText": "Directive for stack B\n\n---\n\nSubject B1 - not bundled\n\nSubject B2 - not bundled\n\n---\n\nPrimary for stack B"
         }
       ]
     },

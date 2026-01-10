@@ -152,8 +152,8 @@
           "triggerIds": [],
           "directiveIds": [],
           "instructionIds": [
-            "blk_instruction_b2",
-            "blk_instruction_b1"
+            "blk_instruction_b1",
+            "blk_instruction_b2"
           ],
           "subjectIds": [],
           "primaryId": "blk_primary_b",
@@ -252,10 +252,10 @@
             {
               "type": "instruction",
               "blockIds": [
-                "blk_instruction_b2",
-                "blk_instruction_b1"
+                "blk_instruction_b1",
+                "blk_instruction_b2"
               ],
-              "text": "Instruction B2 - not bundled\n\nInstruction B1 - not bundled"
+              "text": "Instruction B1 - not bundled\n\nInstruction B2 - not bundled"
             },
             {
               "type": "subject",
@@ -280,7 +280,7 @@
               "text": ""
             }
           ],
-          "fullText": "Instruction B2 - not bundled\n\nInstruction B1 - not bundled\n\n---\n\nPrimary for stack B"
+          "fullText": "Instruction B1 - not bundled\n\nInstruction B2 - not bundled\n\n---\n\nPrimary for stack B"
         }
       ]
     },

@@ -185,8 +185,8 @@
             "blk_philosophy_b2"
           ],
           "blueprintIds": [
-            "blk_blueprint_b2",
-            "blk_blueprint_b1"
+            "blk_blueprint_b1",
+            "blk_blueprint_b2"
           ]
         }
       }
@@ -306,13 +306,13 @@
             {
               "type": "blueprint",
               "blockIds": [
-                "blk_blueprint_b2",
-                "blk_blueprint_b1"
+                "blk_blueprint_b1",
+                "blk_blueprint_b2"
               ],
-              "text": "Blueprint B2 - not bundled\n\nBlueprint B1 - not bundled"
+              "text": "Blueprint B1 - not bundled\n\nBlueprint B2 - not bundled"
             }
           ],
-          "fullText": "Primary for stack B\n\n---\n\nPhilosophy B1\n\nPhilosophy B2\n\n---\n\nBlueprint B2 - not bundled\n\nBlueprint B1 - not bundled"
+          "fullText": "Primary for stack B\n\n---\n\nPhilosophy B1\n\nPhilosophy B2\n\n---\n\nBlueprint B1 - not bundled\n\nBlueprint B2 - not bundled"
         }
       ]
     },

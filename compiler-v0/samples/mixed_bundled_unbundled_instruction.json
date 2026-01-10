@@ -1,0 +1,80 @@
+{
+  "sleeve": {
+    "id": "sleeve_mixed_instruction",
+    "name": "Mixed Bundled and Unbundled Instruction Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary",
+        "moltType": "primary",
+        "content": "Primary block for the stack"
+      },
+      {
+        "id": "blk_instruction_bundled_1",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "Bundled Instruction 1: First ranked step"
+      },
+      {
+        "id": "blk_instruction_bundled_2",
+        "moltType": "instruction",
+        "priorityOrder": 20,
+        "content": "Bundled Instruction 2: Second ranked step"
+      },
+      {
+        "id": "blk_instruction_bundled_3",
+        "moltType": "instruction",
+        "priorityOrder": 30,
+        "content": "Bundled Instruction 3: Third ranked step"
+      },
+      {
+        "id": "blk_instruction_unbundled_high",
+        "moltType": "instruction",
+        "priorityOrder": 100,
+        "content": "Unbundled Instruction HIGH: Highest priority but not bundled"
+      },
+      {
+        "id": "blk_instruction_unbundled_low",
+        "moltType": "instruction",
+        "priorityOrder": 5,
+        "content": "Unbundled Instruction LOW: Lowest priority, not bundled"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_main",
+        "name": "Main Stack with Mixed Instructions",
+        "domainKey": "domain_main",
+        "blockIds": [
+          "blk_primary",
+          "blk_instruction_bundled_1",
+          "blk_instruction_bundled_2",
+          "blk_instruction_bundled_3",
+          "blk_instruction_unbundled_high",
+          "blk_instruction_unbundled_low"
+        ],
+        "segments": [
+          {
+            "id": "seg_ranked_instructions",
+            "kind": "bundle",
+            "stackId": "stack_main",
+            "blockIds": [
+              "blk_instruction_bundled_1",
+              "blk_instruction_bundled_2",
+              "blk_instruction_bundled_3"
+            ],
+            "intent": "ranked"
+          }
+        ]
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

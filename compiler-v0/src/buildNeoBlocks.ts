@@ -5,6 +5,7 @@ import type {
   Block,
   ActiveSelections,
 } from "./types.js";
+import { composeActiveOrder } from "./composeActiveOrder.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -37,6 +38,7 @@ export interface BuildNeoBlocksInput {
   instructionByStackId: Record<string, string[]>;
   blueprintByStackId: Record<string, string[]>;
   subjectByStackId: Record<string, string[]>;
+  priorityOverrides: Map<string, number>;
 }
 
 export interface BuildNeoBlocksResult {
@@ -45,7 +47,18 @@ export interface BuildNeoBlocksResult {
 }
 
 export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult {
-  const { runtimeStacks, bundles, appliedMerges, blocksById, primaryByStackId, directiveByStackId, instructionByStackId, blueprintByStackId, subjectByStackId } = input;
+  const {
+    runtimeStacks,
+    bundles,
+    appliedMerges,
+    blocksById,
+    primaryByStackId,
+    directiveByStackId,
+    instructionByStackId,
+    blueprintByStackId,
+    subjectByStackId,
+    priorityOverrides,
+  } = input;
 
   const neoBlocks: RuntimeNeoBlock[] = [];
   const neoBlockIdByStackId: Record<string, string> = {};
@@ -64,8 +77,9 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
       }
     }
 
-    const bundleIds = bundles
-      .filter(b => b.stackId === st.stackId)
+    const stackBundles = bundles.filter(b => b.stackId === st.stackId);
+
+    const bundleIds = stackBundles
       .map(b => b.segmentId)
       .sort((a, b) => a.localeCompare(b));
 
@@ -76,14 +90,39 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
 
     const selectedPrimaryId = primaryByStackId[st.stackId];
 
+    const rawDirectiveIds = directiveByStackId[st.stackId] ?? byMoltType.directive;
+    const rawInstructionIds = instructionByStackId[st.stackId] ?? byMoltType.instruction;
+    const rawSubjectIds = subjectByStackId[st.stackId] ?? byMoltType.subject;
+    const rawBlueprintIds = blueprintByStackId[st.stackId] ?? byMoltType.blueprint;
+
     const active: ActiveSelections = {
       triggerIds: byMoltType.trigger,
-      directiveIds: directiveByStackId[st.stackId] ?? byMoltType.directive,
-      instructionIds: instructionByStackId[st.stackId] ?? byMoltType.instruction,
-      subjectIds: subjectByStackId[st.stackId] ?? byMoltType.subject,
+      directiveIds: composeActiveOrder({
+        activeIds: rawDirectiveIds,
+        bundles: stackBundles,
+        blocksById,
+        priorityOverrides,
+      }),
+      instructionIds: composeActiveOrder({
+        activeIds: rawInstructionIds,
+        bundles: stackBundles,
+        blocksById,
+        priorityOverrides,
+      }),
+      subjectIds: composeActiveOrder({
+        activeIds: rawSubjectIds,
+        bundles: stackBundles,
+        blocksById,
+        priorityOverrides,
+      }),
       primaryId: selectedPrimaryId,
       philosophyIds: byMoltType.philosophy,
-      blueprintIds: blueprintByStackId[st.stackId] ?? byMoltType.blueprint,
+      blueprintIds: composeActiveOrder({
+        activeIds: rawBlueprintIds,
+        bundles: stackBundles,
+        blocksById,
+        priorityOverrides,
+      }),
     };
 
     neoBlocks.push({

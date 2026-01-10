@@ -151,8 +151,8 @@
         "active": {
           "triggerIds": [],
           "directiveIds": [
-            "blk_directive_b2",
-            "blk_directive_b1"
+            "blk_directive_b1",
+            "blk_directive_b2"
           ],
           "instructionIds": [],
           "subjectIds": [],
@@ -247,10 +247,10 @@
             {
               "type": "directive",
               "blockIds": [
-                "blk_directive_b2",
-                "blk_directive_b1"
+                "blk_directive_b1",
+                "blk_directive_b2"
               ],
-              "text": "Directive B2 - not bundled\n\nDirective B1 - not bundled"
+              "text": "Directive B1 - not bundled\n\nDirective B2 - not bundled"
             },
             {
               "type": "instruction",
@@ -280,7 +280,7 @@
               "text": ""
             }
           ],
-          "fullText": "Directive B2 - not bundled\n\nDirective B1 - not bundled\n\n---\n\nPrimary for stack B"
+          "fullText": "Directive B1 - not bundled\n\nDirective B2 - not bundled\n\n---\n\nPrimary for stack B"
         }
       ]
     },

@@ -428,6 +428,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     instructionByStackId,
     blueprintByStackId,
     subjectByStackId,
+    priorityOverrides: governanceResult.priorityOverrides,
   });
 
   const neoStacks = buildNeoStacks({
