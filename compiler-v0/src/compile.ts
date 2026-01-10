@@ -4,6 +4,7 @@ import { normalizeSegments } from "./normalizeSegments.js";
 import { applyMerges } from "./applyMerges.js";
 import { applyBundles } from "./applyBundles.js";
 import { applyGovernance } from "./applyGovernance.js";
+import { resolveAuthority } from "./resolveAuthority.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 
@@ -192,7 +193,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
   }
 
-  // Step 7: Build runtime from post-merge stack ordering (excluding forbidden + off)
+  // Step 7: Filter live blocks (post-merge, post-governance)
   const isLiveBlock = (id: string): boolean => {
     if (governanceResult.forbiddenBlockIds.has(id)) return false;
     const b = blocksById.get(id);
@@ -200,31 +201,42 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     return true;
   };
 
-  const getEffectivePriority = (id: string): number => {
-    if (governanceResult.priorityOverrides.has(id)) {
-      return governanceResult.priorityOverrides.get(id)!;
-    }
-    const b = blocksById.get(id);
-    return b?.priorityOrder ?? 0;
-  };
+  const preAuthorityStacks = mergeResult.mergedStacks.map(st => ({
+    stackId: st.id,
+    domainKey: st.domainKey,
+    blockIds: st.blockIds.filter(id => isLiveBlock(id)),
+  }));
 
+  // Step 8: Resolve authority (MOLT hierarchy + priority + id tie-break)
+  const authorityResult = resolveAuthority(
+    preAuthorityStacks,
+    blocksById,
+    governanceResult.priorityOverrides
+  );
+  pushAll(authorityResult.notes);
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_RESOLVE_AUTHORITY_DONE",
+    message: `Authority resolved for ${authorityResult.stacks.length} stack(s).`,
+  });
+
+  // Step 9: Build global blocksByMoltType from authority-resolved stacks
   const blocksByMoltType = Object.fromEntries(
     MOLT_ORDER.map(t => [t, [] as string[]])
   ) as Record<MoltType, string[]>;
 
-  const liveBlockIds = Array.from(blocksById.values())
-    .filter(b => isLiveBlock(b.id))
-    .sort((a, b) => {
-      const prioA = getEffectivePriority(a.id);
-      const prioB = getEffectivePriority(b.id);
-      if (prioB !== prioA) return prioB - prioA;
-      return a.id.localeCompare(b.id);
-    })
-    .map(b => b.id);
-
-  for (const id of liveBlockIds) {
-    const b = blocksById.get(id)!;
-    blocksByMoltType[b.moltType].push(id);
+  const seenBlockIds = new Set<string>();
+  for (const st of authorityResult.stacks) {
+    for (const molt of MOLT_ORDER) {
+      for (const blockId of st.byMoltType[molt]) {
+        if (!seenBlockIds.has(blockId)) {
+          seenBlockIds.add(blockId);
+          blocksByMoltType[molt].push(blockId);
+        }
+      }
+    }
   }
 
   // Check for at least one primary
@@ -233,20 +245,13 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
   }
 
-  const runtimeStacks = mergeResult.mergedStacks.map(st => ({
-    stackId: st.id,
+  const runtimeStacks = authorityResult.stacks.map(st => ({
+    stackId: st.stackId,
     domainKey: st.domainKey,
-    orderedBlockIds: st.blockIds
-      .filter(id => isLiveBlock(id))
-      .sort((a, b) => {
-        const prioA = getEffectivePriority(a);
-        const prioB = getEffectivePriority(b);
-        if (prioB !== prioA) return prioB - prioA;
-        return a.localeCompare(b);
-      }),
+    orderedBlockIds: st.orderedBlockIds,
   }));
 
-  // Step 8: Build NeoBlocks and NeoStacks
+  // Step 10: Build NeoBlocks and NeoStacks
   const appliedMerges = sleeve.stacks
     .flatMap(st =>
       (st.segments ?? [])
