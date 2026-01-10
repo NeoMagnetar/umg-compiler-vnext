@@ -14,6 +14,7 @@ export default function App() {
     const c = compileFromJson(loadSleeveJson(fixture));
     return JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2);
   });
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const compiled = useMemo(() => {
     try { return JSON.parse(resultJson); } catch { return null; }
@@ -23,6 +24,7 @@ export default function App() {
     saveSleeveJson(sleeveJson);
     const c = compileFromJson(sleeveJson);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2));
+    setSelectedTag(null);
   };
 
   const onReset = () => {
@@ -30,13 +32,20 @@ export default function App() {
     setSleeveJson(fixture);
     const c = compileFromJson(fixture);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true }, null, 2));
+    setSelectedTag(null);
   };
 
   return (
     <Layout
       top={<TopBar onCompile={onCompile} onReset={onReset} />}
-      left={<LeftPanel compiled={compiled} />}
-      center={<GraphCanvas compiled={compiled} />}
+      left={
+        <LeftPanel 
+          compiled={compiled} 
+          selectedTag={selectedTag}
+          onSelectTag={setSelectedTag}
+        />
+      }
+      center={<GraphCanvas compiled={compiled} selectedTag={selectedTag} />}
       right={<RightPanel sleeveJson={sleeveJson} setSleeveJson={setSleeveJson} resultJson={resultJson} />}
     />
   );
