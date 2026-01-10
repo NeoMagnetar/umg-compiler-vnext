@@ -308,6 +308,110 @@ function checkRuntimeIndexes(sample: string, result: CompileResult): void {
       addViolation(sample, "BLOCKIDS_DUPLICATES", `blockIdsByTag[${tag}] has duplicates`);
     }
   }
+
+  const { allTagsSorted } = indexes.tags;
+  const sortedCheck = [...allTagsSorted].sort();
+  if (!arraysEqual(allTagsSorted, sortedCheck)) {
+    addViolation(sample, "ALL_TAGS_NOT_SORTED", "allTagsSorted is not properly sorted");
+  }
+}
+
+function checkTagIndexNoForbidden(
+  sample: string,
+  result: CompileResult,
+  forbiddenIds: Set<string>
+): void {
+  if (!result.runtime) return;
+
+  const { indexes, stacks } = result.runtime;
+  const liveBlockIds = new Set<string>();
+  for (const st of stacks) {
+    for (const id of st.orderedBlockIds) {
+      liveBlockIds.add(id);
+    }
+  }
+
+  const { tagsByBlockId, blockIdsByTag, blockIdsByTagByStackId, activeBlockIdsByTagByStackId, blockIdsByTagByMoltType } = indexes.tags;
+
+  for (const blockId of Object.keys(tagsByBlockId)) {
+    if (forbiddenIds.has(blockId) || !liveBlockIds.has(blockId)) {
+      addViolation(sample, "TAG_INDEX_FORBIDDEN", `Forbidden/non-live block ${blockId} in tagsByBlockId`);
+    }
+  }
+
+  for (const [tag, blockIds] of Object.entries(blockIdsByTag)) {
+    for (const blockId of blockIds) {
+      if (forbiddenIds.has(blockId) || !liveBlockIds.has(blockId)) {
+        addViolation(sample, "TAG_INDEX_FORBIDDEN", `Forbidden/non-live block ${blockId} in blockIdsByTag[${tag}]`);
+      }
+    }
+  }
+
+  for (const [stackId, tagMap] of Object.entries(blockIdsByTagByStackId)) {
+    for (const [tag, blockIds] of Object.entries(tagMap)) {
+      for (const blockId of blockIds) {
+        if (forbiddenIds.has(blockId) || !liveBlockIds.has(blockId)) {
+          addViolation(sample, "TAG_INDEX_FORBIDDEN", `Forbidden/non-live block ${blockId} in blockIdsByTagByStackId[${stackId}][${tag}]`);
+        }
+      }
+    }
+  }
+
+  for (const [stackId, tagMap] of Object.entries(activeBlockIdsByTagByStackId)) {
+    for (const [tag, blockIds] of Object.entries(tagMap)) {
+      for (const blockId of blockIds) {
+        if (forbiddenIds.has(blockId) || !liveBlockIds.has(blockId)) {
+          addViolation(sample, "TAG_INDEX_FORBIDDEN", `Forbidden/non-live block ${blockId} in activeBlockIdsByTagByStackId[${stackId}][${tag}]`);
+        }
+      }
+    }
+  }
+
+  for (const [moltType, tagMap] of Object.entries(blockIdsByTagByMoltType)) {
+    for (const [tag, blockIds] of Object.entries(tagMap)) {
+      for (const blockId of blockIds) {
+        if (forbiddenIds.has(blockId) || !liveBlockIds.has(blockId)) {
+          addViolation(sample, "TAG_INDEX_FORBIDDEN", `Forbidden/non-live block ${blockId} in blockIdsByTagByMoltType[${moltType}][${tag}]`);
+        }
+      }
+    }
+  }
+}
+
+function checkActiveTagIndexesSubset(sample: string, result: CompileResult): void {
+  if (!result.runtime) return;
+
+  const { neoBlocks, indexes } = result.runtime;
+  const { activeBlockIdsByTagByStackId } = indexes.tags;
+
+  const activeIdsByStackId = new Map<string, Set<string>>();
+  for (const nb of neoBlocks) {
+    const activeSet = new Set<string>();
+    for (const id of nb.active.triggerIds) activeSet.add(id);
+    for (const id of nb.active.directiveIds) activeSet.add(id);
+    for (const id of nb.active.instructionIds) activeSet.add(id);
+    for (const id of nb.active.subjectIds) activeSet.add(id);
+    if (nb.active.primaryId) activeSet.add(nb.active.primaryId);
+    for (const id of nb.active.philosophyIds) activeSet.add(id);
+    for (const id of nb.active.blueprintIds) activeSet.add(id);
+    activeIdsByStackId.set(nb.stackId, activeSet);
+  }
+
+  for (const [stackId, tagMap] of Object.entries(activeBlockIdsByTagByStackId)) {
+    const activeSet = activeIdsByStackId.get(stackId);
+    if (!activeSet) {
+      addViolation(sample, "ACTIVE_TAG_INDEX_INVALID_STACK", `activeBlockIdsByTagByStackId has unknown stackId ${stackId}`);
+      continue;
+    }
+
+    for (const [tag, blockIds] of Object.entries(tagMap)) {
+      for (const blockId of blockIds) {
+        if (!activeSet.has(blockId)) {
+          addViolation(sample, "ACTIVE_TAG_NOT_ACTIVE", `Block ${blockId} in activeBlockIdsByTagByStackId[${stackId}][${tag}] is not in active set`);
+        }
+      }
+    }
+  }
 }
 
 function extractForbiddenIds(sleeve: Sleeve): Set<string> {
@@ -420,6 +524,8 @@ async function main() {
     checkBundleIntents(file, result, result.runtime?.bundles ?? [], blocksById, priorityOverrides, forbiddenIds);
     checkPrimarySelection(file, result);
     checkRuntimeIndexes(file, result);
+    checkTagIndexNoForbidden(file, result, forbiddenIds);
+    checkActiveTagIndexesSubset(file, result);
   }
 
   console.log("");

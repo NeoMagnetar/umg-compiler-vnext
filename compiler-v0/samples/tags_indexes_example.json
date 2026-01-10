@@ -1,0 +1,125 @@
+{
+  "sleeve": {
+    "id": "sleeve_tags_indexes",
+    "name": "Tags Indexes Example",
+    "version": "1.0.0",
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "title": "Primary Block A",
+        "moltType": "primary",
+        "content": "Primary content for stack A.",
+        "tags": ["customer_care", "onboarding"]
+      },
+      {
+        "id": "blk_primary_b",
+        "title": "Primary Block B",
+        "moltType": "primary",
+        "content": "Primary content for stack B.",
+        "tags": ["Customer Care"]
+      },
+      {
+        "id": "blk_instr_a1",
+        "title": "Instruction A1",
+        "moltType": "instruction",
+        "content": "Instruction A1 content.",
+        "tags": ["customer_care", "workflow"]
+      },
+      {
+        "id": "blk_instr_a2",
+        "title": "Instruction A2",
+        "moltType": "instruction",
+        "content": "Instruction A2 content.",
+        "tags": ["workflow"]
+      },
+      {
+        "id": "blk_instr_b1",
+        "title": "Instruction B1",
+        "moltType": "instruction",
+        "content": "Instruction B1 content.",
+        "tags": ["customer_care"]
+      },
+      {
+        "id": "blk_subject_a",
+        "title": "Subject A",
+        "moltType": "subject",
+        "content": "Subject content for stack A.",
+        "tags": ["customer_care"]
+      },
+      {
+        "id": "blk_forbidden",
+        "title": "Forbidden Block",
+        "moltType": "instruction",
+        "content": "This block should be forbidden.",
+        "tags": ["deprecated", "customer_care"]
+      },
+      {
+        "id": "blk_directive_a",
+        "title": "Directive A",
+        "moltType": "directive",
+        "content": "Directive A content.",
+        "tags": ["directive_tag"]
+      }
+    ],
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Customer Care Stack A",
+        "blockIds": [
+          "blk_directive_a",
+          "blk_instr_a1",
+          "blk_instr_a2",
+          "blk_subject_a",
+          "blk_primary_a",
+          "blk_forbidden"
+        ],
+        "segments": [
+          {
+            "id": "seg_ranked_a",
+            "kind": "bundle",
+            "stackId": "stack_a",
+            "blockIds": ["blk_instr_a1", "blk_instr_a2"],
+            "intent": "ranked"
+          }
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Customer Care Stack B",
+        "blockIds": [
+          "blk_instr_b1",
+          "blk_primary_b"
+        ],
+        "segments": [
+          {
+            "id": "seg_alternates_b",
+            "kind": "bundle",
+            "stackId": "stack_b",
+            "blockIds": ["blk_instr_b1"],
+            "intent": "alternates"
+          }
+        ]
+      }
+    ],
+    "triggers": [],
+    "governance": [
+      {
+        "id": "gov_forbid_deprecated",
+        "scope": { "type": "sleeve" },
+        "rules": [
+          {
+            "id": "rule_forbid_deprecated",
+            "name": "Forbid deprecated blocks",
+            "target": {
+              "tagsAny": ["deprecated"]
+            },
+            "effect": { "type": "forbid", "severity": "hard" }
+          }
+        ]
+      }
+    ]
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}
