@@ -19,6 +19,15 @@ for (const file of sampleFiles.sort()) {
   const raw = JSON.parse(fs.readFileSync(samplePath, "utf8"));
   const result = compileSleeve(raw.sleeve, raw.triggerState);
 
+  if (result.runtime?.meta) {
+    result.runtime.meta.compiledAt = "TEST_TIME";
+  }
+  if (result.trace?.events) {
+    for (const e of result.trace.events) {
+      (e as any).timestamp = "TEST_TIME";
+    }
+  }
+
   fs.writeFileSync(outPath, JSON.stringify(result, null, 2) + "\n", "utf8");
 
   console.log(`[snapshot] wrote ${outPath} (hasErrors=${result.hasErrors})`);

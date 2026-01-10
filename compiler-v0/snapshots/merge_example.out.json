@@ -37,7 +37,7 @@
       }
     ],
     "meta": {
-      "compiledAt": "2026-01-10T01:15:15.678Z",
+      "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
     }
   },
@@ -50,7 +50,7 @@
         "code": "INFO_START",
         "message": "compileSleeve(v0) started.",
         "id": "evt_00001",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
@@ -58,7 +58,7 @@
         "code": "INFO_VALIDATE_DONE",
         "message": "Validation passed.",
         "id": "evt_00002",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
@@ -66,7 +66,7 @@
         "code": "INFO_NORMALIZE_DONE",
         "message": "Segments normalized.",
         "id": "evt_00003",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "note",
@@ -82,7 +82,7 @@
           "blk_instr_2"
         ],
         "id": "evt_00004",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
@@ -90,7 +90,7 @@
         "code": "INFO_MERGE_DONE",
         "message": "Merges applied. 1 merge operation(s).",
         "id": "evt_00005",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "note",
@@ -104,7 +104,7 @@
           "blk_primary_main"
         ],
         "id": "evt_00006",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
@@ -112,7 +112,7 @@
         "code": "INFO_BUNDLE_DONE",
         "message": "Bundles recorded. 1 bundle(s).",
         "id": "evt_00007",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
@@ -120,7 +120,7 @@
         "code": "INFO_GOVERNANCE_DONE",
         "message": "Governance applied. 0 rule(s) executed.",
         "id": "evt_00008",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
@@ -129,7 +129,7 @@
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
         "id": "evt_00009",
-        "timestamp": "2026-01-10T01:15:15.678Z"
+        "timestamp": "TEST_TIME"
       }
     ]
   },
