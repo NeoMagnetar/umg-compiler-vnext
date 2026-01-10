@@ -58,7 +58,7 @@
       }
     ],
     "meta": {
-      "compiledAt": "2026-01-09T18:42:59.794Z",
+      "compiledAt": "2026-01-10T01:15:15.676Z",
       "compilerVersion": "v0"
     }
   },
@@ -71,7 +71,7 @@
         "code": "INFO_START",
         "message": "compileSleeve(v0) started.",
         "id": "evt_00001",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.674Z"
       },
       {
         "kind": "pipeline_stage",
@@ -79,7 +79,7 @@
         "code": "INFO_VALIDATE_DONE",
         "message": "Validation passed.",
         "id": "evt_00002",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.674Z"
       },
       {
         "kind": "note",
@@ -93,7 +93,7 @@
           "blk_instr_a"
         ],
         "id": "evt_00003",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -107,7 +107,7 @@
           "blk_instr_b"
         ],
         "id": "evt_00004",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -121,7 +121,7 @@
           "blk_instr_forbidden"
         ],
         "id": "evt_00005",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -135,7 +135,7 @@
           "blk_primary_main"
         ],
         "id": "evt_00006",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "pipeline_stage",
@@ -143,7 +143,7 @@
         "code": "INFO_NORMALIZE_DONE",
         "message": "Segments normalized.",
         "id": "evt_00007",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "pipeline_stage",
@@ -151,7 +151,7 @@
         "code": "INFO_MERGE_DONE",
         "message": "Merges applied. 0 merge operation(s).",
         "id": "evt_00008",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -165,7 +165,7 @@
           "blk_instr_a"
         ],
         "id": "evt_00009",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -179,7 +179,7 @@
           "blk_instr_b"
         ],
         "id": "evt_00010",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -193,7 +193,7 @@
           "blk_instr_forbidden"
         ],
         "id": "evt_00011",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -207,7 +207,7 @@
           "blk_primary_main"
         ],
         "id": "evt_00012",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "pipeline_stage",
@@ -215,7 +215,7 @@
         "code": "INFO_BUNDLE_DONE",
         "message": "Bundles recorded. 4 bundle(s).",
         "id": "evt_00013",
-        "timestamp": "2026-01-09T18:42:59.793Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -226,7 +226,7 @@
           "blk_instr_forbidden"
         ],
         "id": "evt_00014",
-        "timestamp": "2026-01-09T18:42:59.794Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -237,7 +237,7 @@
           "blk_instr_a"
         ],
         "id": "evt_00015",
-        "timestamp": "2026-01-09T18:42:59.794Z"
+        "timestamp": "2026-01-10T01:15:15.675Z"
       },
       {
         "kind": "note",
@@ -248,7 +248,7 @@
           "blk_primary_main"
         ],
         "id": "evt_00016",
-        "timestamp": "2026-01-09T18:42:59.794Z"
+        "timestamp": "2026-01-10T01:15:15.676Z"
       },
       {
         "kind": "pipeline_stage",
@@ -256,7 +256,7 @@
         "code": "INFO_GOVERNANCE_DONE",
         "message": "Governance applied. 3 rule(s) executed.",
         "id": "evt_00017",
-        "timestamp": "2026-01-09T18:42:59.794Z"
+        "timestamp": "2026-01-10T01:15:15.676Z"
       },
       {
         "kind": "pipeline_stage",
@@ -265,7 +265,7 @@
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
         "id": "evt_00018",
-        "timestamp": "2026-01-09T18:42:59.794Z"
+        "timestamp": "2026-01-10T01:15:15.676Z"
       }
     ]
   },
