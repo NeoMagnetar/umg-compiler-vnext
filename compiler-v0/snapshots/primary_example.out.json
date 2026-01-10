@@ -106,6 +106,57 @@
     "primaryByStackId": {
       "stack_main": "blk_primary_beta"
     },
+    "promptSpec": {
+      "sleeveId": "sleeve_primary_demo",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_main",
+          "stackId": "stack_main",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_instr_base"
+              ],
+              "text": "Base instruction content"
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_beta"
+              ],
+              "text": "Primary Beta - highest priority, should be selected"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [],
+              "text": ""
+            }
+          ],
+          "fullText": "Base instruction content\n\n---\n\nPrimary Beta - highest priority, should be selected"
+        }
+      ]
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
@@ -279,10 +330,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 1 neoBlocks.",
+        "id": "evt_00017",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00017",
+        "id": "evt_00018",
         "timestamp": "TEST_TIME"
       }
     ]

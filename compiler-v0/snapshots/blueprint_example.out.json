@@ -214,6 +214,107 @@
       "stack_a": "blk_primary_a",
       "stack_b": "blk_primary_b"
     },
+    "promptSpec": {
+      "sleeveId": "sleeve_blueprint_demo",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_a",
+          "stackId": "stack_a",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_a"
+              ],
+              "text": "Primary for stack A"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [
+                "blk_blueprint_a2"
+              ],
+              "text": "Blueprint A2 - highest priority, should be selected"
+            }
+          ],
+          "fullText": "Primary for stack A\n\n---\n\nBlueprint A2 - highest priority, should be selected"
+        },
+        {
+          "neoBlockId": "nb_stack_b",
+          "stackId": "stack_b",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_b"
+              ],
+              "text": "Primary for stack B"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [
+                "blk_philosophy_b1",
+                "blk_philosophy_b2"
+              ],
+              "text": "Philosophy B1\n\nPhilosophy B2"
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [
+                "blk_blueprint_b2",
+                "blk_blueprint_b1"
+              ],
+              "text": "Blueprint B2 - not bundled\n\nBlueprint B1 - not bundled"
+            }
+          ],
+          "fullText": "Primary for stack B\n\n---\n\nPhilosophy B1\n\nPhilosophy B2\n\n---\n\nBlueprint B2 - not bundled\n\nBlueprint B1 - not bundled"
+        }
+      ]
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
@@ -583,10 +684,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 2 neoBlocks.",
+        "id": "evt_00031",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00031",
+        "id": "evt_00032",
         "timestamp": "TEST_TIME"
       }
     ]

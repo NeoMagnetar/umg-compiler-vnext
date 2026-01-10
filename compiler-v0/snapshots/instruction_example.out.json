@@ -185,6 +185,104 @@
       "stack_a": "blk_primary_a",
       "stack_b": "blk_primary_b"
     },
+    "promptSpec": {
+      "sleeveId": "sleeve_instruction_demo",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_a",
+          "stackId": "stack_a",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_instruction_a2"
+              ],
+              "text": "Instruction A2 - highest priority, should be selected"
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_a"
+              ],
+              "text": "Primary for stack A"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [],
+              "text": ""
+            }
+          ],
+          "fullText": "Instruction A2 - highest priority, should be selected\n\n---\n\nPrimary for stack A"
+        },
+        {
+          "neoBlockId": "nb_stack_b",
+          "stackId": "stack_b",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_instruction_b2",
+                "blk_instruction_b1"
+              ],
+              "text": "Instruction B2 - not bundled\n\nInstruction B1 - not bundled"
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_b"
+              ],
+              "text": "Primary for stack B"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [],
+              "text": ""
+            }
+          ],
+          "fullText": "Instruction B2 - not bundled\n\nInstruction B1 - not bundled\n\n---\n\nPrimary for stack B"
+        }
+      ]
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
@@ -483,10 +581,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 2 neoBlocks.",
+        "id": "evt_00026",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00026",
+        "id": "evt_00027",
         "timestamp": "TEST_TIME"
       }
     ]

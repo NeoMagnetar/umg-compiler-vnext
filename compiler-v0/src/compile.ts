@@ -11,6 +11,7 @@ import { selectInstruction } from "./selectInstruction.js";
 import { selectBlueprint } from "./selectBlueprint.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
+import { buildPromptSpec } from "./buildPromptSpec.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -403,6 +404,19 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     neoBlockIdByStackId: neoBlocksResult.neoBlockIdByStackId,
   });
 
+  const promptSpec = buildPromptSpec({
+    sleeveId: sleeve.id,
+    neoBlocks: neoBlocksResult.neoBlocks,
+    blocksById,
+  });
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_PROMPT_SPEC_DONE",
+    message: `Built promptSpec for ${promptSpec.neoBlockPrompts.length} neoBlocks.`,
+  });
+
   push({
     kind: "pipeline_stage",
     severity: "info",
@@ -422,6 +436,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
       neoStacks,
       neoBlockIdByStackId: neoBlocksResult.neoBlockIdByStackId,
       primaryByStackId,
+      promptSpec,
       meta: {
         compiledAt: isoNow(),
         compilerVersion: "v0",

@@ -186,6 +186,35 @@ export interface RuntimeNeoStack {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PromptSpec Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type PromptSectionType =
+  | "trigger"
+  | "directive"
+  | "instruction"
+  | "subject"
+  | "primary"
+  | "philosophy"
+  | "blueprint";
+
+export interface PromptSection {
+  type: PromptSectionType;
+  blockIds: string[];
+  text: string;
+}
+
+export interface RuntimePromptSpec {
+  sleeveId: string;
+  neoBlockPrompts: Array<{
+    neoBlockId: string;
+    stackId: string;
+    sections: PromptSection[];
+    fullText: string;
+  }>;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RuntimeSpec
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -207,6 +236,8 @@ export interface RuntimeSpec {
   neoStacks: RuntimeNeoStack[];
   neoBlockIdByStackId: Record<string, string>;
   primaryByStackId?: Record<string, string>;
+
+  promptSpec: RuntimePromptSpec;
 
   meta: {
     compiledAt: string;

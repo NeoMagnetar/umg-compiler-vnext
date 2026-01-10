@@ -90,6 +90,57 @@
     "primaryByStackId": {
       "stack_main": "blk_primary_main"
     },
+    "promptSpec": {
+      "sleeveId": "sleeve_merge_demo",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_main",
+          "stackId": "stack_main",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_merged_instr"
+              ],
+              "text": "Merged instruction result."
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_main"
+              ],
+              "text": "Main primary block."
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [],
+              "text": ""
+            }
+          ],
+          "fullText": "Merged instruction result.\n\n---\n\nMain primary block."
+        }
+      ]
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
@@ -233,10 +284,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 1 neoBlocks.",
+        "id": "evt_00015",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00015",
+        "id": "evt_00016",
         "timestamp": "TEST_TIME"
       }
     ]

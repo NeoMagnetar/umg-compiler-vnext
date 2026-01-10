@@ -1,0 +1,110 @@
+{
+  "sleeve": {
+    "id": "sleeve_promptspec_demo",
+    "name": "PromptSpec Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "moltType": "primary",
+        "content": "You are an AI assistant for Stack A."
+      },
+      {
+        "id": "blk_primary_b",
+        "moltType": "primary",
+        "content": "You are an AI assistant for Stack B."
+      },
+      {
+        "id": "blk_directive_a1",
+        "moltType": "directive",
+        "priorityOrder": 10,
+        "content": "Directive A1: Be concise."
+      },
+      {
+        "id": "blk_directive_a2",
+        "moltType": "directive",
+        "priorityOrder": 50,
+        "content": "Directive A2: Be helpful and thorough."
+      },
+      {
+        "id": "blk_directive_b",
+        "moltType": "directive",
+        "content": "Directive B: Follow user instructions carefully."
+      },
+      {
+        "id": "blk_instruction_a",
+        "moltType": "instruction",
+        "content": "Instruction A: Answer questions step by step."
+      },
+      {
+        "id": "blk_instruction_b",
+        "moltType": "instruction",
+        "content": "Instruction B: Provide examples when helpful."
+      },
+      {
+        "id": "blk_blueprint_a",
+        "moltType": "blueprint",
+        "content": "Blueprint A: Use markdown formatting for clarity."
+      },
+      {
+        "id": "blk_blueprint_b",
+        "moltType": "blueprint",
+        "content": "Blueprint B: Structure responses with headers."
+      },
+      {
+        "id": "blk_philosophy_b1",
+        "moltType": "philosophy",
+        "content": "Philosophy B1: Prioritize accuracy over speed."
+      },
+      {
+        "id": "blk_philosophy_b2",
+        "moltType": "philosophy",
+        "content": "Philosophy B2: Be transparent about limitations."
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Stack A - bundled directives",
+        "domainKey": "domain_a",
+        "blockIds": [
+          "blk_primary_a",
+          "blk_directive_a1",
+          "blk_directive_a2",
+          "blk_instruction_a",
+          "blk_blueprint_a"
+        ],
+        "segments": [
+          {
+            "id": "seg_bundle_directives_a",
+            "kind": "bundle",
+            "stackId": "stack_a",
+            "blockIds": ["blk_directive_a1", "blk_directive_a2"]
+          }
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Stack B - multiple philosophy",
+        "domainKey": "domain_b",
+        "blockIds": [
+          "blk_primary_b",
+          "blk_directive_b",
+          "blk_instruction_b",
+          "blk_blueprint_b",
+          "blk_philosophy_b1",
+          "blk_philosophy_b2"
+        ],
+        "segments": []
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

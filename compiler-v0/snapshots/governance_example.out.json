@@ -117,6 +117,58 @@
     "primaryByStackId": {
       "stack_main": "blk_primary_main"
     },
+    "promptSpec": {
+      "sleeveId": "sleeve_governance_demo",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_main",
+          "stackId": "stack_main",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_instr_a",
+                "blk_instr_b"
+              ],
+              "text": "Instruction A - will be boosted by prefer.\n\nInstruction B - normal priority."
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary_main"
+              ],
+              "text": "Main primary block - required by governance."
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [],
+              "text": ""
+            }
+          ],
+          "fullText": "Instruction A - will be boosted by prefer.\n\nInstruction B - normal priority.\n\n---\n\nMain primary block - required by governance."
+        }
+      ]
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"
@@ -390,10 +442,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 1 neoBlocks.",
+        "id": "evt_00025",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00025",
+        "id": "evt_00026",
         "timestamp": "TEST_TIME"
       }
     ]
