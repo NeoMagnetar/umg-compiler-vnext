@@ -1,4 +1,4 @@
-import type { CompileResult, Sleeve, TriggerState, TraceEvent, MoltType, Block, RuntimeIndexes } from "./types.js";
+import type { CompileResult, Sleeve, TriggerState, TraceEvent, MoltType, Block, RuntimeIndexes, RuntimeNeoBlock } from "./types.js";
 import { ROLE_SET } from "./roles.js";
 import { normalizeSegments } from "./normalizeSegments.js";
 import { applyMerges } from "./applyMerges.js";
@@ -13,6 +13,7 @@ import { selectSubject } from "./selectSubject.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 import { buildPromptSpec } from "./buildPromptSpec.js";
+import { buildTagIndexes, type RuntimeStackInfo } from "./buildTagIndexes.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -31,41 +32,32 @@ function isoNow() {
 function buildRuntimeIndexes(
   sleeve: Sleeve,
   liveBlockIds: Set<string>,
-  blocksById: Map<string, Block>
+  blocksById: Map<string, Block>,
+  runtimeStacks: RuntimeStackInfo[],
+  neoBlocks: RuntimeNeoBlock[]
 ): RuntimeIndexes {
   const blockTitleById: Record<string, string> = {};
   const stackNameById: Record<string, string> = {};
-  const tagsByBlockId: Record<string, string[]> = {};
-  const blockIdsByTag: Record<string, string[]> = {};
 
   for (const [id, block] of blocksById) {
     if (!liveBlockIds.has(id)) continue;
     blockTitleById[id] = block.title ?? id;
-    const tags = [...new Set(block.tags ?? [])].sort();
-    if (tags.length > 0) {
-      tagsByBlockId[id] = tags;
-      for (const tag of tags) {
-        if (!blockIdsByTag[tag]) blockIdsByTag[tag] = [];
-        blockIdsByTag[tag].push(id);
-      }
-    }
   }
 
   for (const stack of sleeve.stacks) {
     stackNameById[stack.id] = stack.name ?? stack.id;
   }
 
-  for (const tag of Object.keys(blockIdsByTag)) {
-    blockIdsByTag[tag].sort();
-  }
+  const tags = buildTagIndexes({
+    blocksById,
+    runtimeStacks,
+    neoBlocks,
+  });
 
   return {
     blockTitleById,
     stackNameById,
-    tags: {
-      blockIdsByTag,
-      tagsByBlockId,
-    },
+    tags,
   };
 }
 
@@ -490,7 +482,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     }
   }
 
-  const indexes = buildRuntimeIndexes(sleeve, liveBlockIds, blocksById);
+  const indexes = buildRuntimeIndexes(sleeve, liveBlockIds, blocksById, runtimeStacks, neoBlocksResult.neoBlocks);
 
   push({
     kind: "pipeline_stage",
