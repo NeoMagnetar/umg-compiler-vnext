@@ -9,6 +9,7 @@ import { selectPrimary } from "./selectPrimary.js";
 import { selectDirective } from "./selectDirective.js";
 import { selectInstruction } from "./selectInstruction.js";
 import { selectBlueprint } from "./selectBlueprint.js";
+import { selectSubject } from "./selectSubject.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 import { buildPromptSpec } from "./buildPromptSpec.js";
@@ -294,7 +295,31 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: `Instruction selection complete for ${instructionResult.selections.length} stack(s).`,
   });
 
-  // Step 12: Select blueprints for each stack
+  // Step 12: Select subjects for each stack
+  const subjectResult = selectSubject(
+    authorityResult.stacks.map(st => ({
+      stackId: st.stackId,
+      orderedBlockIds: st.orderedBlockIds,
+    })),
+    blocksById,
+    bundleResult.bundles,
+    governanceResult.priorityOverrides
+  );
+  pushAll(subjectResult.notes);
+  pushAll(subjectResult.errors);
+
+  if (subjectResult.errors.length > 0) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_SUBJECT_SELECTION_DONE",
+    message: `Subject selection complete for ${subjectResult.selections.length} stack(s).`,
+  });
+
+  // Step 13: Select blueprints for each stack
   const blueprintResult = selectBlueprint(
     authorityResult.stacks.map(st => ({
       stackId: st.stackId,
@@ -388,6 +413,11 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     blueprintByStackId[sel.stackId] = sel.activeBlueprintIds;
   }
 
+  const subjectByStackId: Record<string, string[]> = {};
+  for (const sel of subjectResult.selections) {
+    subjectByStackId[sel.stackId] = sel.activeSubjectIds;
+  }
+
   const neoBlocksResult = buildNeoBlocks({
     runtimeStacks,
     bundles: bundleResult.bundles,
@@ -397,6 +427,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     directiveByStackId,
     instructionByStackId,
     blueprintByStackId,
+    subjectByStackId,
   });
 
   const neoStacks = buildNeoStacks({

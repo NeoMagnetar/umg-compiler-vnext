@@ -616,6 +616,14 @@
       },
       {
         "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_SUBJECT_SELECTION_DONE",
+        "message": "Subject selection complete for 2 stack(s).",
+        "id": "evt_00026",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
         "message": "Stack stack_a has 2 bundled blueprint alternates; selecting highest priority.",
@@ -626,7 +634,7 @@
           "blk_blueprint_a2",
           "blk_blueprint_a1"
         ],
-        "id": "evt_00026",
+        "id": "evt_00027",
         "timestamp": "TEST_TIME"
       },
       {
@@ -640,7 +648,7 @@
         "relatedBlockIds": [
           "blk_blueprint_a2"
         ],
-        "id": "evt_00027",
+        "id": "evt_00028",
         "timestamp": "TEST_TIME"
       },
       {
@@ -655,7 +663,7 @@
           "blk_blueprint_b2",
           "blk_blueprint_b1"
         ],
-        "id": "evt_00028",
+        "id": "evt_00029",
         "timestamp": "TEST_TIME"
       },
       {
@@ -663,7 +671,7 @@
         "severity": "info",
         "code": "INFO_BLUEPRINT_SELECTION_DONE",
         "message": "Blueprint selection complete for 2 stack(s).",
-        "id": "evt_00029",
+        "id": "evt_00030",
         "timestamp": "TEST_TIME"
       },
       {
@@ -678,7 +686,7 @@
           "blk_philosophy_b1",
           "blk_philosophy_b2"
         ],
-        "id": "evt_00030",
+        "id": "evt_00031",
         "timestamp": "TEST_TIME"
       },
       {
@@ -686,7 +694,7 @@
         "severity": "info",
         "code": "INFO_PROMPT_SPEC_DONE",
         "message": "Built promptSpec for 2 neoBlocks.",
-        "id": "evt_00031",
+        "id": "evt_00032",
         "timestamp": "TEST_TIME"
       },
       {
@@ -695,7 +703,7 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00032",
+        "id": "evt_00033",
         "timestamp": "TEST_TIME"
       }
     ]

@@ -1,0 +1,94 @@
+{
+  "sleeve": {
+    "id": "sleeve_subject_demo",
+    "name": "Subject Selection Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "moltType": "primary",
+        "content": "Primary for stack A"
+      },
+      {
+        "id": "blk_primary_b",
+        "moltType": "primary",
+        "content": "Primary for stack B"
+      },
+      {
+        "id": "blk_subject_a1",
+        "moltType": "subject",
+        "priorityOrder": 10,
+        "content": "Subject A1 - lower priority"
+      },
+      {
+        "id": "blk_subject_a2",
+        "moltType": "subject",
+        "priorityOrder": 50,
+        "content": "Subject A2 - highest priority, should be selected"
+      },
+      {
+        "id": "blk_subject_b1",
+        "moltType": "subject",
+        "priorityOrder": 20,
+        "content": "Subject B1 - not bundled"
+      },
+      {
+        "id": "blk_subject_b2",
+        "moltType": "subject",
+        "priorityOrder": 40,
+        "content": "Subject B2 - not bundled"
+      },
+      {
+        "id": "blk_directive_a",
+        "moltType": "directive",
+        "content": "Directive for stack A"
+      },
+      {
+        "id": "blk_directive_b",
+        "moltType": "directive",
+        "content": "Directive for stack B"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Stack A - bundled subjects",
+        "domainKey": "domain_a",
+        "blockIds": [
+          "blk_primary_a",
+          "blk_subject_a1",
+          "blk_subject_a2",
+          "blk_directive_a"
+        ],
+        "segments": [
+          {
+            "id": "seg_bundle_subjects_a",
+            "kind": "bundle",
+            "stackId": "stack_a",
+            "blockIds": ["blk_subject_a1", "blk_subject_a2"]
+          }
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Stack B - unbundled subjects",
+        "domainKey": "domain_b",
+        "blockIds": [
+          "blk_primary_b",
+          "blk_subject_b1",
+          "blk_subject_b2",
+          "blk_directive_b"
+        ],
+        "segments": []
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

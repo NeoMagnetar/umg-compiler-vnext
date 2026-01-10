@@ -505,9 +505,17 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_SUBJECT_SELECTION_DONE",
+        "message": "Subject selection complete for 2 stack(s).",
+        "id": "evt_00022",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_BLUEPRINT_SELECTION_DONE",
         "message": "Blueprint selection complete for 2 stack(s).",
-        "id": "evt_00022",
+        "id": "evt_00023",
         "timestamp": "TEST_TIME"
       },
       {
@@ -515,7 +523,7 @@
         "severity": "info",
         "code": "INFO_PROMPT_SPEC_DONE",
         "message": "Built promptSpec for 2 neoBlocks.",
-        "id": "evt_00023",
+        "id": "evt_00024",
         "timestamp": "TEST_TIME"
       },
       {
@@ -524,7 +532,7 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00024",
+        "id": "evt_00025",
         "timestamp": "TEST_TIME"
       }
     ]

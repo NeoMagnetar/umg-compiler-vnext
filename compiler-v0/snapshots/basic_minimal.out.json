@@ -308,9 +308,17 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_SUBJECT_SELECTION_DONE",
+        "message": "Subject selection complete for 1 stack(s).",
+        "id": "evt_00016",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_BLUEPRINT_SELECTION_DONE",
         "message": "Blueprint selection complete for 1 stack(s).",
-        "id": "evt_00016",
+        "id": "evt_00017",
         "timestamp": "TEST_TIME"
       },
       {
@@ -318,7 +326,7 @@
         "severity": "info",
         "code": "INFO_PROMPT_SPEC_DONE",
         "message": "Built promptSpec for 1 neoBlocks.",
-        "id": "evt_00017",
+        "id": "evt_00018",
         "timestamp": "TEST_TIME"
       },
       {
@@ -327,7 +335,7 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00018",
+        "id": "evt_00019",
         "timestamp": "TEST_TIME"
       }
     ]

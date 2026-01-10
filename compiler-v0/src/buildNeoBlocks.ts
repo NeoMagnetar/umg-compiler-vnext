@@ -36,6 +36,7 @@ export interface BuildNeoBlocksInput {
   directiveByStackId: Record<string, string[]>;
   instructionByStackId: Record<string, string[]>;
   blueprintByStackId: Record<string, string[]>;
+  subjectByStackId: Record<string, string[]>;
 }
 
 export interface BuildNeoBlocksResult {
@@ -44,7 +45,7 @@ export interface BuildNeoBlocksResult {
 }
 
 export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult {
-  const { runtimeStacks, bundles, appliedMerges, blocksById, primaryByStackId, directiveByStackId, instructionByStackId, blueprintByStackId } = input;
+  const { runtimeStacks, bundles, appliedMerges, blocksById, primaryByStackId, directiveByStackId, instructionByStackId, blueprintByStackId, subjectByStackId } = input;
 
   const neoBlocks: RuntimeNeoBlock[] = [];
   const neoBlockIdByStackId: Record<string, string> = {};
@@ -79,7 +80,7 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
       triggerIds: byMoltType.trigger,
       directiveIds: directiveByStackId[st.stackId] ?? byMoltType.directive,
       instructionIds: instructionByStackId[st.stackId] ?? byMoltType.instruction,
-      subjectIds: byMoltType.subject,
+      subjectIds: subjectByStackId[st.stackId] ?? byMoltType.subject,
       primaryId: selectedPrimaryId,
       philosophyIds: byMoltType.philosophy,
       blueprintIds: blueprintByStackId[st.stackId] ?? byMoltType.blueprint,
