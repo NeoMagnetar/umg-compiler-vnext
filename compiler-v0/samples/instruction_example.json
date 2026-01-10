@@ -56,7 +56,8 @@
             "id": "seg_bundle_instructions_a",
             "kind": "bundle",
             "stackId": "stack_a",
-            "blockIds": ["blk_instruction_a1", "blk_instruction_a2"]
+            "blockIds": ["blk_instruction_a1", "blk_instruction_a2"],
+            "intent": "alternates"
           }
         ]
       },

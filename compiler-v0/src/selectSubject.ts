@@ -91,32 +91,55 @@ export function selectSubject(
     );
 
     if (subjectOnlyBundleContainingAll) {
-      const sorted = sortByPriorityDesc(subjectIds);
-      const selectedId = sorted[0];
+      const intent = subjectOnlyBundleContainingAll.intent ?? "ranked";
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "warning",
-        code: "WARN_MULTIPLE_SUBJECT_BUNDLED",
-        message: `Stack ${stack.stackId} has ${subjectIds.length} bundled subject alternates; selecting highest priority.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: subjectIds,
-      });
+      if (intent === "alternates") {
+        const sorted = sortByPriorityDesc(subjectIds);
+        const selectedId = sorted[0];
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "info",
-        code: "INFO_SUBJECT_SELECTED",
-        message: `Stack ${stack.stackId}: selected subject ${selectedId} from ${subjectIds.length} candidates.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: [selectedId],
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "warning",
+          code: "WARN_MULTIPLE_SUBJECT_BUNDLED",
+          message: `Stack ${stack.stackId} has ${subjectIds.length} bundled subject alternates; selecting highest priority.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: subjectIds,
+        });
 
-      selections.push({
-        stackId: stack.stackId,
-        activeSubjectIds: [selectedId],
-        candidateIds: subjectIds,
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_SUBJECT_SELECTED",
+          message: `Stack ${stack.stackId}: selected subject ${selectedId} from ${subjectIds.length} candidates.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: [selectedId],
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeSubjectIds: [selectedId],
+          candidateIds: subjectIds,
+        });
+      } else {
+        const orderedInBundle = subjectOnlyBundleContainingAll.blockIds.filter(id =>
+          subjectIds.includes(id)
+        );
+
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_SUBJECT_RANKED_BUNDLE",
+          message: `Stack ${stack.stackId}: ${orderedInBundle.length} subjects in ranked bundle; all remain active.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: orderedInBundle,
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeSubjectIds: orderedInBundle,
+          candidateIds: subjectIds,
+        });
+      }
     } else {
       notes.push({
         kind: "pipeline_stage",

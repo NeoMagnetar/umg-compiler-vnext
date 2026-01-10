@@ -91,32 +91,55 @@ export function selectBlueprint(
     );
 
     if (blueprintOnlyBundleContainingAll) {
-      const sorted = sortByPriorityDesc(blueprintIds);
-      const selectedId = sorted[0];
+      const intent = blueprintOnlyBundleContainingAll.intent ?? "ranked";
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "warning",
-        code: "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
-        message: `Stack ${stack.stackId} has ${blueprintIds.length} bundled blueprint alternates; selecting highest priority.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: blueprintIds,
-      });
+      if (intent === "alternates") {
+        const sorted = sortByPriorityDesc(blueprintIds);
+        const selectedId = sorted[0];
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "info",
-        code: "INFO_BLUEPRINT_SELECTED",
-        message: `Stack ${stack.stackId}: selected blueprint ${selectedId} from ${blueprintIds.length} candidates.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: [selectedId],
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "warning",
+          code: "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
+          message: `Stack ${stack.stackId} has ${blueprintIds.length} bundled blueprint alternates; selecting highest priority.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: blueprintIds,
+        });
 
-      selections.push({
-        stackId: stack.stackId,
-        activeBlueprintIds: [selectedId],
-        candidateIds: blueprintIds,
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_BLUEPRINT_SELECTED",
+          message: `Stack ${stack.stackId}: selected blueprint ${selectedId} from ${blueprintIds.length} candidates.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: [selectedId],
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeBlueprintIds: [selectedId],
+          candidateIds: blueprintIds,
+        });
+      } else {
+        const orderedInBundle = blueprintOnlyBundleContainingAll.blockIds.filter(id =>
+          blueprintIds.includes(id)
+        );
+
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_BLUEPRINT_RANKED_BUNDLE",
+          message: `Stack ${stack.stackId}: ${orderedInBundle.length} blueprints in ranked bundle; all remain active.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: orderedInBundle,
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeBlueprintIds: orderedInBundle,
+          candidateIds: blueprintIds,
+        });
+      }
     } else {
       notes.push({
         kind: "pipeline_stage",

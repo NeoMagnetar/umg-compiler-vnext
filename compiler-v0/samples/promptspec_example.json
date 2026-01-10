@@ -81,7 +81,8 @@
             "id": "seg_bundle_directives_a",
             "kind": "bundle",
             "stackId": "stack_a",
-            "blockIds": ["blk_directive_a1", "blk_directive_a2"]
+            "blockIds": ["blk_directive_a1", "blk_directive_a2"],
+            "intent": "alternates"
           }
         ]
       },

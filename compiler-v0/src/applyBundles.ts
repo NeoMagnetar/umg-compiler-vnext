@@ -28,6 +28,7 @@ export function applyBundles(
         segmentId: bundle.id,
         stackId: stack.id,
         blockIds: liveBlockIds,
+        intent: bundle.intent,
       });
 
       notes.push({

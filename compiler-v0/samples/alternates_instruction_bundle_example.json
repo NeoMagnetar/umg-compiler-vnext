@@ -1,0 +1,66 @@
+{
+  "sleeve": {
+    "id": "sleeve_alternates_instruction",
+    "name": "Alternates Instruction Bundle Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary",
+        "moltType": "primary",
+        "content": "Primary block for the stack"
+      },
+      {
+        "id": "blk_instruction_1",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "Instruction 1: Lower priority option"
+      },
+      {
+        "id": "blk_instruction_2",
+        "moltType": "instruction",
+        "priorityOrder": 50,
+        "content": "Instruction 2: Higher priority option - should be selected"
+      },
+      {
+        "id": "blk_instruction_3",
+        "moltType": "instruction",
+        "priorityOrder": 30,
+        "content": "Instruction 3: Medium priority option"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_main",
+        "name": "Main Stack with Alternates Instructions",
+        "domainKey": "domain_main",
+        "blockIds": [
+          "blk_primary",
+          "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3"
+        ],
+        "segments": [
+          {
+            "id": "seg_alternates_instructions",
+            "kind": "bundle",
+            "stackId": "stack_main",
+            "blockIds": [
+              "blk_instruction_1",
+              "blk_instruction_2",
+              "blk_instruction_3"
+            ],
+            "intent": "alternates"
+          }
+        ]
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

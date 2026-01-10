@@ -1,0 +1,381 @@
+{
+  "runtime": {
+    "sleeveId": "sleeve_ranked_instruction",
+    "sleeveName": "Ranked Instruction Bundle Demo",
+    "stacks": [
+      {
+        "stackId": "stack_main",
+        "domainKey": "domain_main",
+        "orderedBlockIds": [
+          "blk_instruction_5",
+          "blk_instruction_4",
+          "blk_instruction_3",
+          "blk_instruction_2",
+          "blk_instruction_1",
+          "blk_primary"
+        ]
+      }
+    ],
+    "blocksByMoltType": {
+      "trigger": [],
+      "directive": [],
+      "instruction": [
+        "blk_instruction_5",
+        "blk_instruction_4",
+        "blk_instruction_3",
+        "blk_instruction_2",
+        "blk_instruction_1"
+      ],
+      "subject": [],
+      "primary": [
+        "blk_primary"
+      ],
+      "philosophy": [],
+      "blueprint": []
+    },
+    "bundles": [
+      {
+        "segmentId": "seg_ranked_instructions",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_4",
+          "blk_instruction_5"
+        ],
+        "intent": "ranked"
+      },
+      {
+        "segmentId": "implicit_bundle_stack_main_blk_primary",
+        "stackId": "stack_main",
+        "blockIds": [
+          "blk_primary"
+        ]
+      }
+    ],
+    "neoBlocks": [
+      {
+        "id": "nb_stack_main",
+        "stackId": "stack_main",
+        "orderedBlockIds": [
+          "blk_instruction_5",
+          "blk_instruction_4",
+          "blk_instruction_3",
+          "blk_instruction_2",
+          "blk_instruction_1",
+          "blk_primary"
+        ],
+        "byMoltType": {
+          "trigger": [],
+          "directive": [],
+          "instruction": [
+            "blk_instruction_5",
+            "blk_instruction_4",
+            "blk_instruction_3",
+            "blk_instruction_2",
+            "blk_instruction_1"
+          ],
+          "subject": [],
+          "primary": [
+            "blk_primary"
+          ],
+          "philosophy": [],
+          "blueprint": []
+        },
+        "bundleIds": [
+          "implicit_bundle_stack_main_blk_primary",
+          "seg_ranked_instructions"
+        ],
+        "mergeIds": [],
+        "selectedPrimaryId": "blk_primary",
+        "active": {
+          "triggerIds": [],
+          "directiveIds": [],
+          "instructionIds": [
+            "blk_instruction_1",
+            "blk_instruction_2",
+            "blk_instruction_3",
+            "blk_instruction_4",
+            "blk_instruction_5"
+          ],
+          "subjectIds": [],
+          "primaryId": "blk_primary",
+          "philosophyIds": [],
+          "blueprintIds": []
+        }
+      }
+    ],
+    "neoStacks": [
+      {
+        "id": "ns_domain_main",
+        "domainKey": "domain_main",
+        "neoBlockIds": [
+          "nb_stack_main"
+        ]
+      }
+    ],
+    "neoBlockIdByStackId": {
+      "stack_main": "nb_stack_main"
+    },
+    "primaryByStackId": {
+      "stack_main": "blk_primary"
+    },
+    "promptSpec": {
+      "sleeveId": "sleeve_ranked_instruction",
+      "neoBlockPrompts": [
+        {
+          "neoBlockId": "nb_stack_main",
+          "stackId": "stack_main",
+          "sections": [
+            {
+              "type": "trigger",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "directive",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "instruction",
+              "blockIds": [
+                "blk_instruction_1",
+                "blk_instruction_2",
+                "blk_instruction_3",
+                "blk_instruction_4",
+                "blk_instruction_5"
+              ],
+              "text": "Instruction 1: First step\n\nInstruction 2: Second step\n\nInstruction 3: Third step\n\nInstruction 4: Fourth step\n\nInstruction 5: Fifth step"
+            },
+            {
+              "type": "subject",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "primary",
+              "blockIds": [
+                "blk_primary"
+              ],
+              "text": "Primary block for the stack"
+            },
+            {
+              "type": "philosophy",
+              "blockIds": [],
+              "text": ""
+            },
+            {
+              "type": "blueprint",
+              "blockIds": [],
+              "text": ""
+            }
+          ],
+          "fullText": "Instruction 1: First step\n\nInstruction 2: Second step\n\nInstruction 3: Third step\n\nInstruction 4: Fourth step\n\nInstruction 5: Fifth step\n\n---\n\nPrimary block for the stack"
+        }
+      ]
+    },
+    "meta": {
+      "compiledAt": "TEST_TIME",
+      "compilerVersion": "v0"
+    }
+  },
+  "trace": {
+    "sleeveId": "sleeve_ranked_instruction",
+    "events": [
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "id": "evt_00001",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_VALIDATE_DONE",
+        "message": "Validation passed.",
+        "id": "evt_00002",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_primary in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary"
+        ],
+        "id": "evt_00003",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_NORMALIZE_DONE",
+        "message": "Segments normalized.",
+        "id": "evt_00004",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_MERGE_DONE",
+        "message": "Merges applied. 0 merge operation(s).",
+        "id": "evt_00005",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_ranked_instructions recorded with 5 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_4",
+          "blk_instruction_5"
+        ],
+        "id": "evt_00006",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_main_blk_primary recorded with 1 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary"
+        ],
+        "id": "evt_00007",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BUNDLE_DONE",
+        "message": "Bundles recorded. 2 bundle(s).",
+        "id": "evt_00008",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_DONE",
+        "message": "Governance applied. 0 rule(s) executed.",
+        "id": "evt_00009",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_RESOLVE_AUTHORITY_DONE",
+        "message": "Authority resolved for 1 stack(s).",
+        "id": "evt_00010",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTED",
+        "message": "Stack stack_main: selected primary blk_primary.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary"
+        ],
+        "id": "evt_00011",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTION_DONE",
+        "message": "Primary selection complete for 1 stack(s).",
+        "id": "evt_00012",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DIRECTIVE_SELECTION_DONE",
+        "message": "Directive selection complete for 1 stack(s).",
+        "id": "evt_00013",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_INSTRUCTION_RANKED_BUNDLE",
+        "message": "Stack stack_main: 5 instructions in ranked bundle; all remain active.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_4",
+          "blk_instruction_5"
+        ],
+        "id": "evt_00014",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_INSTRUCTION_SELECTION_DONE",
+        "message": "Instruction selection complete for 1 stack(s).",
+        "id": "evt_00015",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_SUBJECT_SELECTION_DONE",
+        "message": "Subject selection complete for 1 stack(s).",
+        "id": "evt_00016",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BLUEPRINT_SELECTION_DONE",
+        "message": "Blueprint selection complete for 1 stack(s).",
+        "id": "evt_00017",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PROMPT_SPEC_DONE",
+        "message": "Built promptSpec for 1 neoBlocks.",
+        "id": "evt_00018",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
+        "relatedTriggerIds": [],
+        "id": "evt_00019",
+        "timestamp": "TEST_TIME"
+      }
+    ]
+  },
+  "hasErrors": false
+}

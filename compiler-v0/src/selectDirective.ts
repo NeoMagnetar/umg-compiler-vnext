@@ -88,31 +88,53 @@ export function selectDirective(
     );
 
     if (directiveOnlyBundleContainingAll) {
-      const sorted = sortByPriorityDesc(directiveIds);
-      const selectedId = sorted[0];
+      const intent = directiveOnlyBundleContainingAll.intent ?? "ranked";
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "warning",
-        code: "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-        message: `Stack ${stack.stackId} has ${directiveIds.length} bundled directive alternates; selecting highest priority.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: directiveIds,
-      });
+      if (intent === "alternates") {
+        const sorted = sortByPriorityDesc(directiveIds);
+        const selectedId = sorted[0];
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "info",
-        code: "INFO_DIRECTIVE_SELECTED",
-        message: `Stack ${stack.stackId}: selected directive ${selectedId} from ${directiveIds.length} candidates.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: [selectedId],
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "warning",
+          code: "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
+          message: `Stack ${stack.stackId} has ${directiveIds.length} bundled directive alternates; selecting highest priority.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: directiveIds,
+        });
 
-      selections.push({
-        stackId: stack.stackId,
-        activeDirectiveIds: [selectedId],
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_DIRECTIVE_SELECTED",
+          message: `Stack ${stack.stackId}: selected directive ${selectedId} from ${directiveIds.length} candidates.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: [selectedId],
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeDirectiveIds: [selectedId],
+        });
+      } else {
+        const orderedInBundle = directiveOnlyBundleContainingAll.blockIds.filter(id =>
+          directiveIds.includes(id)
+        );
+
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_DIRECTIVE_RANKED_BUNDLE",
+          message: `Stack ${stack.stackId}: ${orderedInBundle.length} directives in ranked bundle; all remain active.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: orderedInBundle,
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeDirectiveIds: orderedInBundle,
+        });
+      }
     } else {
       const sorted = sortByPriorityDesc(directiveIds);
 

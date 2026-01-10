@@ -20,11 +20,14 @@ export interface Block {
 
 export type SegmentKind = "bundle" | "merge";
 
+export type BundleIntent = "ranked" | "alternates";
+
 export interface BundleSegment {
   id: string;
   kind: "bundle";
   stackId: string;
   blockIds: string[]; // ordered
+  intent?: BundleIntent;
 }
 
 export interface MergeSegment {
@@ -152,6 +155,7 @@ export interface RuntimeBundle {
   segmentId: string;
   stackId: string;
   blockIds: string[];
+  intent?: BundleIntent;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

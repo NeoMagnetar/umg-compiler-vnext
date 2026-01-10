@@ -1,0 +1,82 @@
+{
+  "sleeve": {
+    "id": "sleeve_ranked_instruction",
+    "name": "Ranked Instruction Bundle Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary",
+        "moltType": "primary",
+        "content": "Primary block for the stack"
+      },
+      {
+        "id": "blk_instruction_1",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "Instruction 1: First step"
+      },
+      {
+        "id": "blk_instruction_2",
+        "moltType": "instruction",
+        "priorityOrder": 20,
+        "content": "Instruction 2: Second step"
+      },
+      {
+        "id": "blk_instruction_3",
+        "moltType": "instruction",
+        "priorityOrder": 30,
+        "content": "Instruction 3: Third step"
+      },
+      {
+        "id": "blk_instruction_4",
+        "moltType": "instruction",
+        "priorityOrder": 40,
+        "content": "Instruction 4: Fourth step"
+      },
+      {
+        "id": "blk_instruction_5",
+        "moltType": "instruction",
+        "priorityOrder": 50,
+        "content": "Instruction 5: Fifth step"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_main",
+        "name": "Main Stack with Ranked Instructions",
+        "domainKey": "domain_main",
+        "blockIds": [
+          "blk_primary",
+          "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_4",
+          "blk_instruction_5"
+        ],
+        "segments": [
+          {
+            "id": "seg_ranked_instructions",
+            "kind": "bundle",
+            "stackId": "stack_main",
+            "blockIds": [
+              "blk_instruction_1",
+              "blk_instruction_2",
+              "blk_instruction_3",
+              "blk_instruction_4",
+              "blk_instruction_5"
+            ],
+            "intent": "ranked"
+          }
+        ]
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

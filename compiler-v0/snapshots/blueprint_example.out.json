@@ -51,7 +51,8 @@
         "blockIds": [
           "blk_blueprint_a1",
           "blk_blueprint_a2"
-        ]
+        ],
+        "intent": "alternates"
       },
       {
         "segmentId": "implicit_bundle_stack_a_blk_primary_a",

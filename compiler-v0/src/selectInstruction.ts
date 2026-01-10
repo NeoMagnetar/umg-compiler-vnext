@@ -91,32 +91,55 @@ export function selectInstruction(
     );
 
     if (instructionOnlyBundleContainingAll) {
-      const sorted = sortByPriorityDesc(instructionIds);
-      const selectedId = sorted[0];
+      const intent = instructionOnlyBundleContainingAll.intent ?? "ranked";
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "warning",
-        code: "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
-        message: `Stack ${stack.stackId} has ${instructionIds.length} bundled instruction alternates; selecting highest priority.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: instructionIds,
-      });
+      if (intent === "alternates") {
+        const sorted = sortByPriorityDesc(instructionIds);
+        const selectedId = sorted[0];
 
-      notes.push({
-        kind: "pipeline_stage",
-        severity: "info",
-        code: "INFO_INSTRUCTION_SELECTED",
-        message: `Stack ${stack.stackId}: selected instruction ${selectedId} from ${instructionIds.length} candidates.`,
-        relatedStackIds: [stack.stackId],
-        relatedBlockIds: [selectedId],
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "warning",
+          code: "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
+          message: `Stack ${stack.stackId} has ${instructionIds.length} bundled instruction alternates; selecting highest priority.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: instructionIds,
+        });
 
-      selections.push({
-        stackId: stack.stackId,
-        activeInstructionIds: [selectedId],
-        candidateIds: instructionIds,
-      });
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_INSTRUCTION_SELECTED",
+          message: `Stack ${stack.stackId}: selected instruction ${selectedId} from ${instructionIds.length} candidates.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: [selectedId],
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeInstructionIds: [selectedId],
+          candidateIds: instructionIds,
+        });
+      } else {
+        const orderedInBundle = instructionOnlyBundleContainingAll.blockIds.filter(id =>
+          instructionIds.includes(id)
+        );
+
+        notes.push({
+          kind: "pipeline_stage",
+          severity: "info",
+          code: "INFO_INSTRUCTION_RANKED_BUNDLE",
+          message: `Stack ${stack.stackId}: ${orderedInBundle.length} instructions in ranked bundle; all remain active.`,
+          relatedStackIds: [stack.stackId],
+          relatedBlockIds: orderedInBundle,
+        });
+
+        selections.push({
+          stackId: stack.stackId,
+          activeInstructionIds: orderedInBundle,
+          candidateIds: instructionIds,
+        });
+      }
     } else {
       notes.push({
         kind: "pipeline_stage",

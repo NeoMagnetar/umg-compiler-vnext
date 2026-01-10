@@ -59,7 +59,8 @@
         "blockIds": [
           "blk_directive_a1",
           "blk_directive_a2"
-        ]
+        ],
+        "intent": "alternates"
       },
       {
         "segmentId": "implicit_bundle_stack_a_blk_primary_a",

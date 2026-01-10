@@ -67,7 +67,8 @@
             "id": "seg_bundle_subjects_a",
             "kind": "bundle",
             "stackId": "stack_a",
-            "blockIds": ["blk_subject_a1", "blk_subject_a2"]
+            "blockIds": ["blk_subject_a1", "blk_subject_a2"],
+            "intent": "alternates"
           }
         ]
       },
