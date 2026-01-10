@@ -68,6 +68,7 @@ export default function App() {
       }
       center={
         <GraphCanvas 
+          sleeveJson={sleeveJson}
           compiled={compiled} 
           selectedTag={selectedTag} 
           selectedBlockId={selectedBlockId}
