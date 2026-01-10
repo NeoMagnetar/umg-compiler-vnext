@@ -6,6 +6,7 @@ import { applyBundles } from "./applyBundles.js";
 import { applyGovernance } from "./applyGovernance.js";
 import { resolveAuthority } from "./resolveAuthority.js";
 import { selectPrimary } from "./selectPrimary.js";
+import { selectDirective } from "./selectDirective.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 
@@ -247,7 +248,26 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: `Primary selection complete for ${primaryResult.selections.length} stack(s).`,
   });
 
-  // Step 10: Build global blocksByMoltType from authority-resolved stacks
+  // Step 10: Select directives for each stack
+  const directiveResult = selectDirective(
+    authorityResult.stacks.map(st => ({
+      stackId: st.stackId,
+      orderedBlockIds: st.orderedBlockIds,
+    })),
+    blocksById,
+    bundleResult.bundles,
+    governanceResult.priorityOverrides
+  );
+  pushAll(directiveResult.notes);
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_DIRECTIVE_SELECTION_DONE",
+    message: `Directive selection complete for ${directiveResult.selections.length} stack(s).`,
+  });
+
+  // Step 11: Build global blocksByMoltType from authority-resolved stacks
   const blocksByMoltType = Object.fromEntries(
     MOLT_ORDER.map(t => [t, [] as string[]])
   ) as Record<MoltType, string[]>;
@@ -270,7 +290,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     orderedBlockIds: st.orderedBlockIds,
   }));
 
-  // Step 11: Build NeoBlocks and NeoStacks
+  // Step 12: Build NeoBlocks and NeoStacks
   const appliedMerges = sleeve.stacks
     .flatMap(st =>
       (st.segments ?? [])
@@ -284,12 +304,18 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     primaryByStackId[sel.stackId] = sel.selectedPrimaryId;
   }
 
+  const directiveByStackId: Record<string, string[]> = {};
+  for (const sel of directiveResult.selections) {
+    directiveByStackId[sel.stackId] = sel.activeDirectiveIds;
+  }
+
   const neoBlocksResult = buildNeoBlocks({
     runtimeStacks,
     bundles: bundleResult.bundles,
     appliedMerges,
     blocksById,
     primaryByStackId,
+    directiveByStackId,
   });
 
   const neoStacks = buildNeoStacks({

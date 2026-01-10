@@ -1,0 +1,82 @@
+{
+  "sleeve": {
+    "id": "sleeve_directive_demo",
+    "name": "Directive Selection Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "moltType": "primary",
+        "content": "Primary for stack A"
+      },
+      {
+        "id": "blk_primary_b",
+        "moltType": "primary",
+        "content": "Primary for stack B"
+      },
+      {
+        "id": "blk_directive_a1",
+        "moltType": "directive",
+        "priorityOrder": 10,
+        "content": "Directive A1 - lower priority"
+      },
+      {
+        "id": "blk_directive_a2",
+        "moltType": "directive",
+        "priorityOrder": 50,
+        "content": "Directive A2 - highest priority, should be selected"
+      },
+      {
+        "id": "blk_directive_b1",
+        "moltType": "directive",
+        "priorityOrder": 20,
+        "content": "Directive B1 - not bundled"
+      },
+      {
+        "id": "blk_directive_b2",
+        "moltType": "directive",
+        "priorityOrder": 40,
+        "content": "Directive B2 - not bundled"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Stack A - bundled directives",
+        "domainKey": "domain_a",
+        "blockIds": [
+          "blk_primary_a",
+          "blk_directive_a1",
+          "blk_directive_a2"
+        ],
+        "segments": [
+          {
+            "id": "seg_bundle_directives_a",
+            "kind": "bundle",
+            "stackId": "stack_a",
+            "blockIds": ["blk_directive_a1", "blk_directive_a2"]
+          }
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Stack B - unbundled directives",
+        "domainKey": "domain_b",
+        "blockIds": [
+          "blk_primary_b",
+          "blk_directive_b1",
+          "blk_directive_b2"
+        ],
+        "segments": []
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

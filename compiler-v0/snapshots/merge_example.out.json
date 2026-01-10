@@ -209,10 +209,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_DIRECTIVE_SELECTION_DONE",
+        "message": "Directive selection complete for 1 stack(s).",
+        "id": "evt_00012",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00012",
+        "id": "evt_00013",
         "timestamp": "TEST_TIME"
       }
     ]

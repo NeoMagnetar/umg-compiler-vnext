@@ -1,0 +1,54 @@
+Task: Implement Directive Selection (v0) as “alternate-mode selection” only when directives are in a directive-only bundle; otherwise keep all directives active but emit a warning. Persist result into runtime neoBlock.active.directiveIds. Add a new sample + snapshot.
+Rules / Constraints
+Do NOT touch anything in apps/.
+Do NOT change existing behavior of: normalizeSegments, applyMerges, applyBundles, applyGovernance, resolveAuthority, selectPrimary.
+Keep determinism absolute (same input → same output; id tie-breakers).
+Snapshots must remain deterministic (timestamps already normalized).
+Implementation Requirements
+New file: src/selectDirective.ts
+Input: per-stack orderedBlockIds, blocksById, bundles, priorityOverrides
+Behavior per stack:
+Collect surviving directive candidates in that stack.
+If 0 directives → active.directiveIds = [] (no warning).
+If 1 directive → active.directiveIds = [that id].
+If >1 directives:
+If there exists a bundle segment that contains only directives and includes all directive candidates for that stack (i.e., explicit alternates bundle):
+Select exactly 1 directive by effectivePriority desc then id asc
+Emit: INFO_DIRECTIVE_SELECTED
+Emit: WARN_MULTIPLE_DIRECTIVE_BUNDLED
+active.directiveIds = [selectedDirectiveId]
+Else (no explicit alternates bundle):
+Keep all directives active (ordered deterministically using same sort rule)
+Emit: WARN_MULTIPLE_DIRECTIVE_ACTIVE
+active.directiveIds = [all directive ids in deterministic order]
+Return structure similar to selectPrimary: selections + notes + errors (but directives never hard-error in v0).
+Wire into pipeline: compile.ts
+After resolveAuthority
+After selectPrimary
+Before buildNeoBlocks
+Produce directiveByStackId: Record<string, string[]> (the active directiveIds per stack)
+Persist into runtime:
+Update types.ts if needed ONLY minimally:
+Ensure ActiveSelections already exists with directiveIds: string[] (it does).
+Update buildNeoBlocks.ts:
+Accept directiveByStackId in input.
+Set neoBlock.active.directiveIds = directiveByStackId[stackId] ?? []
+Do not change how other active.* fields are set.
+Add sample + snapshot:
+Create samples/directive_example.json:
+Two stacks.
+Stack A: two directives in a directive-only bundle → should select one.
+Stack B: two directives not bundled → should keep both active + warning.
+Include primaries so compile passes.
+Ensure snapshot script picks it up and writes snapshots/directive_example.out.json.
+Acceptance Checks (must report)
+npm run build PASS
+npm run snapshot PASS
+In directive_example.out.json:
+stack A neoBlock active.directiveIds.length === 1
+stack B neoBlock active.directiveIds.length === 2
+trace contains:
+INFO_DIRECTIVE_SELECTED for stack A
+WARN_MULTIPLE_DIRECTIVE_BUNDLED for stack A
+WARN_MULTIPLE_DIRECTIVE_ACTIVE for stack B
+STOP after reporting results.
