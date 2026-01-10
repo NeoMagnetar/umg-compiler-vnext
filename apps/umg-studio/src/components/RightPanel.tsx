@@ -6,9 +6,10 @@ interface RightPanelProps {
   sleeveJson: string;
   setSleeveJson: (v: string) => void;
   resultJson: string;
+  selectedBlockId?: string | null;
 }
 
-export default function RightPanel({ sleeveJson, setSleeveJson, resultJson }: RightPanelProps) {
+export default function RightPanel({ sleeveJson, setSleeveJson, resultJson, selectedBlockId }: RightPanelProps) {
   const [tab, setTab] = useState<"input" | "output">("input");
 
   return (

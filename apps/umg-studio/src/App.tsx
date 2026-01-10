@@ -15,6 +15,7 @@ export default function App() {
     return JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2);
   });
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
   const compiled = useMemo(() => {
     try { return JSON.parse(resultJson); } catch { return null; }
@@ -25,6 +26,7 @@ export default function App() {
     const c = compileFromJson(sleeveJson);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2));
     setSelectedTag(null);
+    setSelectedBlockId(null);
   };
 
   const onReset = () => {
@@ -33,11 +35,12 @@ export default function App() {
     const c = compileFromJson(fixture);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true }, null, 2));
     setSelectedTag(null);
+    setSelectedBlockId(null);
   };
 
   return (
     <Layout
-      top={<TopBar onCompile={onCompile} onReset={onReset} />}
+      top={<TopBar onCompile={onCompile} onReset={onReset} selectedBlockId={selectedBlockId} />}
       left={
         <LeftPanel 
           compiled={compiled} 
@@ -45,8 +48,22 @@ export default function App() {
           onSelectTag={setSelectedTag}
         />
       }
-      center={<GraphCanvas compiled={compiled} selectedTag={selectedTag} />}
-      right={<RightPanel sleeveJson={sleeveJson} setSleeveJson={setSleeveJson} resultJson={resultJson} />}
+      center={
+        <GraphCanvas 
+          compiled={compiled} 
+          selectedTag={selectedTag} 
+          selectedBlockId={selectedBlockId}
+          onSelectBlockId={setSelectedBlockId}
+        />
+      }
+      right={
+        <RightPanel 
+          sleeveJson={sleeveJson} 
+          setSleeveJson={setSleeveJson} 
+          resultJson={resultJson} 
+          selectedBlockId={selectedBlockId}
+        />
+      }
     />
   );
 }

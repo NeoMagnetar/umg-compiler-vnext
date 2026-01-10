@@ -23,9 +23,11 @@ const MOLT_COLORS: Record<string, { bg: string; border: string }> = {
 interface GraphCanvasProps {
   compiled: any;
   selectedTag?: string | null;
+  selectedBlockId?: string | null;
+  onSelectBlockId?: (id: string | null) => void;
 }
 
-export default function GraphCanvas({ compiled, selectedTag }: GraphCanvasProps) {
+export default function GraphCanvas({ compiled, selectedTag, selectedBlockId, onSelectBlockId }: GraphCanvasProps) {
   const neoBlocks = compiled?.runtime?.neoBlocks ?? [];
   const indexes = compiled?.runtime?.indexes ?? {};
   const hasErrors = compiled?.hasErrors;
@@ -55,14 +57,20 @@ export default function GraphCanvas({ compiled, selectedTag }: GraphCanvasProps)
     return blocksByMolt;
   };
 
-  const isBlockHighlighted = (blockId: string) => {
+  const isBlockHighlightedByTag = (blockId: string) => {
     if (!selectedTag) return false;
     const blockTags = tagsByBlockId[blockId] ?? [];
     return blockTags.includes(selectedTag);
   };
 
+  const handleBlockClick = (blockId: string) => {
+    if (onSelectBlockId) {
+      onSelectBlockId(selectedBlockId === blockId ? null : blockId);
+    }
+  };
+
   return (
-    <div className="panel" style={{ height: "100%", padding: 16, overflowX: "auto" }}>
+    <div style={{ height: "100%", overflow: "auto", padding: 12 }}>
       <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7 }}>Graph Canvas</h3>
       {hasErrors ? (
         <p style={{ color: "#ff6b6b" }}>Compilation has errors. Check output.</p>
@@ -105,7 +113,8 @@ export default function GraphCanvas({ compiled, selectedTag }: GraphCanvasProps)
                           background: colors.bg,
                           borderLeft: `3px solid ${colors.border}`,
                           borderRadius: "0 4px 4px 0",
-                          minHeight: 32
+                          minHeight: 32,
+                          pointerEvents: "none"
                         }}
                       >
                         <div style={{ 
@@ -123,52 +132,68 @@ export default function GraphCanvas({ compiled, selectedTag }: GraphCanvasProps)
                             empty {molt}
                           </div>
                         ) : (
-                          blocks.map((block: any) => (
-                            <div 
-                              key={block.id}
-                              style={{
-                                padding: "6px 8px",
-                                marginBottom: 4,
-                                background: "rgba(0,0,0,0.3)",
-                                borderRadius: 4,
-                                border: isBlockHighlighted(block.id) 
-                                  ? "1px solid #ff69b4" 
-                                  : "1px solid transparent",
-                                boxShadow: isBlockHighlighted(block.id) 
-                                  ? "0 0 8px rgba(255,105,180,0.4)" 
-                                  : "none"
-                              }}
-                            >
-                              <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 2 }}>
-                                {block.title}
-                              </div>
-                              <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
-                                {block.id}
-                              </div>
-                              {block.tags.length > 0 && (
-                                <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
-                                  {block.tags.map((tag: string) => (
-                                    <span 
-                                      key={tag}
-                                      style={{
-                                        fontSize: 9,
-                                        padding: "2px 6px",
-                                        background: selectedTag === tag 
-                                          ? "rgba(255,105,180,0.3)" 
-                                          : "rgba(255,255,255,0.1)",
-                                        borderRadius: 10,
-                                        border: selectedTag === tag 
-                                          ? "1px solid #ff69b4" 
-                                          : "1px solid transparent"
-                                      }}
-                                    >
-                                      {tag}
-                                    </span>
-                                  ))}
+                          blocks.map((block: any) => {
+                            const isSelected = block.id === selectedBlockId;
+                            const isHighlightedByTag = isBlockHighlightedByTag(block.id);
+
+                            return (
+                              <div 
+                                key={block.id}
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => handleBlockClick(block.id)}
+                                onKeyDown={(e) => e.key === "Enter" && handleBlockClick(block.id)}
+                                style={{
+                                  padding: 10,
+                                  marginTop: 8,
+                                  background: "rgba(0,0,0,0.25)",
+                                  borderRadius: 10,
+                                  cursor: "pointer",
+                                  pointerEvents: "auto",
+                                  border: isSelected 
+                                    ? "2px solid rgba(255,255,255,0.65)" 
+                                    : isHighlightedByTag 
+                                      ? "1px solid #ff69b4" 
+                                      : "1px solid rgba(255,255,255,0.12)",
+                                  boxShadow: isSelected 
+                                    ? "0 0 0 3px rgba(255,255,255,0.12)" 
+                                    : isHighlightedByTag 
+                                      ? "0 0 8px rgba(255,105,180,0.4)" 
+                                      : "none",
+                                  transition: "border 0.15s, box-shadow 0.15s"
+                                }}
+                              >
+                                <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 2 }}>
+                                  {block.title}
                                 </div>
-                              )}
-                            </div>
-                          ))
+                                <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
+                                  {block.id}
+                                </div>
+                                {block.tags.length > 0 && (
+                                  <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                    {block.tags.map((tag: string) => (
+                                      <span 
+                                        key={tag}
+                                        style={{
+                                          fontSize: 9,
+                                          padding: "2px 6px",
+                                          background: selectedTag === tag 
+                                            ? "rgba(255,105,180,0.3)" 
+                                            : "rgba(255,255,255,0.1)",
+                                          borderRadius: 10,
+                                          border: selectedTag === tag 
+                                            ? "1px solid #ff69b4" 
+                                            : "1px solid transparent"
+                                        }}
+                                      >
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
                         )}
                       </div>
                     );
