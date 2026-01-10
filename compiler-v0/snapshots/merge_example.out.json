@@ -61,7 +61,18 @@
         "mergeIds": [
           "seg_merge_instr"
         ],
-        "selectedPrimaryId": "blk_primary_main"
+        "selectedPrimaryId": "blk_primary_main",
+        "active": {
+          "triggerIds": [],
+          "directiveIds": [],
+          "instructionIds": [
+            "blk_merged_instr"
+          ],
+          "subjectIds": [],
+          "primaryId": "blk_primary_main",
+          "philosophyIds": [],
+          "blueprintIds": []
+        }
       }
     ],
     "neoStacks": [

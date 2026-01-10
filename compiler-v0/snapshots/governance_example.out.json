@@ -87,7 +87,19 @@
           "implicit_bundle_stack_main_blk_primary_main"
         ],
         "mergeIds": [],
-        "selectedPrimaryId": "blk_primary_main"
+        "selectedPrimaryId": "blk_primary_main",
+        "active": {
+          "triggerIds": [],
+          "directiveIds": [],
+          "instructionIds": [
+            "blk_instr_a",
+            "blk_instr_b"
+          ],
+          "subjectIds": [],
+          "primaryId": "blk_primary_main",
+          "philosophyIds": [],
+          "blueprintIds": []
+        }
       }
     ],
     "neoStacks": [

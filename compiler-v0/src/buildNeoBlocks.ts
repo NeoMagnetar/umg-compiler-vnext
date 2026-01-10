@@ -3,6 +3,7 @@ import type {
   RuntimeBundle,
   MoltType,
   Block,
+  ActiveSelections,
 } from "./types.js";
 
 const MOLT_ORDER: MoltType[] = [
@@ -71,6 +72,16 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
 
     const selectedPrimaryId = primaryByStackId[st.stackId];
 
+    const active: ActiveSelections = {
+      triggerIds: byMoltType.trigger,
+      directiveIds: byMoltType.directive,
+      instructionIds: byMoltType.instruction,
+      subjectIds: byMoltType.subject,
+      primaryId: selectedPrimaryId,
+      philosophyIds: byMoltType.philosophy,
+      blueprintIds: byMoltType.blueprint,
+    };
+
     neoBlocks.push({
       id: neoBlockId,
       stackId: st.stackId,
@@ -79,6 +90,7 @@ export function buildNeoBlocks(input: BuildNeoBlocksInput): BuildNeoBlocksResult
       bundleIds,
       mergeIds,
       selectedPrimaryId,
+      active,
     });
 
     neoBlockIdByStackId[st.stackId] = neoBlockId;

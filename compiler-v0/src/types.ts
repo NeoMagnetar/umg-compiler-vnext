@@ -158,6 +158,16 @@ export interface RuntimeBundle {
 // NeoBlock / NeoStack Types
 // ─────────────────────────────────────────────────────────────────────────────
 
+export interface ActiveSelections {
+  triggerIds: string[];
+  directiveIds: string[];
+  instructionIds: string[];
+  subjectIds: string[];
+  primaryId?: string;
+  philosophyIds: string[];
+  blueprintIds: string[];
+}
+
 export interface RuntimeNeoBlock {
   id: string;
   stackId: string;
@@ -166,6 +176,7 @@ export interface RuntimeNeoBlock {
   bundleIds: string[];
   mergeIds: string[];
   selectedPrimaryId?: string;
+  active: ActiveSelections;
 }
 
 export interface RuntimeNeoStack {

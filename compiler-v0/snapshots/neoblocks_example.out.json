@@ -93,7 +93,18 @@
         "mergeIds": [
           "seg_merge_instr"
         ],
-        "selectedPrimaryId": "blk_primary_ops"
+        "selectedPrimaryId": "blk_primary_ops",
+        "active": {
+          "triggerIds": [],
+          "directiveIds": [],
+          "instructionIds": [
+            "blk_merged_instr"
+          ],
+          "subjectIds": [],
+          "primaryId": "blk_primary_ops",
+          "philosophyIds": [],
+          "blueprintIds": []
+        }
       },
       {
         "id": "nb_stack_ops_b",
@@ -121,7 +132,18 @@
           "implicit_bundle_stack_ops_b_blk_primary_ops_b"
         ],
         "mergeIds": [],
-        "selectedPrimaryId": "blk_primary_ops_b"
+        "selectedPrimaryId": "blk_primary_ops_b",
+        "active": {
+          "triggerIds": [],
+          "directiveIds": [
+            "blk_directive_ops"
+          ],
+          "instructionIds": [],
+          "subjectIds": [],
+          "primaryId": "blk_primary_ops_b",
+          "philosophyIds": [],
+          "blueprintIds": []
+        }
       }
     ],
     "neoStacks": [
