@@ -21,9 +21,10 @@ export interface GovernanceResult {
 }
 
 function scopeSpecificity(scope: GovernanceScope): number {
-  if (scope.type === "block") return 3;
-  if (scope.type === "stack") return 2;
-  return 1;
+  if (scope.type === "block") return 4;
+  if (scope.type === "stack") return 3;
+  if (scope.type === "stacks") return 2;
+  return 1; // sleeve
 }
 
 function evaluateCondition(
@@ -62,6 +63,24 @@ function resolveScopeBlockIds(
       return { blockIds: [], error: `Stack not found: ${scope.stackId}` };
     }
     return { blockIds: stack.blockIds.filter((id) => blocksById.has(id)) };
+  }
+
+  if (scope.type === "stacks") {
+    const allBlockIds: string[] = [];
+    const seen = new Set<string>();
+    for (const stackId of scope.stackIds) {
+      const stack = stacksById.get(stackId);
+      if (!stack) {
+        return { blockIds: [], error: `Stack not found: ${stackId}` };
+      }
+      for (const bid of stack.blockIds) {
+        if (blocksById.has(bid) && !seen.has(bid)) {
+          seen.add(bid);
+          allBlockIds.push(bid);
+        }
+      }
+    }
+    return { blockIds: allBlockIds };
   }
 
   if (scope.type === "block") {
@@ -282,6 +301,8 @@ export function applyGovernance(
           limitKey = `sleeve:limit:${moltType}`;
         } else if (binding.scope.type === "stack") {
           limitKey = `stack:${binding.scope.stackId}:limit:${moltType}`;
+        } else if (binding.scope.type === "stacks") {
+          limitKey = `stacks:${binding.scope.stackIds.sort().join(",")}:limit:${moltType}`;
         } else {
           continue;
         }

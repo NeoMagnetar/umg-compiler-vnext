@@ -11,6 +11,7 @@ export type BlockRole = "primary_shell" | "merge_contributor" | "annotation" | "
 
 export interface Block {
   id: string;
+  title?: string;        // short UI label
   moltType: MoltType;
   role?: BlockRole;
   priorityOrder?: number; // higher = stronger within same moltType
@@ -64,11 +65,12 @@ export interface TriggerState {
 // Governance Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type GovernanceScopeType = "sleeve" | "stack" | "block";
+export type GovernanceScopeType = "sleeve" | "stack" | "stacks" | "block";
 
 export type GovernanceScope =
   | { type: "sleeve" }
   | { type: "stack"; stackId: string }
+  | { type: "stacks"; stackIds: string[] }
   | { type: "block"; blockId: string };
 
 export interface GovernanceCondition {
@@ -219,6 +221,19 @@ export interface RuntimePromptSpec {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// RuntimeIndexes (UI-friendly lookups)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface RuntimeIndexes {
+  blockTitleById: Record<string, string>;     // title fallback: id
+  stackNameById: Record<string, string>;      // name fallback: id
+  tags: {
+    blockIdsByTag: Record<string, string[]>;  // stable sorted lists
+    tagsByBlockId: Record<string, string[]>;  // stable sorted lists
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RuntimeSpec
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -242,6 +257,8 @@ export interface RuntimeSpec {
   primaryByStackId?: Record<string, string>;
 
   promptSpec: RuntimePromptSpec;
+
+  indexes: RuntimeIndexes;
 
   meta: {
     compiledAt: string;
