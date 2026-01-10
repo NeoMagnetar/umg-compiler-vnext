@@ -330,40 +330,116 @@
         "stack_b": "Customer Care Stack B"
       },
       "tags": {
-        "blockIdsByTag": {
-          "customer_care": [
-            "blk_instr_a1",
-            "blk_instr_b1",
-            "blk_primary_a",
-            "blk_primary_b",
-            "blk_subject_a"
-          ],
-          "priority": [
-            "blk_primary_a"
-          ],
-          "onboarding": [
-            "blk_instr_a1"
-          ]
-        },
         "tagsByBlockId": {
-          "blk_primary_a": [
-            "customer_care",
-            "priority"
-          ],
-          "blk_primary_b": [
-            "customer_care"
-          ],
           "blk_instr_a1": [
             "customer_care",
             "onboarding"
           ],
+          "blk_subject_a": [
+            "customer_care"
+          ],
+          "blk_primary_a": [
+            "customer_care",
+            "priority"
+          ],
           "blk_instr_b1": [
             "customer_care"
           ],
-          "blk_subject_a": [
+          "blk_primary_b": [
             "customer_care"
           ]
-        }
+        },
+        "blockIdsByTag": {
+          "customer_care": [
+            "blk_instr_a1",
+            "blk_subject_a",
+            "blk_primary_a",
+            "blk_instr_b1",
+            "blk_primary_b"
+          ],
+          "onboarding": [
+            "blk_instr_a1"
+          ],
+          "priority": [
+            "blk_primary_a"
+          ]
+        },
+        "blockIdsByTagByStackId": {
+          "stack_a": {
+            "customer_care": [
+              "blk_instr_a1",
+              "blk_subject_a",
+              "blk_primary_a"
+            ],
+            "onboarding": [
+              "blk_instr_a1"
+            ],
+            "priority": [
+              "blk_primary_a"
+            ]
+          },
+          "stack_b": {
+            "customer_care": [
+              "blk_instr_b1",
+              "blk_primary_b"
+            ]
+          }
+        },
+        "activeBlockIdsByTagByStackId": {
+          "stack_a": {
+            "customer_care": [
+              "blk_instr_a1",
+              "blk_subject_a",
+              "blk_primary_a"
+            ],
+            "onboarding": [
+              "blk_instr_a1"
+            ],
+            "priority": [
+              "blk_primary_a"
+            ]
+          },
+          "stack_b": {
+            "customer_care": [
+              "blk_instr_b1",
+              "blk_primary_b"
+            ]
+          }
+        },
+        "blockIdsByTagByMoltType": {
+          "trigger": {},
+          "directive": {},
+          "instruction": {
+            "customer_care": [
+              "blk_instr_a1",
+              "blk_instr_b1"
+            ],
+            "onboarding": [
+              "blk_instr_a1"
+            ]
+          },
+          "subject": {
+            "customer_care": [
+              "blk_subject_a"
+            ]
+          },
+          "primary": {
+            "customer_care": [
+              "blk_primary_a",
+              "blk_primary_b"
+            ],
+            "priority": [
+              "blk_primary_a"
+            ]
+          },
+          "philosophy": {},
+          "blueprint": {}
+        },
+        "allTagsSorted": [
+          "customer_care",
+          "onboarding",
+          "priority"
+        ]
       }
     },
     "meta": {

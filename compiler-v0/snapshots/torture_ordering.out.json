@@ -291,8 +291,24 @@
         "stack_torture": "Torture Stack"
       },
       "tags": {
+        "tagsByBlockId": {},
         "blockIdsByTag": {},
-        "tagsByBlockId": {}
+        "blockIdsByTagByStackId": {
+          "stack_torture": {}
+        },
+        "activeBlockIdsByTagByStackId": {
+          "stack_torture": {}
+        },
+        "blockIdsByTagByMoltType": {
+          "trigger": {},
+          "directive": {},
+          "instruction": {},
+          "subject": {},
+          "primary": {},
+          "philosophy": {},
+          "blueprint": {}
+        },
+        "allTagsSorted": []
       }
     },
     "meta": {

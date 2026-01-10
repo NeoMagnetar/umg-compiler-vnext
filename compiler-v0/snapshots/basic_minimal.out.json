@@ -156,8 +156,24 @@
         "stack_support": "stack_support"
       },
       "tags": {
+        "tagsByBlockId": {},
         "blockIdsByTag": {},
-        "tagsByBlockId": {}
+        "blockIdsByTagByStackId": {
+          "stack_support": {}
+        },
+        "activeBlockIdsByTagByStackId": {
+          "stack_support": {}
+        },
+        "blockIdsByTagByMoltType": {
+          "trigger": {},
+          "directive": {},
+          "instruction": {},
+          "subject": {},
+          "primary": {},
+          "philosophy": {},
+          "blueprint": {}
+        },
+        "allTagsSorted": []
       }
     },
     "meta": {

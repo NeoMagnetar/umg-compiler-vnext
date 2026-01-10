@@ -169,8 +169,24 @@
         "stack_main": "Main Stack with Alternates Instructions"
       },
       "tags": {
+        "tagsByBlockId": {},
         "blockIdsByTag": {},
-        "tagsByBlockId": {}
+        "blockIdsByTagByStackId": {
+          "stack_main": {}
+        },
+        "activeBlockIdsByTagByStackId": {
+          "stack_main": {}
+        },
+        "blockIdsByTagByMoltType": {
+          "trigger": {},
+          "directive": {},
+          "instruction": {},
+          "subject": {},
+          "primary": {},
+          "philosophy": {},
+          "blueprint": {}
+        },
+        "allTagsSorted": []
       }
     },
     "meta": {

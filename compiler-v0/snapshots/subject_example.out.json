@@ -335,8 +335,26 @@
         "stack_b": "Stack B - unbundled subjects"
       },
       "tags": {
+        "tagsByBlockId": {},
         "blockIdsByTag": {},
-        "tagsByBlockId": {}
+        "blockIdsByTagByStackId": {
+          "stack_a": {},
+          "stack_b": {}
+        },
+        "activeBlockIdsByTagByStackId": {
+          "stack_a": {},
+          "stack_b": {}
+        },
+        "blockIdsByTagByMoltType": {
+          "trigger": {},
+          "directive": {},
+          "instruction": {},
+          "subject": {},
+          "primary": {},
+          "philosophy": {},
+          "blueprint": {}
+        },
+        "allTagsSorted": []
       }
     },
     "meta": {

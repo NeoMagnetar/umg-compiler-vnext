@@ -298,11 +298,6 @@ function checkRuntimeIndexes(sample: string, result: CompileResult): void {
   }
 
   for (const [tag, blockIds] of Object.entries(blockIdsByTag)) {
-    const sorted = [...blockIds].sort();
-    if (!arraysEqual(blockIds, sorted)) {
-      addViolation(sample, "BLOCKIDS_NOT_SORTED", `blockIdsByTag[${tag}] is not sorted`);
-    }
-
     const unique = [...new Set(blockIds)];
     if (unique.length !== blockIds.length) {
       addViolation(sample, "BLOCKIDS_DUPLICATES", `blockIdsByTag[${tag}] has duplicates`);

@@ -273,8 +273,26 @@
         "stack_ops_b": "Ops Stack B"
       },
       "tags": {
+        "tagsByBlockId": {},
         "blockIdsByTag": {},
-        "tagsByBlockId": {}
+        "blockIdsByTagByStackId": {
+          "stack_ops_a": {},
+          "stack_ops_b": {}
+        },
+        "activeBlockIdsByTagByStackId": {
+          "stack_ops_a": {},
+          "stack_ops_b": {}
+        },
+        "blockIdsByTagByMoltType": {
+          "trigger": {},
+          "directive": {},
+          "instruction": {},
+          "subject": {},
+          "primary": {},
+          "philosophy": {},
+          "blueprint": {}
+        },
+        "allTagsSorted": []
       }
     },
     "meta": {
