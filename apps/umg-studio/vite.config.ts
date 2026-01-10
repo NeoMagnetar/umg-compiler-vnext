@@ -9,5 +9,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
       "@compiler-v0": path.resolve(__dirname, "../../compiler-v0/src/index.ts")
     }
+  },
+  server: {
+    host: true,
+    allowedHosts: true
+  },
+  preview: {
+    host: true,
+    allowedHosts: true
   }
 });
