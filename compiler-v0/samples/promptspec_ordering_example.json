@@ -1,0 +1,80 @@
+{
+  "sleeve": {
+    "id": "sleeve_promptspec_ordering",
+    "name": "PromptSpec Ordering Invariants Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary",
+        "moltType": "primary",
+        "content": "Primary block content."
+      },
+      {
+        "id": "blk_instr_bundle_a",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "BUNDLE_A: First bundled instruction."
+      },
+      {
+        "id": "blk_instr_bundle_b",
+        "moltType": "instruction",
+        "priorityOrder": 20,
+        "content": "BUNDLE_B: Second bundled instruction."
+      },
+      {
+        "id": "blk_instr_bundle_c",
+        "moltType": "instruction",
+        "priorityOrder": 30,
+        "content": "BUNDLE_C: Third bundled instruction."
+      },
+      {
+        "id": "blk_instr_unbundled_high",
+        "moltType": "instruction",
+        "priorityOrder": 100,
+        "content": "UNBUNDLED_HIGH: High priority unbundled."
+      },
+      {
+        "id": "blk_instr_unbundled_low",
+        "moltType": "instruction",
+        "priorityOrder": 5,
+        "content": "UNBUNDLED_LOW: Low priority unbundled."
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_main",
+        "name": "Main Stack",
+        "domainKey": "domain_main",
+        "blockIds": [
+          "blk_primary",
+          "blk_instr_bundle_a",
+          "blk_instr_bundle_b",
+          "blk_instr_bundle_c",
+          "blk_instr_unbundled_high",
+          "blk_instr_unbundled_low"
+        ],
+        "segments": [
+          {
+            "id": "seg_ranked_instructions",
+            "kind": "bundle",
+            "stackId": "stack_main",
+            "blockIds": [
+              "blk_instr_bundle_a",
+              "blk_instr_bundle_b",
+              "blk_instr_bundle_c"
+            ],
+            "intent": "ranked"
+          }
+        ]
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}
