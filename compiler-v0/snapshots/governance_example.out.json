@@ -57,6 +57,50 @@
         ]
       }
     ],
+    "neoBlocks": [
+      {
+        "id": "nb_stack_main",
+        "stackId": "stack_main",
+        "orderedBlockIds": [
+          "blk_instr_a",
+          "blk_primary_main",
+          "blk_instr_b"
+        ],
+        "byMoltType": {
+          "trigger": [],
+          "directive": [],
+          "instruction": [
+            "blk_instr_a",
+            "blk_instr_b"
+          ],
+          "subject": [],
+          "primary": [
+            "blk_primary_main"
+          ],
+          "philosophy": [],
+          "blueprint": []
+        },
+        "bundleIds": [
+          "implicit_bundle_stack_main_blk_instr_a",
+          "implicit_bundle_stack_main_blk_instr_b",
+          "implicit_bundle_stack_main_blk_instr_forbidden",
+          "implicit_bundle_stack_main_blk_primary_main"
+        ],
+        "mergeIds": []
+      }
+    ],
+    "neoStacks": [
+      {
+        "id": "ns_main",
+        "domainKey": "main",
+        "neoBlockIds": [
+          "nb_stack_main"
+        ]
+      }
+    ],
+    "neoBlockIdByStackId": {
+      "stack_main": "nb_stack_main"
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

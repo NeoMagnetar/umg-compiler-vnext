@@ -36,6 +36,47 @@
         ]
       }
     ],
+    "neoBlocks": [
+      {
+        "id": "nb_stack_main",
+        "stackId": "stack_main",
+        "orderedBlockIds": [
+          "blk_merged_instr",
+          "blk_primary_main"
+        ],
+        "byMoltType": {
+          "trigger": [],
+          "directive": [],
+          "instruction": [
+            "blk_merged_instr"
+          ],
+          "subject": [],
+          "primary": [
+            "blk_primary_main"
+          ],
+          "philosophy": [],
+          "blueprint": []
+        },
+        "bundleIds": [
+          "seg_bundle_primary"
+        ],
+        "mergeIds": [
+          "seg_merge_instr"
+        ]
+      }
+    ],
+    "neoStacks": [
+      {
+        "id": "ns_main",
+        "domainKey": "main",
+        "neoBlockIds": [
+          "nb_stack_main"
+        ]
+      }
+    ],
+    "neoBlockIdByStackId": {
+      "stack_main": "nb_stack_main"
+    },
     "meta": {
       "compiledAt": "TEST_TIME",
       "compilerVersion": "v0"

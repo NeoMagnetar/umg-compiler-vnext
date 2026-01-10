@@ -4,6 +4,8 @@ import { normalizeSegments } from "./normalizeSegments.js";
 import { applyMerges } from "./applyMerges.js";
 import { applyBundles } from "./applyBundles.js";
 import { applyGovernance } from "./applyGovernance.js";
+import { buildNeoBlocks } from "./buildNeoBlocks.js";
+import { buildNeoStacks } from "./buildNeoStacks.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -244,6 +246,27 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
       }),
   }));
 
+  // Step 8: Build NeoBlocks and NeoStacks
+  const appliedMerges = sleeve.stacks
+    .flatMap(st =>
+      (st.segments ?? [])
+        .filter(seg => seg.kind === "merge")
+        .map(seg => ({ segmentId: seg.id, stackId: st.id }))
+    )
+    .sort((a, b) => a.segmentId.localeCompare(b.segmentId));
+
+  const neoBlocksResult = buildNeoBlocks({
+    runtimeStacks,
+    bundles: bundleResult.bundles,
+    appliedMerges,
+    blocksById,
+  });
+
+  const neoStacks = buildNeoStacks({
+    stacks: sleeve.stacks,
+    neoBlockIdByStackId: neoBlocksResult.neoBlockIdByStackId,
+  });
+
   push({
     kind: "pipeline_stage",
     severity: "info",
@@ -259,6 +282,9 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
       stacks: runtimeStacks,
       blocksByMoltType,
       bundles: bundleResult.bundles,
+      neoBlocks: neoBlocksResult.neoBlocks,
+      neoStacks,
+      neoBlockIdByStackId: neoBlocksResult.neoBlockIdByStackId,
       meta: {
         compiledAt: isoNow(),
         compilerVersion: "v0",

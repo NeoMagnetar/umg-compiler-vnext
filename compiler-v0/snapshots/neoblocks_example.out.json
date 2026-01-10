@@ -1,0 +1,293 @@
+{
+  "runtime": {
+    "sleeveId": "sleeve_neoblocks_demo",
+    "sleeveName": "NeoBlocks Example",
+    "stacks": [
+      {
+        "stackId": "stack_ops_a",
+        "domainKey": "ops",
+        "orderedBlockIds": [
+          "blk_primary_ops",
+          "blk_merged_instr"
+        ]
+      },
+      {
+        "stackId": "stack_ops_b",
+        "domainKey": "ops",
+        "orderedBlockIds": [
+          "blk_directive_ops"
+        ]
+      }
+    ],
+    "blocksByMoltType": {
+      "trigger": [],
+      "directive": [
+        "blk_directive_ops"
+      ],
+      "instruction": [
+        "blk_merged_instr",
+        "blk_instr_2",
+        "blk_instr_1"
+      ],
+      "subject": [],
+      "primary": [
+        "blk_primary_ops"
+      ],
+      "philosophy": [],
+      "blueprint": []
+    },
+    "bundles": [
+      {
+        "segmentId": "seg_bundle_primary",
+        "stackId": "stack_ops_a",
+        "blockIds": [
+          "blk_primary_ops"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_ops_b_blk_directive_ops",
+        "stackId": "stack_ops_b",
+        "blockIds": [
+          "blk_directive_ops"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_ops_b_blk_instr_forbidden",
+        "stackId": "stack_ops_b",
+        "blockIds": [
+          "blk_instr_forbidden"
+        ]
+      }
+    ],
+    "neoBlocks": [
+      {
+        "id": "nb_stack_ops_a",
+        "stackId": "stack_ops_a",
+        "orderedBlockIds": [
+          "blk_primary_ops",
+          "blk_merged_instr"
+        ],
+        "byMoltType": {
+          "trigger": [],
+          "directive": [],
+          "instruction": [
+            "blk_merged_instr"
+          ],
+          "subject": [],
+          "primary": [
+            "blk_primary_ops"
+          ],
+          "philosophy": [],
+          "blueprint": []
+        },
+        "bundleIds": [
+          "seg_bundle_primary"
+        ],
+        "mergeIds": [
+          "seg_merge_instr"
+        ]
+      },
+      {
+        "id": "nb_stack_ops_b",
+        "stackId": "stack_ops_b",
+        "orderedBlockIds": [
+          "blk_directive_ops"
+        ],
+        "byMoltType": {
+          "trigger": [],
+          "directive": [
+            "blk_directive_ops"
+          ],
+          "instruction": [],
+          "subject": [],
+          "primary": [],
+          "philosophy": [],
+          "blueprint": []
+        },
+        "bundleIds": [
+          "implicit_bundle_stack_ops_b_blk_directive_ops",
+          "implicit_bundle_stack_ops_b_blk_instr_forbidden"
+        ],
+        "mergeIds": []
+      }
+    ],
+    "neoStacks": [
+      {
+        "id": "ns_ops",
+        "domainKey": "ops",
+        "neoBlockIds": [
+          "nb_stack_ops_a",
+          "nb_stack_ops_b"
+        ]
+      }
+    ],
+    "neoBlockIdByStackId": {
+      "stack_ops_a": "nb_stack_ops_a",
+      "stack_ops_b": "nb_stack_ops_b"
+    },
+    "meta": {
+      "compiledAt": "TEST_TIME",
+      "compilerVersion": "v0"
+    }
+  },
+  "trace": {
+    "sleeveId": "sleeve_neoblocks_demo",
+    "events": [
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "id": "evt_00001",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_VALIDATE_DONE",
+        "message": "Validation passed.",
+        "id": "evt_00002",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_directive_ops in stack stack_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_directive_ops"
+        ],
+        "id": "evt_00003",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_instr_forbidden in stack stack_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00004",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_NORMALIZE_DONE",
+        "message": "Segments normalized.",
+        "id": "evt_00005",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_MERGE_APPLIED",
+        "message": "Merge seg_merge_instr: replaced [blk_instr_1, blk_instr_2] with blk_merged_instr in stack stack_ops_a.",
+        "relatedStackIds": [
+          "stack_ops_a"
+        ],
+        "relatedBlockIds": [
+          "blk_merged_instr",
+          "blk_instr_1",
+          "blk_instr_2"
+        ],
+        "id": "evt_00006",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_MERGE_DONE",
+        "message": "Merges applied. 1 merge operation(s).",
+        "id": "evt_00007",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_bundle_primary recorded with 1 block(s) in stack stack_ops_a.",
+        "relatedStackIds": [
+          "stack_ops_a"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_ops"
+        ],
+        "id": "evt_00008",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_ops_b_blk_directive_ops recorded with 1 block(s) in stack stack_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_directive_ops"
+        ],
+        "id": "evt_00009",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_ops_b_blk_instr_forbidden recorded with 1 block(s) in stack stack_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00010",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_BUNDLE_DONE",
+        "message": "Bundles recorded. 3 bundle(s).",
+        "id": "evt_00011",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_APPLIED",
+        "message": "Rule rule_forbid_instr (forbid) applied to 1 block(s).",
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00012",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_GOVERNANCE_DONE",
+        "message": "Governance applied. 1 rule(s) executed.",
+        "id": "evt_00013",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
+        "relatedTriggerIds": [],
+        "id": "evt_00014",
+        "timestamp": "TEST_TIME"
+      }
+    ]
+  },
+  "hasErrors": false
+}
