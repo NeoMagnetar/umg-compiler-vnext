@@ -1,0 +1,82 @@
+{
+  "sleeve": {
+    "id": "sleeve_instruction_demo",
+    "name": "Instruction Selection Demo",
+    "version": "0.1.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "moltType": "primary",
+        "content": "Primary for stack A"
+      },
+      {
+        "id": "blk_primary_b",
+        "moltType": "primary",
+        "content": "Primary for stack B"
+      },
+      {
+        "id": "blk_instruction_a1",
+        "moltType": "instruction",
+        "priorityOrder": 10,
+        "content": "Instruction A1 - lower priority"
+      },
+      {
+        "id": "blk_instruction_a2",
+        "moltType": "instruction",
+        "priorityOrder": 50,
+        "content": "Instruction A2 - highest priority, should be selected"
+      },
+      {
+        "id": "blk_instruction_b1",
+        "moltType": "instruction",
+        "priorityOrder": 20,
+        "content": "Instruction B1 - not bundled"
+      },
+      {
+        "id": "blk_instruction_b2",
+        "moltType": "instruction",
+        "priorityOrder": 40,
+        "content": "Instruction B2 - not bundled"
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Stack A - bundled instructions",
+        "domainKey": "domain_a",
+        "blockIds": [
+          "blk_primary_a",
+          "blk_instruction_a1",
+          "blk_instruction_a2"
+        ],
+        "segments": [
+          {
+            "id": "seg_bundle_instructions_a",
+            "kind": "bundle",
+            "stackId": "stack_a",
+            "blockIds": ["blk_instruction_a1", "blk_instruction_a2"]
+          }
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Stack B - unbundled instructions",
+        "domainKey": "domain_b",
+        "blockIds": [
+          "blk_primary_b",
+          "blk_instruction_b1",
+          "blk_instruction_b2"
+        ],
+        "segments": []
+      }
+    ],
+
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

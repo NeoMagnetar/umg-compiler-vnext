@@ -1,14 +1,14 @@
 {
   "runtime": {
-    "sleeveId": "sleeve_directive_demo",
-    "sleeveName": "Directive Selection Demo",
+    "sleeveId": "sleeve_instruction_demo",
+    "sleeveName": "Instruction Selection Demo",
     "stacks": [
       {
         "stackId": "stack_a",
         "domainKey": "domain_a",
         "orderedBlockIds": [
-          "blk_directive_a2",
-          "blk_directive_a1",
+          "blk_instruction_a2",
+          "blk_instruction_a1",
           "blk_primary_a"
         ]
       },
@@ -16,21 +16,21 @@
         "stackId": "stack_b",
         "domainKey": "domain_b",
         "orderedBlockIds": [
-          "blk_directive_b2",
-          "blk_directive_b1",
+          "blk_instruction_b2",
+          "blk_instruction_b1",
           "blk_primary_b"
         ]
       }
     ],
     "blocksByMoltType": {
       "trigger": [],
-      "directive": [
-        "blk_directive_a2",
-        "blk_directive_a1",
-        "blk_directive_b2",
-        "blk_directive_b1"
+      "directive": [],
+      "instruction": [
+        "blk_instruction_a2",
+        "blk_instruction_a1",
+        "blk_instruction_b2",
+        "blk_instruction_b1"
       ],
-      "instruction": [],
       "subject": [],
       "primary": [
         "blk_primary_a",
@@ -41,11 +41,11 @@
     },
     "bundles": [
       {
-        "segmentId": "seg_bundle_directives_a",
+        "segmentId": "seg_bundle_instructions_a",
         "stackId": "stack_a",
         "blockIds": [
-          "blk_directive_a1",
-          "blk_directive_a2"
+          "blk_instruction_a1",
+          "blk_instruction_a2"
         ]
       },
       {
@@ -63,17 +63,17 @@
         ]
       },
       {
-        "segmentId": "implicit_bundle_stack_b_blk_directive_b1",
+        "segmentId": "implicit_bundle_stack_b_blk_instruction_b1",
         "stackId": "stack_b",
         "blockIds": [
-          "blk_directive_b1"
+          "blk_instruction_b1"
         ]
       },
       {
-        "segmentId": "implicit_bundle_stack_b_blk_directive_b2",
+        "segmentId": "implicit_bundle_stack_b_blk_instruction_b2",
         "stackId": "stack_b",
         "blockIds": [
-          "blk_directive_b2"
+          "blk_instruction_b2"
         ]
       }
     ],
@@ -82,17 +82,17 @@
         "id": "nb_stack_a",
         "stackId": "stack_a",
         "orderedBlockIds": [
-          "blk_directive_a2",
-          "blk_directive_a1",
+          "blk_instruction_a2",
+          "blk_instruction_a1",
           "blk_primary_a"
         ],
         "byMoltType": {
           "trigger": [],
-          "directive": [
-            "blk_directive_a2",
-            "blk_directive_a1"
+          "directive": [],
+          "instruction": [
+            "blk_instruction_a2",
+            "blk_instruction_a1"
           ],
-          "instruction": [],
           "subject": [],
           "primary": [
             "blk_primary_a"
@@ -102,16 +102,16 @@
         },
         "bundleIds": [
           "implicit_bundle_stack_a_blk_primary_a",
-          "seg_bundle_directives_a"
+          "seg_bundle_instructions_a"
         ],
         "mergeIds": [],
         "selectedPrimaryId": "blk_primary_a",
         "active": {
           "triggerIds": [],
-          "directiveIds": [
-            "blk_directive_a2"
+          "directiveIds": [],
+          "instructionIds": [
+            "blk_instruction_a2"
           ],
-          "instructionIds": [],
           "subjectIds": [],
           "primaryId": "blk_primary_a",
           "philosophyIds": [],
@@ -122,17 +122,17 @@
         "id": "nb_stack_b",
         "stackId": "stack_b",
         "orderedBlockIds": [
-          "blk_directive_b2",
-          "blk_directive_b1",
+          "blk_instruction_b2",
+          "blk_instruction_b1",
           "blk_primary_b"
         ],
         "byMoltType": {
           "trigger": [],
-          "directive": [
-            "blk_directive_b2",
-            "blk_directive_b1"
+          "directive": [],
+          "instruction": [
+            "blk_instruction_b2",
+            "blk_instruction_b1"
           ],
-          "instruction": [],
           "subject": [],
           "primary": [
             "blk_primary_b"
@@ -141,19 +141,19 @@
           "blueprint": []
         },
         "bundleIds": [
-          "implicit_bundle_stack_b_blk_directive_b1",
-          "implicit_bundle_stack_b_blk_directive_b2",
+          "implicit_bundle_stack_b_blk_instruction_b1",
+          "implicit_bundle_stack_b_blk_instruction_b2",
           "implicit_bundle_stack_b_blk_primary_b"
         ],
         "mergeIds": [],
         "selectedPrimaryId": "blk_primary_b",
         "active": {
           "triggerIds": [],
-          "directiveIds": [
-            "blk_directive_b2",
-            "blk_directive_b1"
+          "directiveIds": [],
+          "instructionIds": [
+            "blk_instruction_b2",
+            "blk_instruction_b1"
           ],
-          "instructionIds": [],
           "subjectIds": [],
           "primaryId": "blk_primary_b",
           "philosophyIds": [],
@@ -191,7 +191,7 @@
     }
   },
   "trace": {
-    "sleeveId": "sleeve_directive_demo",
+    "sleeveId": "sleeve_instruction_demo",
     "events": [
       {
         "kind": "pipeline_stage",
@@ -241,12 +241,12 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_IMPLICIT_BUNDLE",
-        "message": "Created implicit singleton bundle for block blk_directive_b1 in stack stack_b.",
+        "message": "Created implicit singleton bundle for block blk_instruction_b1 in stack stack_b.",
         "relatedStackIds": [
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_directive_b1"
+          "blk_instruction_b1"
         ],
         "id": "evt_00005",
         "timestamp": "TEST_TIME"
@@ -255,12 +255,12 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_IMPLICIT_BUNDLE",
-        "message": "Created implicit singleton bundle for block blk_directive_b2 in stack stack_b.",
+        "message": "Created implicit singleton bundle for block blk_instruction_b2 in stack stack_b.",
         "relatedStackIds": [
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_directive_b2"
+          "blk_instruction_b2"
         ],
         "id": "evt_00006",
         "timestamp": "TEST_TIME"
@@ -285,13 +285,13 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle seg_bundle_directives_a recorded with 2 block(s) in stack stack_a.",
+        "message": "Bundle seg_bundle_instructions_a recorded with 2 block(s) in stack stack_a.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_directive_a1",
-          "blk_directive_a2"
+          "blk_instruction_a1",
+          "blk_instruction_a2"
         ],
         "id": "evt_00009",
         "timestamp": "TEST_TIME"
@@ -328,12 +328,12 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle implicit_bundle_stack_b_blk_directive_b1 recorded with 1 block(s) in stack stack_b.",
+        "message": "Bundle implicit_bundle_stack_b_blk_instruction_b1 recorded with 1 block(s) in stack stack_b.",
         "relatedStackIds": [
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_directive_b1"
+          "blk_instruction_b1"
         ],
         "id": "evt_00012",
         "timestamp": "TEST_TIME"
@@ -342,12 +342,12 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle implicit_bundle_stack_b_blk_directive_b2 recorded with 1 block(s) in stack stack_b.",
+        "message": "Bundle implicit_bundle_stack_b_blk_instruction_b2 recorded with 1 block(s) in stack stack_b.",
         "relatedStackIds": [
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_directive_b2"
+          "blk_instruction_b2"
         ],
         "id": "evt_00013",
         "timestamp": "TEST_TIME"
@@ -414,53 +414,53 @@
       },
       {
         "kind": "pipeline_stage",
-        "severity": "warning",
-        "code": "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-        "message": "Stack stack_a has 2 bundled directive alternates; selecting highest priority.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
-        "relatedBlockIds": [
-          "blk_directive_a2",
-          "blk_directive_a1"
-        ],
+        "severity": "info",
+        "code": "INFO_DIRECTIVE_SELECTION_DONE",
+        "message": "Directive selection complete for 2 stack(s).",
         "id": "evt_00020",
         "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
-        "severity": "info",
-        "code": "INFO_DIRECTIVE_SELECTED",
-        "message": "Stack stack_a: selected directive blk_directive_a2 from 2 candidates.",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
+        "message": "Stack stack_a has 2 bundled instruction alternates; selecting highest priority.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_directive_a2"
+          "blk_instruction_a2",
+          "blk_instruction_a1"
         ],
         "id": "evt_00021",
         "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
-        "severity": "warning",
-        "code": "WARN_MULTIPLE_DIRECTIVE_ACTIVE",
-        "message": "Stack stack_b has 2 directives without explicit alternates bundle; all remain active.",
+        "severity": "info",
+        "code": "INFO_INSTRUCTION_SELECTED",
+        "message": "Stack stack_a: selected instruction blk_instruction_a2 from 2 candidates.",
         "relatedStackIds": [
-          "stack_b"
+          "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_directive_b2",
-          "blk_directive_b1"
+          "blk_instruction_a2"
         ],
         "id": "evt_00022",
         "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
-        "severity": "info",
-        "code": "INFO_DIRECTIVE_SELECTION_DONE",
-        "message": "Directive selection complete for 2 stack(s).",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_INSTRUCTION_ACTIVE",
+        "message": "Stack stack_b has 2 instructions without explicit alternates bundle; all remain active.",
+        "relatedStackIds": [
+          "stack_b"
+        ],
+        "relatedBlockIds": [
+          "blk_instruction_b2",
+          "blk_instruction_b1"
+        ],
         "id": "evt_00023",
         "timestamp": "TEST_TIME"
       },

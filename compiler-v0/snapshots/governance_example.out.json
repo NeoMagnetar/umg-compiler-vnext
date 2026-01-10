@@ -358,11 +358,34 @@
       },
       {
         "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_INSTRUCTION_ACTIVE",
+        "message": "Stack stack_main has 2 instructions without explicit alternates bundle; all remain active.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_instr_a",
+          "blk_instr_b"
+        ],
+        "id": "evt_00022",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_INSTRUCTION_SELECTION_DONE",
+        "message": "Instruction selection complete for 1 stack(s).",
+        "id": "evt_00023",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
         "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00022",
+        "id": "evt_00024",
         "timestamp": "TEST_TIME"
       }
     ]

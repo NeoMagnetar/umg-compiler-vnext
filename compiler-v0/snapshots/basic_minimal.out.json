@@ -249,10 +249,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_INSTRUCTION_SELECTION_DONE",
+        "message": "Instruction selection complete for 1 stack(s).",
+        "id": "evt_00015",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00015",
+        "id": "evt_00016",
         "timestamp": "TEST_TIME"
       }
     ]

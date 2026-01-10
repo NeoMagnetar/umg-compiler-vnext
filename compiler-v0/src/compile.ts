@@ -7,6 +7,7 @@ import { applyGovernance } from "./applyGovernance.js";
 import { resolveAuthority } from "./resolveAuthority.js";
 import { selectPrimary } from "./selectPrimary.js";
 import { selectDirective } from "./selectDirective.js";
+import { selectInstruction } from "./selectInstruction.js";
 import { buildNeoBlocks } from "./buildNeoBlocks.js";
 import { buildNeoStacks } from "./buildNeoStacks.js";
 
@@ -267,7 +268,31 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     message: `Directive selection complete for ${directiveResult.selections.length} stack(s).`,
   });
 
-  // Step 11: Build global blocksByMoltType from authority-resolved stacks
+  // Step 11: Select instructions for each stack
+  const instructionResult = selectInstruction(
+    authorityResult.stacks.map(st => ({
+      stackId: st.stackId,
+      orderedBlockIds: st.orderedBlockIds,
+    })),
+    blocksById,
+    bundleResult.bundles,
+    governanceResult.priorityOverrides
+  );
+  pushAll(instructionResult.notes);
+  pushAll(instructionResult.errors);
+
+  if (instructionResult.errors.length > 0) {
+    return { trace: { sleeveId: sleeve.id, events }, hasErrors: true };
+  }
+
+  push({
+    kind: "pipeline_stage",
+    severity: "info",
+    code: "INFO_INSTRUCTION_SELECTION_DONE",
+    message: `Instruction selection complete for ${instructionResult.selections.length} stack(s).`,
+  });
+
+  // Step 12: Build global blocksByMoltType from authority-resolved stacks
   const blocksByMoltType = Object.fromEntries(
     MOLT_ORDER.map(t => [t, [] as string[]])
   ) as Record<MoltType, string[]>;
@@ -309,6 +334,11 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     directiveByStackId[sel.stackId] = sel.activeDirectiveIds;
   }
 
+  const instructionByStackId: Record<string, string[]> = {};
+  for (const sel of instructionResult.selections) {
+    instructionByStackId[sel.stackId] = sel.activeInstructionIds;
+  }
+
   const neoBlocksResult = buildNeoBlocks({
     runtimeStacks,
     bundles: bundleResult.bundles,
@@ -316,6 +346,7 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     blocksById,
     primaryByStackId,
     directiveByStackId,
+    instructionByStackId,
   });
 
   const neoStacks = buildNeoStacks({
