@@ -224,13 +224,27 @@ export interface RuntimePromptSpec {
 // RuntimeIndexes (UI-friendly lookups)
 // ─────────────────────────────────────────────────────────────────────────────
 
+export interface RuntimeTagIndexes {
+  tagsByBlockId: Record<string, string[]>;
+  blockIdsByTag: Record<string, string[]>;
+
+  // per-stack (all blocks in that stack, post-forbid + role!=off)
+  blockIdsByTagByStackId: Record<string, Record<string, string[]>>;
+
+  // per-stack but ACTIVE only (post-selection; matches neoBlock.active.* union)
+  activeBlockIdsByTagByStackId: Record<string, Record<string, string[]>>;
+
+  // per-moltType (all blocks across sleeve)
+  blockIdsByTagByMoltType: Record<MoltType, Record<string, string[]>>;
+
+  // helpful for UI filtering/search
+  allTagsSorted: string[];
+}
+
 export interface RuntimeIndexes {
   blockTitleById: Record<string, string>;     // title fallback: id
   stackNameById: Record<string, string>;      // name fallback: id
-  tags: {
-    blockIdsByTag: Record<string, string[]>;  // stable sorted lists
-    tagsByBlockId: Record<string, string[]>;  // stable sorted lists
-  };
+  tags: RuntimeTagIndexes;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
