@@ -7,8 +7,8 @@
         "stackId": "stack_support",
         "domainKey": "support",
         "orderedBlockIds": [
-          "blk_primary_support",
-          "blk_instr_safe"
+          "blk_instr_safe",
+          "blk_primary_support"
         ]
       }
     ],
@@ -46,8 +46,8 @@
         "id": "nb_stack_support",
         "stackId": "stack_support",
         "orderedBlockIds": [
-          "blk_primary_support",
-          "blk_instr_safe"
+          "blk_instr_safe",
+          "blk_primary_support"
         ],
         "byMoltType": {
           "trigger": [],
@@ -196,10 +196,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_RESOLVE_AUTHORITY_DONE",
+        "message": "Authority resolved for 1 stack(s).",
+        "id": "evt_00011",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00011",
+        "id": "evt_00012",
         "timestamp": "TEST_TIME"
       }
     ]

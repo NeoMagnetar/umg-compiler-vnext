@@ -8,8 +8,8 @@
         "domainKey": "main",
         "orderedBlockIds": [
           "blk_instr_a",
-          "blk_primary_main",
-          "blk_instr_b"
+          "blk_instr_b",
+          "blk_primary_main"
         ]
       }
     ],
@@ -63,8 +63,8 @@
         "stackId": "stack_main",
         "orderedBlockIds": [
           "blk_instr_a",
-          "blk_primary_main",
-          "blk_instr_b"
+          "blk_instr_b",
+          "blk_primary_main"
         ],
         "byMoltType": {
           "trigger": [],
@@ -305,10 +305,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_RESOLVE_AUTHORITY_DONE",
+        "message": "Authority resolved for 1 stack(s).",
+        "id": "evt_00018",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00018",
+        "id": "evt_00019",
         "timestamp": "TEST_TIME"
       }
     ]

@@ -16,9 +16,7 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_merged_instr",
-        "blk_instr_2",
-        "blk_instr_1"
+        "blk_merged_instr"
       ],
       "subject": [],
       "primary": [
@@ -166,10 +164,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_RESOLVE_AUTHORITY_DONE",
+        "message": "Authority resolved for 1 stack(s).",
+        "id": "evt_00009",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00009",
+        "id": "evt_00010",
         "timestamp": "TEST_TIME"
       }
     ]

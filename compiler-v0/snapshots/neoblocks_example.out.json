@@ -7,8 +7,8 @@
         "stackId": "stack_ops_a",
         "domainKey": "ops",
         "orderedBlockIds": [
-          "blk_primary_ops",
-          "blk_merged_instr"
+          "blk_merged_instr",
+          "blk_primary_ops"
         ]
       },
       {
@@ -25,9 +25,7 @@
         "blk_directive_ops"
       ],
       "instruction": [
-        "blk_merged_instr",
-        "blk_instr_2",
-        "blk_instr_1"
+        "blk_merged_instr"
       ],
       "subject": [],
       "primary": [
@@ -64,8 +62,8 @@
         "id": "nb_stack_ops_a",
         "stackId": "stack_ops_a",
         "orderedBlockIds": [
-          "blk_primary_ops",
-          "blk_merged_instr"
+          "blk_merged_instr",
+          "blk_primary_ops"
         ],
         "byMoltType": {
           "trigger": [],
@@ -281,10 +279,18 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_RESOLVE_AUTHORITY_DONE",
+        "message": "Authority resolved for 2 stack(s).",
+        "id": "evt_00014",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00014",
+        "id": "evt_00015",
         "timestamp": "TEST_TIME"
       }
     ]
