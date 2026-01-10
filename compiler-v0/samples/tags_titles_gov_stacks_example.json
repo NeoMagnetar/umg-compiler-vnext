@@ -1,0 +1,123 @@
+{
+  "sleeve": {
+    "id": "slv_tags_titles_stacks",
+    "name": "Tags Titles Multi-Stack Demo",
+    "version": "1.0.0",
+
+    "blocks": [
+      {
+        "id": "blk_primary_a",
+        "title": "Primary Block A",
+        "moltType": "primary",
+        "content": "Primary content for stack A.",
+        "priorityOrder": 100,
+        "tags": ["customer_care", "priority"]
+      },
+      {
+        "id": "blk_primary_b",
+        "title": "Primary Block B",
+        "moltType": "primary",
+        "content": "Primary content for stack B.",
+        "priorityOrder": 100,
+        "tags": ["customer_care"]
+      },
+      {
+        "id": "blk_instr_a1",
+        "title": "Instruction A1",
+        "moltType": "instruction",
+        "content": "Instruction content for stack A.",
+        "priorityOrder": 50,
+        "tags": ["customer_care", "onboarding"]
+      },
+      {
+        "id": "blk_instr_b1",
+        "moltType": "instruction",
+        "content": "Instruction content for stack B (no title).",
+        "priorityOrder": 50,
+        "tags": ["customer_care"]
+      },
+      {
+        "id": "blk_deprecated_a",
+        "title": "Deprecated A",
+        "moltType": "instruction",
+        "content": "This instruction is deprecated and should be forbidden.",
+        "priorityOrder": 10,
+        "tags": ["deprecated", "old_api"]
+      },
+      {
+        "id": "blk_deprecated_b",
+        "title": "Deprecated B",
+        "moltType": "instruction",
+        "content": "This instruction is also deprecated and should be forbidden.",
+        "priorityOrder": 10,
+        "tags": ["deprecated"]
+      },
+      {
+        "id": "blk_subject_a",
+        "moltType": "subject",
+        "content": "Subject for stack A.",
+        "priorityOrder": 30,
+        "tags": ["customer_care"]
+      },
+      {
+        "id": "blk_directive_b",
+        "title": "Directive B",
+        "moltType": "directive",
+        "content": "Directive for stack B.",
+        "priorityOrder": 80
+      }
+    ],
+
+    "stacks": [
+      {
+        "id": "stack_a",
+        "name": "Customer Care Stack A",
+        "domainKey": "care_a",
+        "blockIds": [
+          "blk_primary_a",
+          "blk_instr_a1",
+          "blk_deprecated_a",
+          "blk_subject_a"
+        ]
+      },
+      {
+        "id": "stack_b",
+        "name": "Customer Care Stack B",
+        "domainKey": "care_b",
+        "blockIds": [
+          "blk_primary_b",
+          "blk_instr_b1",
+          "blk_deprecated_b",
+          "blk_directive_b"
+        ]
+      }
+    ],
+
+    "governance": [
+      {
+        "id": "gov_forbid_deprecated",
+        "scope": {
+          "type": "stacks",
+          "stackIds": ["stack_a", "stack_b"]
+        },
+        "rules": [
+          {
+            "id": "rule_forbid_deprecated",
+            "name": "Forbid deprecated blocks",
+            "description": "Forbid any blocks tagged as deprecated across both stacks",
+            "target": {
+              "tagsAny": ["deprecated"]
+            },
+            "effect": {
+              "type": "forbid",
+              "severity": "hard"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

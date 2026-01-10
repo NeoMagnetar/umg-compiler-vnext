@@ -246,6 +246,69 @@ function checkPrimarySelection(sample: string, result: CompileResult): void {
   }
 }
 
+function checkRuntimeIndexes(sample: string, result: CompileResult): void {
+  if (!result.runtime) return;
+
+  const { neoBlocks, indexes } = result.runtime;
+
+  for (const nb of neoBlocks) {
+    for (const id of nb.orderedBlockIds) {
+      if (!(id in indexes.blockTitleById)) {
+        addViolation(sample, "INDEX_MISSING_TITLE", `Block ${id} in ${nb.id}.orderedBlockIds missing from indexes.blockTitleById`);
+      }
+    }
+
+    const allActiveIds = [
+      ...nb.active.triggerIds,
+      ...nb.active.directiveIds,
+      ...nb.active.instructionIds,
+      ...nb.active.subjectIds,
+      ...(nb.active.primaryId ? [nb.active.primaryId] : []),
+      ...nb.active.philosophyIds,
+      ...nb.active.blueprintIds,
+    ];
+    for (const id of allActiveIds) {
+      if (!(id in indexes.blockTitleById)) {
+        addViolation(sample, "INDEX_MISSING_ACTIVE", `Active block ${id} missing from indexes.blockTitleById`);
+      }
+    }
+  }
+
+  const { tagsByBlockId, blockIdsByTag } = indexes.tags;
+
+  for (const [blockId, tags] of Object.entries(tagsByBlockId)) {
+    const sorted = [...tags].sort();
+    if (!arraysEqual(tags, sorted)) {
+      addViolation(sample, "TAGS_NOT_SORTED", `tagsByBlockId[${blockId}] is not sorted`);
+    }
+
+    const unique = [...new Set(tags)];
+    if (unique.length !== tags.length) {
+      addViolation(sample, "TAGS_DUPLICATES", `tagsByBlockId[${blockId}] has duplicates`);
+    }
+
+    for (const tag of tags) {
+      if (!blockIdsByTag[tag]) {
+        addViolation(sample, "TAG_MISSING_REVERSE", `Tag ${tag} for block ${blockId} missing from blockIdsByTag`);
+      } else if (!blockIdsByTag[tag].includes(blockId)) {
+        addViolation(sample, "TAG_MISSING_BLOCKID", `Block ${blockId} not in blockIdsByTag[${tag}]`);
+      }
+    }
+  }
+
+  for (const [tag, blockIds] of Object.entries(blockIdsByTag)) {
+    const sorted = [...blockIds].sort();
+    if (!arraysEqual(blockIds, sorted)) {
+      addViolation(sample, "BLOCKIDS_NOT_SORTED", `blockIdsByTag[${tag}] is not sorted`);
+    }
+
+    const unique = [...new Set(blockIds)];
+    if (unique.length !== blockIds.length) {
+      addViolation(sample, "BLOCKIDS_DUPLICATES", `blockIdsByTag[${tag}] has duplicates`);
+    }
+  }
+}
+
 function extractForbiddenIds(sleeve: Sleeve): Set<string> {
   const forbidden = new Set<string>();
   for (const binding of sleeve.governance ?? []) {
@@ -308,6 +371,7 @@ async function main() {
     checkNoForbiddenBlocks(file, result, forbiddenIds);
     checkBundleIntents(file, result, result.runtime?.bundles ?? [], blocksById, priorityOverrides, forbiddenIds);
     checkPrimarySelection(file, result);
+    checkRuntimeIndexes(file, result);
   }
 
   console.log("");
