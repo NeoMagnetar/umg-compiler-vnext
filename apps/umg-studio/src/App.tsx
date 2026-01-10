@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import Layout from "@/components/Layout";
 import TopBar from "@/components/TopBar";
 import LeftPanel from "@/components/LeftPanel";
@@ -16,17 +16,20 @@ export default function App() {
   });
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const lastCompiledJsonRef = useRef<string>(loadSleeveJson(fixture));
 
   const compiled = useMemo(() => {
     try { return JSON.parse(resultJson); } catch { return null; }
   }, [resultJson]);
 
+  const isDirty = sleeveJson !== lastCompiledJsonRef.current;
+
   const onCompile = () => {
     saveSleeveJson(sleeveJson);
     const c = compileFromJson(sleeveJson);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2));
+    lastCompiledJsonRef.current = sleeveJson;
     setSelectedTag(null);
-    setSelectedBlockId(null);
   };
 
   const onReset = () => {
@@ -34,13 +37,21 @@ export default function App() {
     setSleeveJson(fixture);
     const c = compileFromJson(fixture);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true }, null, 2));
+    lastCompiledJsonRef.current = fixture;
     setSelectedTag(null);
     setSelectedBlockId(null);
   };
 
   return (
     <Layout
-      top={<TopBar onCompile={onCompile} onReset={onReset} selectedBlockId={selectedBlockId} />}
+      top={
+        <TopBar 
+          onCompile={onCompile} 
+          onReset={onReset} 
+          selectedBlockId={selectedBlockId}
+          isDirty={isDirty}
+        />
+      }
       left={
         <LeftPanel 
           compiled={compiled} 
