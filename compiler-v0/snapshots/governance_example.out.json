@@ -313,10 +313,32 @@
       {
         "kind": "pipeline_stage",
         "severity": "info",
+        "code": "INFO_PRIMARY_SELECTED",
+        "message": "Stack stack_main: selected primary blk_primary_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_main"
+        ],
+        "id": "evt_00019",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTION_DONE",
+        "message": "Primary selection complete for 1 stack(s).",
+        "id": "evt_00020",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00019",
+        "id": "evt_00021",
         "timestamp": "TEST_TIME"
       }
     ]

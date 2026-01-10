@@ -1,56 +1,61 @@
 {
-  "id": "sleeve_primary_demo",
-  "name": "Primary Selection Demo",
-  "version": "0.1.0",
+  "sleeve": {
+    "id": "sleeve_primary_demo",
+    "name": "Primary Selection Demo",
+    "version": "0.1.0",
 
-  "blocks": [
-    {
-      "id": "blk_instr_base",
-      "moltType": "instruction",
-      "content": "Base instruction content"
-    },
-    {
-      "id": "blk_primary_alpha",
-      "moltType": "primary",
-      "priorityOrder": 10,
-      "content": "Primary Alpha - lower priority"
-    },
-    {
-      "id": "blk_primary_beta",
-      "moltType": "primary",
-      "priorityOrder": 50,
-      "content": "Primary Beta - highest priority, should be selected"
-    },
-    {
-      "id": "blk_primary_gamma",
-      "moltType": "primary",
-      "priorityOrder": 30,
-      "content": "Primary Gamma - medium priority"
-    }
-  ],
+    "blocks": [
+      {
+        "id": "blk_instr_base",
+        "moltType": "instruction",
+        "content": "Base instruction content"
+      },
+      {
+        "id": "blk_primary_alpha",
+        "moltType": "primary",
+        "priorityOrder": 10,
+        "content": "Primary Alpha - lower priority"
+      },
+      {
+        "id": "blk_primary_beta",
+        "moltType": "primary",
+        "priorityOrder": 50,
+        "content": "Primary Beta - highest priority, should be selected"
+      },
+      {
+        "id": "blk_primary_gamma",
+        "moltType": "primary",
+        "priorityOrder": 30,
+        "content": "Primary Gamma - medium priority"
+      }
+    ],
 
-  "stacks": [
-    {
-      "id": "stack_main",
-      "name": "Main Stack",
-      "domainKey": "main",
-      "blockIds": [
-        "blk_instr_base",
-        "blk_primary_alpha",
-        "blk_primary_beta",
-        "blk_primary_gamma"
-      ],
-      "segments": [
-        {
-          "id": "seg_bundle_primaries",
-          "kind": "bundle",
-          "stackId": "stack_main",
-          "blockIds": ["blk_primary_alpha", "blk_primary_beta", "blk_primary_gamma"]
-        }
-      ]
-    }
-  ],
+    "stacks": [
+      {
+        "id": "stack_main",
+        "name": "Main Stack",
+        "domainKey": "main",
+        "blockIds": [
+          "blk_instr_base",
+          "blk_primary_alpha",
+          "blk_primary_beta",
+          "blk_primary_gamma"
+        ],
+        "segments": [
+          {
+            "id": "seg_bundle_primaries",
+            "kind": "bundle",
+            "stackId": "stack_main",
+            "blockIds": ["blk_primary_alpha", "blk_primary_beta", "blk_primary_gamma"]
+          }
+        ]
+      }
+    ],
 
-  "triggers": [],
-  "governance": []
+    "triggers": [],
+    "governance": []
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
 }

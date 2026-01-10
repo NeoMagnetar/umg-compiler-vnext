@@ -38,6 +38,12 @@
         "moltType": "directive",
         "priorityOrder": 5,
         "content": "Directive for ops."
+      },
+      {
+        "id": "blk_primary_ops_b",
+        "moltType": "primary",
+        "priorityOrder": 80,
+        "content": "Primary block for ops stack B."
       }
     ],
     "stacks": [
@@ -72,7 +78,8 @@
         "domainKey": "ops",
         "blockIds": [
           "blk_directive_ops",
-          "blk_instr_forbidden"
+          "blk_instr_forbidden",
+          "blk_primary_ops_b"
         ]
       }
     ],

@@ -15,7 +15,8 @@
         "stackId": "stack_ops_b",
         "domainKey": "ops",
         "orderedBlockIds": [
-          "blk_directive_ops"
+          "blk_directive_ops",
+          "blk_primary_ops_b"
         ]
       }
     ],
@@ -29,7 +30,8 @@
       ],
       "subject": [],
       "primary": [
-        "blk_primary_ops"
+        "blk_primary_ops",
+        "blk_primary_ops_b"
       ],
       "philosophy": [],
       "blueprint": []
@@ -54,6 +56,13 @@
         "stackId": "stack_ops_b",
         "blockIds": [
           "blk_instr_forbidden"
+        ]
+      },
+      {
+        "segmentId": "implicit_bundle_stack_ops_b_blk_primary_ops_b",
+        "stackId": "stack_ops_b",
+        "blockIds": [
+          "blk_primary_ops_b"
         ]
       }
     ],
@@ -89,7 +98,8 @@
         "id": "nb_stack_ops_b",
         "stackId": "stack_ops_b",
         "orderedBlockIds": [
-          "blk_directive_ops"
+          "blk_directive_ops",
+          "blk_primary_ops_b"
         ],
         "byMoltType": {
           "trigger": [],
@@ -98,13 +108,16 @@
           ],
           "instruction": [],
           "subject": [],
-          "primary": [],
+          "primary": [
+            "blk_primary_ops_b"
+          ],
           "philosophy": [],
           "blueprint": []
         },
         "bundleIds": [
           "implicit_bundle_stack_ops_b_blk_directive_ops",
-          "implicit_bundle_stack_ops_b_blk_instr_forbidden"
+          "implicit_bundle_stack_ops_b_blk_instr_forbidden",
+          "implicit_bundle_stack_ops_b_blk_primary_ops_b"
         ],
         "mergeIds": []
       }
@@ -176,11 +189,25 @@
         "timestamp": "TEST_TIME"
       },
       {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_IMPLICIT_BUNDLE",
+        "message": "Created implicit singleton bundle for block blk_primary_ops_b in stack stack_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_ops_b"
+        ],
+        "id": "evt_00005",
+        "timestamp": "TEST_TIME"
+      },
+      {
         "kind": "pipeline_stage",
         "severity": "info",
         "code": "INFO_NORMALIZE_DONE",
         "message": "Segments normalized.",
-        "id": "evt_00005",
+        "id": "evt_00006",
         "timestamp": "TEST_TIME"
       },
       {
@@ -196,7 +223,7 @@
           "blk_instr_1",
           "blk_instr_2"
         ],
-        "id": "evt_00006",
+        "id": "evt_00007",
         "timestamp": "TEST_TIME"
       },
       {
@@ -204,7 +231,7 @@
         "severity": "info",
         "code": "INFO_MERGE_DONE",
         "message": "Merges applied. 1 merge operation(s).",
-        "id": "evt_00007",
+        "id": "evt_00008",
         "timestamp": "TEST_TIME"
       },
       {
@@ -218,7 +245,7 @@
         "relatedBlockIds": [
           "blk_primary_ops"
         ],
-        "id": "evt_00008",
+        "id": "evt_00009",
         "timestamp": "TEST_TIME"
       },
       {
@@ -232,7 +259,7 @@
         "relatedBlockIds": [
           "blk_directive_ops"
         ],
-        "id": "evt_00009",
+        "id": "evt_00010",
         "timestamp": "TEST_TIME"
       },
       {
@@ -246,15 +273,29 @@
         "relatedBlockIds": [
           "blk_instr_forbidden"
         ],
-        "id": "evt_00010",
+        "id": "evt_00011",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle implicit_bundle_stack_ops_b_blk_primary_ops_b recorded with 1 block(s) in stack stack_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_ops_b"
+        ],
+        "id": "evt_00012",
         "timestamp": "TEST_TIME"
       },
       {
         "kind": "pipeline_stage",
         "severity": "info",
         "code": "INFO_BUNDLE_DONE",
-        "message": "Bundles recorded. 3 bundle(s).",
-        "id": "evt_00011",
+        "message": "Bundles recorded. 4 bundle(s).",
+        "id": "evt_00013",
         "timestamp": "TEST_TIME"
       },
       {
@@ -265,7 +306,7 @@
         "relatedBlockIds": [
           "blk_instr_forbidden"
         ],
-        "id": "evt_00012",
+        "id": "evt_00014",
         "timestamp": "TEST_TIME"
       },
       {
@@ -273,7 +314,7 @@
         "severity": "info",
         "code": "INFO_GOVERNANCE_DONE",
         "message": "Governance applied. 1 rule(s) executed.",
-        "id": "evt_00013",
+        "id": "evt_00015",
         "timestamp": "TEST_TIME"
       },
       {
@@ -281,7 +322,43 @@
         "severity": "info",
         "code": "INFO_RESOLVE_AUTHORITY_DONE",
         "message": "Authority resolved for 2 stack(s).",
-        "id": "evt_00014",
+        "id": "evt_00016",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTED",
+        "message": "Stack stack_ops_a: selected primary blk_primary_ops.",
+        "relatedStackIds": [
+          "stack_ops_a"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_ops"
+        ],
+        "id": "evt_00017",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTED",
+        "message": "Stack stack_ops_b: selected primary blk_primary_ops_b.",
+        "relatedStackIds": [
+          "stack_ops_b"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_ops_b"
+        ],
+        "id": "evt_00018",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_PRIMARY_SELECTION_DONE",
+        "message": "Primary selection complete for 2 stack(s).",
+        "id": "evt_00019",
         "timestamp": "TEST_TIME"
       },
       {
@@ -290,7 +367,7 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00015",
+        "id": "evt_00020",
         "timestamp": "TEST_TIME"
       }
     ]

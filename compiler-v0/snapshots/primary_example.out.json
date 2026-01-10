@@ -1,14 +1,16 @@
 {
   "runtime": {
-    "sleeveId": "sleeve_basic",
-    "sleeveName": "Basic Minimal",
+    "sleeveId": "sleeve_primary_demo",
+    "sleeveName": "Primary Selection Demo",
     "stacks": [
       {
-        "stackId": "stack_support",
-        "domainKey": "support",
+        "stackId": "stack_main",
+        "domainKey": "main",
         "orderedBlockIds": [
-          "blk_instr_safe",
-          "blk_primary_support"
+          "blk_instr_base",
+          "blk_primary_beta",
+          "blk_primary_gamma",
+          "blk_primary_alpha"
         ]
       }
     ],
@@ -16,70 +18,78 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instr_safe"
+        "blk_instr_base"
       ],
       "subject": [],
       "primary": [
-        "blk_primary_support"
+        "blk_primary_beta",
+        "blk_primary_gamma",
+        "blk_primary_alpha"
       ],
       "philosophy": [],
       "blueprint": []
     },
     "bundles": [
       {
-        "segmentId": "implicit_bundle_stack_support_blk_primary_support",
-        "stackId": "stack_support",
+        "segmentId": "seg_bundle_primaries",
+        "stackId": "stack_main",
         "blockIds": [
-          "blk_primary_support"
+          "blk_primary_alpha",
+          "blk_primary_beta",
+          "blk_primary_gamma"
         ]
       },
       {
-        "segmentId": "implicit_bundle_stack_support_blk_instr_safe",
-        "stackId": "stack_support",
+        "segmentId": "implicit_bundle_stack_main_blk_instr_base",
+        "stackId": "stack_main",
         "blockIds": [
-          "blk_instr_safe"
+          "blk_instr_base"
         ]
       }
     ],
     "neoBlocks": [
       {
-        "id": "nb_stack_support",
-        "stackId": "stack_support",
+        "id": "nb_stack_main",
+        "stackId": "stack_main",
         "orderedBlockIds": [
-          "blk_instr_safe",
-          "blk_primary_support"
+          "blk_instr_base",
+          "blk_primary_beta",
+          "blk_primary_gamma",
+          "blk_primary_alpha"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instr_safe"
+            "blk_instr_base"
           ],
           "subject": [],
           "primary": [
-            "blk_primary_support"
+            "blk_primary_beta",
+            "blk_primary_gamma",
+            "blk_primary_alpha"
           ],
           "philosophy": [],
           "blueprint": []
         },
         "bundleIds": [
-          "implicit_bundle_stack_support_blk_instr_safe",
-          "implicit_bundle_stack_support_blk_primary_support"
+          "implicit_bundle_stack_main_blk_instr_base",
+          "seg_bundle_primaries"
         ],
         "mergeIds": []
       }
     ],
     "neoStacks": [
       {
-        "id": "ns_support",
-        "domainKey": "support",
+        "id": "ns_main",
+        "domainKey": "main",
         "neoBlockIds": [
-          "nb_stack_support"
+          "nb_stack_main"
         ]
       }
     ],
     "neoBlockIdByStackId": {
-      "stack_support": "nb_stack_support"
+      "stack_main": "nb_stack_main"
     },
     "meta": {
       "compiledAt": "TEST_TIME",
@@ -87,7 +97,7 @@
     }
   },
   "trace": {
-    "sleeveId": "sleeve_basic",
+    "sleeveId": "sleeve_primary_demo",
     "events": [
       {
         "kind": "pipeline_stage",
@@ -109,28 +119,14 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_IMPLICIT_BUNDLE",
-        "message": "Created implicit singleton bundle for block blk_primary_support in stack stack_support.",
+        "message": "Created implicit singleton bundle for block blk_instr_base in stack stack_main.",
         "relatedStackIds": [
-          "stack_support"
+          "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_primary_support"
+          "blk_instr_base"
         ],
         "id": "evt_00003",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "note",
-        "severity": "info",
-        "code": "INFO_IMPLICIT_BUNDLE",
-        "message": "Created implicit singleton bundle for block blk_instr_safe in stack stack_support.",
-        "relatedStackIds": [
-          "stack_support"
-        ],
-        "relatedBlockIds": [
-          "blk_instr_safe"
-        ],
-        "id": "evt_00004",
         "timestamp": "TEST_TIME"
       },
       {
@@ -138,7 +134,7 @@
         "severity": "info",
         "code": "INFO_NORMALIZE_DONE",
         "message": "Segments normalized.",
-        "id": "evt_00005",
+        "id": "evt_00004",
         "timestamp": "TEST_TIME"
       },
       {
@@ -146,6 +142,22 @@
         "severity": "info",
         "code": "INFO_MERGE_DONE",
         "message": "Merges applied. 0 merge operation(s).",
+        "id": "evt_00005",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BUNDLE_APPLIED",
+        "message": "Bundle seg_bundle_primaries recorded with 3 block(s) in stack stack_main.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_alpha",
+          "blk_primary_beta",
+          "blk_primary_gamma"
+        ],
         "id": "evt_00006",
         "timestamp": "TEST_TIME"
       },
@@ -153,28 +165,14 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle implicit_bundle_stack_support_blk_primary_support recorded with 1 block(s) in stack stack_support.",
+        "message": "Bundle implicit_bundle_stack_main_blk_instr_base recorded with 1 block(s) in stack stack_main.",
         "relatedStackIds": [
-          "stack_support"
+          "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_primary_support"
+          "blk_instr_base"
         ],
         "id": "evt_00007",
-        "timestamp": "TEST_TIME"
-      },
-      {
-        "kind": "note",
-        "severity": "info",
-        "code": "INFO_BUNDLE_APPLIED",
-        "message": "Bundle implicit_bundle_stack_support_blk_instr_safe recorded with 1 block(s) in stack stack_support.",
-        "relatedStackIds": [
-          "stack_support"
-        ],
-        "relatedBlockIds": [
-          "blk_instr_safe"
-        ],
-        "id": "evt_00008",
         "timestamp": "TEST_TIME"
       },
       {
@@ -182,7 +180,7 @@
         "severity": "info",
         "code": "INFO_BUNDLE_DONE",
         "message": "Bundles recorded. 2 bundle(s).",
-        "id": "evt_00009",
+        "id": "evt_00008",
         "timestamp": "TEST_TIME"
       },
       {
@@ -190,7 +188,7 @@
         "severity": "info",
         "code": "INFO_GOVERNANCE_DONE",
         "message": "Governance applied. 0 rule(s) executed.",
-        "id": "evt_00010",
+        "id": "evt_00009",
         "timestamp": "TEST_TIME"
       },
       {
@@ -198,6 +196,22 @@
         "severity": "info",
         "code": "INFO_RESOLVE_AUTHORITY_DONE",
         "message": "Authority resolved for 1 stack(s).",
+        "id": "evt_00010",
+        "timestamp": "TEST_TIME"
+      },
+      {
+        "kind": "pipeline_stage",
+        "severity": "warning",
+        "code": "WARN_MULTIPLE_PRIMARY_BUNDLED",
+        "message": "Stack stack_main has 3 bundled primary alternates; selecting highest priority.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
+        "relatedBlockIds": [
+          "blk_primary_beta",
+          "blk_primary_gamma",
+          "blk_primary_alpha"
+        ],
         "id": "evt_00011",
         "timestamp": "TEST_TIME"
       },
@@ -205,12 +219,12 @@
         "kind": "pipeline_stage",
         "severity": "info",
         "code": "INFO_PRIMARY_SELECTED",
-        "message": "Stack stack_support: selected primary blk_primary_support.",
+        "message": "Stack stack_main: selected primary blk_primary_beta from 3 candidates.",
         "relatedStackIds": [
-          "stack_support"
+          "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_primary_support"
+          "blk_primary_beta"
         ],
         "id": "evt_00012",
         "timestamp": "TEST_TIME"
