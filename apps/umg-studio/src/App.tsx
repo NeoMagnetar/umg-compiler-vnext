@@ -61,9 +61,11 @@ export default function App() {
       }
       left={
         <LeftPanel 
-          compiled={compiled} 
+          compiled={compiled}
+          sleeveJson={sleeveJson}
           selectedTag={selectedTag}
           onSelectTag={setSelectedTag}
+          onChangeSleeveJson={setSleeveJson}
         />
       }
       center={

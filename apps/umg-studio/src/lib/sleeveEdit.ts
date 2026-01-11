@@ -16,6 +16,21 @@ export interface BlockPatch {
   priorityOrder?: number;
 }
 
+export interface NewStackOptions {
+  id?: string;
+  name?: string;
+  domainKey?: string;
+}
+
+export interface NewBlockOptions {
+  id?: string;
+  title?: string;
+  moltType: string;
+  content?: string;
+  tags?: string[];
+  priorityOrder?: number;
+}
+
 export function parseSleeve(json: string): ParsedSleeve {
   try {
     const sleeve = JSON.parse(json);
@@ -131,4 +146,102 @@ export function findBlockInSleeve(json: string, blockId: string): { block: any |
 export function blockExistsInSleeve(json: string, blockId: string): boolean {
   const { block } = findBlockInSleeve(json, blockId);
   return block !== null;
+}
+
+function generateId(prefix: string): string {
+  return `${prefix}_${Date.now().toString(36)}`;
+}
+
+export function addStack(json: string, options: NewStackOptions = {}): UpdateResult {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  if (!Array.isArray(sleeve.stacks)) {
+    sleeve.stacks = [];
+  }
+
+  const newStack = {
+    id: options.id ?? generateId("stack"),
+    name: options.name ?? "New Stack",
+    domainKey: options.domainKey ?? "default",
+    blockIds: [],
+    segments: []
+  };
+
+  sleeve.stacks.push(newStack);
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export function addBlockToStack(json: string, stackId: string, options: NewBlockOptions): UpdateResult {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  if (!Array.isArray(sleeve.blocks)) {
+    sleeve.blocks = [];
+  }
+
+  if (!Array.isArray(sleeve.stacks)) {
+    return { error: "No stacks in sleeve" };
+  }
+
+  const stack = sleeve.stacks.find((s: any) => s.id === stackId);
+  if (!stack) {
+    return { error: `Stack not found: ${stackId}` };
+  }
+
+  const newBlock = {
+    id: options.id ?? generateId("blk"),
+    title: options.title ?? `New ${options.moltType}`,
+    moltType: options.moltType,
+    priorityOrder: options.priorityOrder ?? 10,
+    content: options.content ?? "",
+    tags: options.tags ?? []
+  };
+
+  sleeve.blocks.push(newBlock);
+
+  if (!Array.isArray(stack.blockIds)) {
+    stack.blockIds = [];
+  }
+  stack.blockIds.push(newBlock.id);
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export function getStacks(json: string): { id: string; name: string }[] {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve || !Array.isArray(sleeve.stacks)) {
+    return [];
+  }
+  return sleeve.stacks.map((s: any) => ({
+    id: s.id ?? "",
+    name: s.name ?? s.id ?? "Unnamed"
+  }));
+}
+
+export function getBlocks(json: string): { id: string; title: string; moltType: string }[] {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve || !Array.isArray(sleeve.blocks)) {
+    return [];
+  }
+  return sleeve.blocks.map((b: any) => ({
+    id: b.id ?? "",
+    title: b.title ?? b.id ?? "Unnamed",
+    moltType: b.moltType ?? "instruction"
+  }));
 }

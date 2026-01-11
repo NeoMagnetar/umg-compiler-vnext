@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { findBlockInSleeve, updateBlock, BlockPatch } from "@/lib/sleeveEdit";
 
 interface BlockInspectorProps {
@@ -16,6 +16,13 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
   const [stackId, setStackId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [blockFound, setBlockFound] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [lastSaved, setLastSaved] = useState(false);
+
+  const [originalTitle, setOriginalTitle] = useState("");
+  const [originalContent, setOriginalContent] = useState("");
+  const [originalTagsInput, setOriginalTagsInput] = useState("");
+  const [originalPriorityOrder, setOriginalPriorityOrder] = useState<number>(0);
 
   useEffect(() => {
     if (!selectedBlockId) {
@@ -27,24 +34,90 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setStackId("");
       setBlockFound(false);
       setError(null);
+      setIsDirty(false);
+      setLastSaved(false);
       return;
     }
 
     const { block, stackId: foundStackId } = findBlockInSleeve(sleeveJson, selectedBlockId);
     if (block) {
-      setTitle(block.title ?? "");
-      setContent(block.content ?? "");
-      setTagsInput((block.tags ?? []).join(", "));
-      setPriorityOrder(block.priorityOrder ?? 0);
+      const t = block.title ?? "";
+      const c = block.content ?? "";
+      const tags = (block.tags ?? []).join(", ");
+      const p = block.priorityOrder ?? 0;
+
+      setTitle(t);
+      setContent(c);
+      setTagsInput(tags);
+      setPriorityOrder(p);
       setMoltType(block.moltType ?? "instruction");
       setStackId(foundStackId ?? "(unknown)");
       setBlockFound(true);
       setError(null);
+      setIsDirty(false);
+      setLastSaved(false);
+
+      setOriginalTitle(t);
+      setOriginalContent(c);
+      setOriginalTagsInput(tags);
+      setOriginalPriorityOrder(p);
     } else {
       setBlockFound(false);
       setError(`Block "${selectedBlockId}" not found in sleeve JSON`);
     }
   }, [selectedBlockId, sleeveJson]);
+
+  useEffect(() => {
+    if (!blockFound) return;
+    const dirty = 
+      title !== originalTitle ||
+      content !== originalContent ||
+      tagsInput !== originalTagsInput ||
+      priorityOrder !== originalPriorityOrder;
+    setIsDirty(dirty);
+    if (dirty) setLastSaved(false);
+  }, [title, content, tagsInput, priorityOrder, originalTitle, originalContent, originalTagsInput, originalPriorityOrder, blockFound]);
+
+  const handleApply = useCallback(() => {
+    if (!selectedBlockId || !blockFound) return;
+
+    const tags = tagsInput
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    const patch: BlockPatch = {
+      title,
+      content,
+      tags,
+      priorityOrder
+    };
+
+    const result = updateBlock(sleeveJson, selectedBlockId, patch);
+    if (result.error) {
+      setError(result.error);
+    } else if (result.nextJson) {
+      setError(null);
+      onChangeSleeveJson(result.nextJson);
+      setOriginalTitle(title);
+      setOriginalContent(content);
+      setOriginalTagsInput(tagsInput);
+      setOriginalPriorityOrder(priorityOrder);
+      setIsDirty(false);
+      setLastSaved(true);
+    }
+  }, [sleeveJson, selectedBlockId, blockFound, title, content, tagsInput, priorityOrder, onChangeSleeveJson]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        handleApply();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [handleApply]);
 
   if (!selectedBlockId) {
     return (
@@ -66,152 +139,137 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
           <div style={{ fontWeight: 600, color: "#ef4444", marginBottom: 4 }}>Block Not Found</div>
           <div className="mono small" style={{ opacity: 0.8 }}>{selectedBlockId}</div>
           <div className="small" style={{ marginTop: 8, opacity: 0.6 }}>
-            This block ID exists in the compiled output but could not be found in the input sleeve JSON.
+            This block ID could not be found in the input sleeve JSON.
           </div>
         </div>
       </div>
     );
   }
 
-  const handleApply = () => {
-    const tags = tagsInput
-      .split(",")
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
-
-    const patch: BlockPatch = {
-      title,
-      content,
-      tags,
-      priorityOrder
-    };
-
-    const result = updateBlock(sleeveJson, selectedBlockId, patch);
-    if (result.error) {
-      setError(result.error);
-    } else if (result.nextJson) {
-      setError(null);
-      onChangeSleeveJson(result.nextJson);
-    }
-  };
-
   return (
-    <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 12, height: "100%", overflow: "auto" }}>
-      <div style={{ 
-        padding: 10, 
-        background: "rgba(255,255,255,0.03)", 
-        borderRadius: 6,
-        borderLeft: "3px solid #ff69b4"
-      }}>
-        <div className="mono small hotpink" style={{ fontWeight: 600 }}>{selectedBlockId}</div>
-        <div className="small" style={{ marginTop: 4, opacity: 0.6 }}>
-          Stack: <span className="mono">{stackId}</span>
-        </div>
-        <div className="small" style={{ marginTop: 2, opacity: 0.6 }}>
-          Type: <span className="mono">{moltType}</span>
-        </div>
-      </div>
-
-      {error && (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div style={{ flex: 1, overflow: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ 
-          padding: 8, 
-          background: "rgba(239, 68, 68, 0.15)", 
-          borderRadius: 4,
-          color: "#ef4444",
-          fontSize: 12
+          padding: 10, 
+          background: "rgba(255,255,255,0.03)", 
+          borderRadius: 6,
+          borderLeft: "3px solid #ff69b4"
         }}>
-          {error}
+          <div className="mono small hotpink" style={{ fontWeight: 600 }}>{selectedBlockId}</div>
+          <div className="small" style={{ marginTop: 4, opacity: 0.6 }}>
+            Stack: <span className="mono">{stackId}</span>
+          </div>
+          <div className="small" style={{ marginTop: 2, opacity: 0.6 }}>
+            Type: <span className="mono">{moltType}</span>
+          </div>
         </div>
-      )}
 
-      <div>
-        <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Title</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px 10px",
-            background: "rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 6,
-            color: "inherit",
-            fontSize: 13
-          }}
-        />
+        <div>
+          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "8px 10px",
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 6,
+              color: "inherit",
+              fontSize: 13
+            }}
+          />
+        </div>
+
+        <div style={{ flex: 1, minHeight: 100, display: "flex", flexDirection: "column" }}>
+          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Content</label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            style={{
+              flex: 1,
+              width: "100%",
+              padding: "8px 10px",
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 6,
+              color: "inherit",
+              fontSize: 12,
+              fontFamily: "monospace",
+              resize: "vertical",
+              minHeight: 80
+            }}
+          />
+        </div>
+
+        <div>
+          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>
+            Tags <span style={{ opacity: 0.5 }}>(comma-separated)</span>
+          </label>
+          <input
+            type="text"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder="tag1, tag2, tag3"
+            style={{
+              width: "100%",
+              padding: "8px 10px",
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 6,
+              color: "inherit",
+              fontSize: 13
+            }}
+          />
+        </div>
+
+        <div>
+          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Priority Order</label>
+          <input
+            type="number"
+            value={priorityOrder}
+            onChange={(e) => setPriorityOrder(parseInt(e.target.value) || 0)}
+            style={{
+              width: 100,
+              padding: "8px 10px",
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 6,
+              color: "inherit",
+              fontSize: 13
+            }}
+          />
+        </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 100, display: "flex", flexDirection: "column" }}>
-        <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Content</label>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+      <div style={{ 
+        padding: "10px 12px",
+        borderTop: "1px solid rgba(255,255,255,0.1)",
+        background: "rgba(0,0,0,0.2)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12
+      }}>
+        <div className="small" style={{ 
+          color: error ? "#ef4444" : isDirty ? "#eab308" : lastSaved ? "#22c55e" : "inherit",
+          opacity: error || isDirty || lastSaved ? 1 : 0.4
+        }}>
+          {error ? "Error" : isDirty ? "Unsaved changes" : lastSaved ? "Saved" : "No changes"}
+        </div>
+        <button
+          className="btn"
+          onClick={handleApply}
+          disabled={!isDirty}
           style={{
-            flex: 1,
-            width: "100%",
-            padding: "8px 10px",
-            background: "rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 6,
-            color: "inherit",
-            fontSize: 12,
-            fontFamily: "monospace",
-            resize: "vertical",
-            minHeight: 80
+            opacity: isDirty ? 1 : 0.5,
+            cursor: isDirty ? "pointer" : "not-allowed"
           }}
-        />
-      </div>
-
-      <div>
-        <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>
-          Tags <span style={{ opacity: 0.5 }}>(comma-separated)</span>
-        </label>
-        <input
-          type="text"
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          placeholder="tag1, tag2, tag3"
-          style={{
-            width: "100%",
-            padding: "8px 10px",
-            background: "rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 6,
-            color: "inherit",
-            fontSize: 13
-          }}
-        />
-      </div>
-
-      <div>
-        <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Priority Order</label>
-        <input
-          type="number"
-          value={priorityOrder}
-          onChange={(e) => setPriorityOrder(parseInt(e.target.value) || 0)}
-          style={{
-            width: 100,
-            padding: "8px 10px",
-            background: "rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: 6,
-            color: "inherit",
-            fontSize: 13
-          }}
-        />
-      </div>
-
-      <button
-        className="btn"
-        onClick={handleApply}
-        style={{ marginTop: 8 }}
-      >
-        Apply Changes
-      </button>
-
-      <div className="small" style={{ opacity: 0.4, marginTop: 4 }}>
-        Changes update the Input JSON. Click Compile to see runtime updates.
+        >
+          Apply
+          <span className="small" style={{ opacity: 0.6, marginLeft: 6 }}>Ctrl+Enter</span>
+        </button>
       </div>
     </div>
   );

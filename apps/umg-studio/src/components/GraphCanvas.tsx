@@ -14,7 +14,7 @@ const MOLT_ORDER = [
 const MOLT_COLORS: Record<string, { bg: string; border: string }> = {
   trigger: { bg: "rgba(239, 68, 68, 0.15)", border: "#ef4444" },
   directive: { bg: "rgba(168, 85, 247, 0.15)", border: "#a855f7" },
-  instruction: { bg: "rgba(234, 179, 8, 0.15)", border: "#eab308" },
+  instruction: { bg: "rgba(236, 72, 153, 0.15)", border: "#ec4899" },
   subject: { bg: "rgba(34, 197, 94, 0.15)", border: "#22c55e" },
   primary: { bg: "rgba(245, 158, 11, 0.15)", border: "#f59e0b" },
   philosophy: { bg: "rgba(245, 245, 220, 0.12)", border: "#d4d4aa" },
