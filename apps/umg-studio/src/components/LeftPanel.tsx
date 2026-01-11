@@ -49,11 +49,12 @@ interface LeftPanelProps {
   compiled: any;
   sleeveJson: string;
   selectedTag?: string | null;
+  selectedBlockId?: string | null;
   onSelectTag?: (tag: string | null) => void;
   onChangeSleeveJson: (next: string) => void;
 }
 
-export default function LeftPanel({ compiled, sleeveJson, selectedTag, onSelectTag, onChangeSleeveJson }: LeftPanelProps) {
+export default function LeftPanel({ compiled, sleeveJson, selectedTag, selectedBlockId, onSelectTag, onChangeSleeveJson }: LeftPanelProps) {
   const indexes = compiled?.runtime?.indexes;
   const tags = indexes?.tags;
 
@@ -65,7 +66,11 @@ export default function LeftPanel({ compiled, sleeveJson, selectedTag, onSelectT
       </div>
 
       <CollapsibleSection title="Library" defaultOpen={false}>
-        <LibraryPanel sleeveJson={sleeveJson} />
+        <LibraryPanel 
+          sleeveJson={sleeveJson} 
+          selectedBlockId={selectedBlockId ?? null}
+          onChangeSleeveJson={onChangeSleeveJson}
+        />
       </CollapsibleSection>
 
       <CollapsibleSection title="Tags" defaultOpen={true}>

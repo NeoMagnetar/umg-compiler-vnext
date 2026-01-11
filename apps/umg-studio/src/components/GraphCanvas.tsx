@@ -27,9 +27,10 @@ interface GraphCanvasProps {
   selectedTag?: string | null;
   selectedBlockId?: string | null;
   onSelectBlockId?: (id: string | null) => void;
+  onAddBlock?: (stackId: string, moltType: string) => void;
 }
 
-export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selectedBlockId, onSelectBlockId }: GraphCanvasProps) {
+export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selectedBlockId, onSelectBlockId, onAddBlock }: GraphCanvasProps) {
   const { sleeve, blocksById, stacks } = useMemo(() => {
     const { sleeve, error } = parseSleeve(sleeveJson);
     if (error || !sleeve) {
@@ -51,6 +52,12 @@ export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selecte
   const handleBlockClick = (blockId: string) => {
     if (onSelectBlockId) {
       onSelectBlockId(selectedBlockId === blockId ? null : blockId);
+    }
+  };
+
+  const handleAddBlock = (stackId: string, moltType: string) => {
+    if (onAddBlock) {
+      onAddBlock(stackId, moltType);
     }
   };
 
@@ -99,6 +106,33 @@ export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selecte
       </div>
     );
   };
+
+  const renderEmptySlot = (stackId: string, molt: string) => (
+    <button
+      onClick={() => handleAddBlock(stackId, molt)}
+      style={{
+        background: "transparent",
+        border: "1px dashed rgba(255,255,255,0.2)",
+        borderRadius: 6,
+        padding: "6px 10px",
+        color: "inherit",
+        fontSize: 11,
+        cursor: "pointer",
+        opacity: 0.5,
+        transition: "opacity 0.15s, border-color 0.15s"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.opacity = "0.8";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.opacity = "0.5";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+      }}
+    >
+      + Add block
+    </button>
+  );
 
   if (!sleeve) {
     return (
@@ -175,9 +209,7 @@ export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selecte
                       </div>
 
                       {blocksInLane.length === 0 ? (
-                        <div style={{ fontSize: 11, opacity: 0.3, fontStyle: "italic", pointerEvents: "none" }}>
-                          empty {molt}
-                        </div>
+                        renderEmptySlot(stack.id, molt)
                       ) : (
                         blocksInLane.map((block: any) => renderCard(block))
                       )}

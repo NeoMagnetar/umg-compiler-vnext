@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useState, useRef, useCallback } from "react";
 import Layout from "@/components/Layout";
 import TopBar from "@/components/TopBar";
 import LeftPanel from "@/components/LeftPanel";
@@ -6,7 +6,7 @@ import GraphCanvas from "@/components/GraphCanvas";
 import RightPanel from "@/components/RightPanel";
 import { compileFromJson } from "@/lib/compile";
 import { loadSleeveJson, saveSleeveJson } from "@/lib/storage";
-import { blockExistsInSleeve } from "@/lib/sleeveEdit";
+import { blockExistsInSleeve, addBlockToStack } from "@/lib/sleeveEdit";
 import fixture from "@/fixtures/sleeve.minimal.json?raw";
 
 export default function App() {
@@ -48,6 +48,13 @@ export default function App() {
     setSelectedBlockId(null);
   };
 
+  const handleAddBlock = useCallback((stackId: string, moltType: string) => {
+    const result = addBlockToStack(sleeveJson, stackId, { moltType });
+    if (result.nextJson) {
+      setSleeveJson(result.nextJson);
+    }
+  }, [sleeveJson]);
+
   return (
     <Layout
       top={
@@ -64,6 +71,7 @@ export default function App() {
           compiled={compiled}
           sleeveJson={sleeveJson}
           selectedTag={selectedTag}
+          selectedBlockId={selectedBlockId}
           onSelectTag={setSelectedTag}
           onChangeSleeveJson={setSleeveJson}
         />
@@ -75,6 +83,7 @@ export default function App() {
           selectedTag={selectedTag} 
           selectedBlockId={selectedBlockId}
           onSelectBlockId={setSelectedBlockId}
+          onAddBlock={handleAddBlock}
         />
       }
       right={
