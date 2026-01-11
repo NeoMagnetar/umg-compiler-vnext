@@ -4,17 +4,11 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["lsof"]
 
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 5001
-externalPort = 3000
-
-[[ports]]
-localPort = 5002
 
 [[ports]]
 localPort = 5173
@@ -22,7 +16,7 @@ externalPort = 5173
 
 [[ports]]
 localPort = 5174
-externalPort = 3001
+externalPort = 3000
 
 [env]
 PORT = "5000"
