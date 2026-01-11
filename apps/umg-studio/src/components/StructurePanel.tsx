@@ -8,10 +8,12 @@ import {
   addMergeOp,
   deleteOp,
   getOps,
-  validateMultiSelectForOp
+  validateMultiSelectForOp,
+  getBlocksById
 } from "@/lib/sleeveEdit";
 import { compressStackToNeoBlock } from "@/lib/compress";
 import { saveNeoBlock, listNeoBlocks, deleteNeoBlock, getTotalBlockCount, NeoBlock } from "@/lib/library/neoblockStore";
+import NeoBlockPreview from "./NeoBlockPreview";
 
 const MOLT_TYPES = [
   "trigger",
@@ -472,46 +474,72 @@ export default function StructurePanel({
       {previewNeoBlock && (
         <div style={{
           padding: 10,
-          background: "rgba(168, 85, 247, 0.1)",
+          background: "rgba(168, 85, 247, 0.08)",
           borderRadius: 6,
           borderLeft: "3px solid #a855f7"
         }}>
-          <div className="small" style={{ opacity: 0.7, marginBottom: 4 }}>NeoBlock Preview</div>
-          <div style={{ fontWeight: 500, marginBottom: 4 }}>{previewNeoBlock.name}</div>
-          <div className="mono" style={{ fontSize: 10, opacity: 0.6, marginBottom: 8 }}>
-            {previewNeoBlock.summary}
-          </div>
-          <div style={{ display: "flex", gap: 6 }}>
+          <div className="small" style={{ opacity: 0.7, marginBottom: 8 }}>NeoBlock Preview</div>
+          
+          <NeoBlockPreview 
+            title={previewNeoBlock.name}
+            lanes={previewNeoBlock.lanes}
+            blocksById={getBlocksById(sleeveJson)}
+            compact={false}
+          />
+          
+          <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
             <button
               onClick={handleSaveNeoBlock}
+              data-testid="button-save-neoblock"
               style={{
                 flex: 1,
-                padding: "4px 8px",
+                padding: "6px 10px",
                 background: "rgba(34, 197, 94, 0.2)",
                 border: "1px solid rgba(34, 197, 94, 0.3)",
                 borderRadius: 4,
                 color: "#22c55e",
-                fontSize: 10,
-                cursor: "pointer"
+                fontSize: 11,
+                cursor: "pointer",
+                fontWeight: 500
               }}
             >
-              Save to Library
+              Save to NeoBlock Library
             </button>
             <button
               onClick={() => { setPreviewNeoBlock(null); setPreviewStackId(null); }}
+              data-testid="button-close-preview"
               style={{
-                padding: "4px 8px",
+                padding: "6px 10px",
                 background: "transparent",
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 4,
                 color: "inherit",
-                fontSize: 10,
+                fontSize: 11,
                 cursor: "pointer"
               }}
             >
-              Cancel
+              Close Preview
             </button>
           </div>
+          
+          <button
+            disabled
+            data-testid="button-insert-neoblock-stub"
+            style={{
+              width: "100%",
+              marginTop: 8,
+              padding: "6px 10px",
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 4,
+              color: "inherit",
+              fontSize: 11,
+              cursor: "not-allowed",
+              opacity: 0.4
+            }}
+          >
+            Insert NeoBlock (coming soon)
+          </button>
         </div>
       )}
 

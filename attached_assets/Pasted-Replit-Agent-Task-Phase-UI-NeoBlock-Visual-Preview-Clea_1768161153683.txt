@@ -1,0 +1,154 @@
+Replit Agent Task — Phase UI: NeoBlock Visual Preview + Clean Library Surface (Blocks / NeoBlocks / NeoStacks / Sleeves)
+Hard rules
+Do NOT modify compiler-v0/**.
+Sleeve JSON remains source of truth.
+NeoBlock/NeoStack/Sleeve libraries are editor-side artifacts (localStorage is fine for v1).
+Must be usable on mobile: big buttons, minimal scrolling, clear preview cards.
+Part A — Compress button must show a real NeoBlock visual (not just counts)
+A1) Create a NeoBlockPreview component (visual lanes)
+Create: apps/umg-studio/src/components/NeoBlockPreview.tsx
+Props
+Copy code
+Ts
+type NeoBlockPreviewProps = {
+  title: string;
+  lanes: {
+    trigger: string[];
+    directive: string[];
+    instruction: string[];
+    subject: string[];
+    primary: string[];
+    philosophy: string[];
+    blueprint: string[];
+  };
+  blocksById?: Record<string, any>; // optional for showing titles
+  compact?: boolean; // default false
+};
+UI requirements
+Render a mini 7-lane grid (Trigger/Directive/Instruction/Subject/Primary/Philosophy/Blueprint).
+Each lane shows “chips/cards” for each block:
+chip label = block.title ?? block.id if blocksById provided, else id
+cap display to first 3 items per lane; if more show +N more
+Use strong lane headers + subtle tinted backgrounds.
+This component must be pure UI; no parsing inside.
+A2) Make compress produce a “preview object” and show it immediately
+You already have compressStackToNeoBlock in apps/umg-studio/src/lib/compress.ts. Extend (without changing semantics):
+Ensure it returns:
+Copy code
+Ts
+{
+  id: string;
+  name: string;
+  sourceStackId: string;
+  createdAt: number;
+  lanes: { ... } // arrays of blockIds per lane
+  summary?: string;
+}
+In StructurePanel.tsx:
+When user clicks Compress on a stack:
+set a local state like activeNeoBlockPreview
+render a big preview card directly under that stack row:
+Title: “NeoBlock Preview: ”
+Include <NeoBlockPreview /> with lanes
+Buttons row:
+Save to NeoBlock Library
+Close Preview
+If user saves, show a toast-ish inline confirmation: “Saved ✅”
+Important
+The preview must show lanes visually even if a lane is empty (“(empty)”).
+A3) Optional quick win: “Insert Preview Back Into Stack” (stub ok)
+Add a disabled button labeled Insert NeoBlock (coming soon) so the UI implies future workflow, but doesn’t do anything yet.
+Part B — New clean “Library Surface” with tabs: Blocks / NeoBlocks / NeoStacks / Sleeves
+B1) Replace current Library section with a full-screen-ish panel
+Edit: apps/umg-studio/src/components/LibraryPanel.tsx
+Goal: When I click Block Library in LeftPanel, I see a clean surface with 4 tabs:
+Blocks
+NeoBlocks
+NeoStacks
+Sleeves
+Implement internal state:
+Copy code
+Ts
+const [tab, setTab] = useState<"blocks"|"neoblocks"|"neostacks"|"sleeves">("blocks");
+Tabs UI rules (mobile):
+big segmented buttons, sticky at top of panel
+show selected state clearly
+B2) Blocks tab (existing functionality preserved)
+Use existing block library logic.
+Keep filter by molt type (All/Trigger/…).
+List saved block templates.
+Actions:
+“Save selected block to Library”
+“Insert into Stack” (auto lane based on moltType) — keep current behavior
+B3) NeoBlocks tab (use existing neoblockStore)
+You already added apps/umg-studio/src/lib/library/neoblockStore.ts.
+In NeoBlocks tab:
+List saved NeoBlocks
+Each item shows:
+name
+source stack
+created date (simple)
+a “Preview” expand/collapse which renders <NeoBlockPreview />
+Add button per item:
+“Insert NeoBlock (coming soon)” (disabled stub)
+B4) NeoStacks tab (NEW, v1 localStorage stub)
+Create: apps/umg-studio/src/lib/library/neostackStore.ts
+Shape (simple):
+Copy code
+Ts
+type NeoStack = {
+  id: string;
+  name: string;
+  createdAt: number;
+  neoBlockIds: string[]; // references from neoblockStore
+  summary?: string;
+};
+Functions:
+listNeoStacks()
+saveNeoStack(neostack)
+deleteNeoStack(id)
+UI:
+“Create NeoStack” button (opens a simple modal or inline form):
+name input
+checklist of NeoBlocks (from neoblockStore)
+Save
+List NeoStacks with expandable details:
+show included NeoBlocks and render preview per NeoBlock (collapsed by default)
+No need to compile anything. This is library management only.
+B5) Sleeves tab (NEW, v1 localStorage stub)
+Create: apps/umg-studio/src/lib/library/sleeveStore.ts
+Shape:
+Copy code
+Ts
+type SleeveTemplate = {
+  id: string;
+  name: string;
+  createdAt: number;
+  sleeveJson: string; // the full input JSON string
+  notes?: string;
+};
+Functions:
+listSleeves()
+saveSleeveTemplate(template)
+loadSleeveTemplate(id)
+deleteSleeveTemplate(id)
+UI:
+Button: Save current sleeve to Library
+name prompt
+saves the current sleeveJson
+List saved sleeves:
+Load button (replaces editor input sleeveJson)
+Delete button
+Safety:
+Confirm before replacing current sleeveJson: “Replace current sleeve?”
+Part C — LeftPanel navigation: “Block Library” opens this surface cleanly
+Edit: apps/umg-studio/src/components/LeftPanel.tsx
+Ensure there is a clear nav button labeled Block Library
+Clicking it should show the LibraryPanel with the 4 tabs.
+Keep other sections (Tags, Structure) unchanged.
+Deliverables (Agent must confirm)
+Compress shows a visual NeoBlock Preview with 7 lanes and chips.
+LibraryPanel has 4 tabs: Blocks / NeoBlocks / NeoStacks / Sleeves.
+NeoStacks and Sleeves work via localStorage (create/save/list/delete).
+No compiler-v0 changes.
+List files changed (paths only).
