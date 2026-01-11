@@ -76,7 +76,7 @@ export default function LeftPanel({
         <div className="small" style={{ opacity: 0.5, marginTop: 2 }}>Sidebar</div>
       </div>
 
-      <CollapsibleSection title="Library" defaultOpen={false}>
+      <CollapsibleSection title="Block Library" defaultOpen={false}>
         <LibraryPanel 
           sleeveJson={sleeveJson} 
           selectedBlockId={selectedBlockId ?? null}
