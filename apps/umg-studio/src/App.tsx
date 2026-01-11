@@ -17,6 +17,8 @@ export default function App() {
   });
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [selectedBlockIds, setSelectedBlockIds] = useState<string[]>([]);
+  const [selectMode, setSelectMode] = useState(false);
   const lastCompiledJsonRef = useRef<string>(loadSleeveJson(fixture));
 
   const compiled = useMemo(() => {
@@ -46,6 +48,7 @@ export default function App() {
     lastCompiledJsonRef.current = fixture;
     setSelectedTag(null);
     setSelectedBlockId(null);
+    setSelectedBlockIds([]);
   };
 
   const handleAddBlock = useCallback((stackId: string, moltType: string) => {
@@ -54,6 +57,22 @@ export default function App() {
       setSleeveJson(result.nextJson);
     }
   }, [sleeveJson]);
+
+  const toggleMultiSelect = useCallback((id: string) => {
+    setSelectedBlockIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(x => x !== id)
+        : [...prev, id]
+    );
+  }, []);
+
+  const clearMultiSelect = useCallback(() => {
+    setSelectedBlockIds([]);
+  }, []);
+
+  const toggleSelectMode = useCallback(() => {
+    setSelectMode(prev => !prev);
+  }, []);
 
   return (
     <Layout
@@ -64,6 +83,10 @@ export default function App() {
           selectedBlockId={selectedBlockId}
           isDirty={isDirty}
           blockFoundInSleeve={blockFoundInSleeve}
+          selectMode={selectMode}
+          onToggleSelectMode={toggleSelectMode}
+          multiSelectCount={selectedBlockIds.length}
+          onClearMultiSelect={clearMultiSelect}
         />
       }
       left={
@@ -72,8 +95,10 @@ export default function App() {
           sleeveJson={sleeveJson}
           selectedTag={selectedTag}
           selectedBlockId={selectedBlockId}
+          selectedBlockIds={selectedBlockIds}
           onSelectTag={setSelectedTag}
           onChangeSleeveJson={setSleeveJson}
+          onClearMultiSelect={clearMultiSelect}
         />
       }
       center={
@@ -84,6 +109,9 @@ export default function App() {
           selectedBlockId={selectedBlockId}
           onSelectBlockId={setSelectedBlockId}
           onAddBlock={handleAddBlock}
+          selectedBlockIds={selectedBlockIds}
+          onToggleMultiSelect={toggleMultiSelect}
+          selectMode={selectMode}
         />
       }
       right={
@@ -92,6 +120,7 @@ export default function App() {
           setSleeveJson={setSleeveJson} 
           resultJson={resultJson} 
           selectedBlockId={selectedBlockId}
+          onSelectBlockId={setSelectedBlockId}
         />
       }
     />

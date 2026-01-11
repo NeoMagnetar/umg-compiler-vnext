@@ -28,9 +28,22 @@ interface GraphCanvasProps {
   selectedBlockId?: string | null;
   onSelectBlockId?: (id: string | null) => void;
   onAddBlock?: (stackId: string, moltType: string) => void;
+  selectedBlockIds?: string[];
+  onToggleMultiSelect?: (id: string) => void;
+  selectMode?: boolean;
 }
 
-export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selectedBlockId, onSelectBlockId, onAddBlock }: GraphCanvasProps) {
+export default function GraphCanvas({ 
+  sleeveJson, 
+  compiled, 
+  selectedTag, 
+  selectedBlockId, 
+  onSelectBlockId, 
+  onAddBlock,
+  selectedBlockIds = [],
+  onToggleMultiSelect,
+  selectMode = false
+}: GraphCanvasProps) {
   const { sleeve, blocksById, stacks } = useMemo(() => {
     const { sleeve, error } = parseSleeve(sleeveJson);
     if (error || !sleeve) {
@@ -49,9 +62,13 @@ export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selecte
     return { sleeve, blocksById, stacks };
   }, [sleeveJson]);
 
-  const handleBlockClick = (blockId: string) => {
-    if (onSelectBlockId) {
-      onSelectBlockId(selectedBlockId === blockId ? null : blockId);
+  const handleBlockClick = (blockId: string, e: React.MouseEvent) => {
+    if (selectMode || e.shiftKey) {
+      onToggleMultiSelect?.(blockId);
+    } else {
+      if (onSelectBlockId) {
+        onSelectBlockId(selectedBlockId === blockId ? null : blockId);
+      }
     }
   };
 
@@ -67,34 +84,41 @@ export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selecte
     return blockTags.includes(selectedTag);
   };
 
+  const isMultiSelected = (blockId: string) => selectedBlockIds.includes(blockId);
+
   const renderCard = (block: any) => {
     const isSelected = block.id === selectedBlockId;
     const isHighlightedByTag = isBlockHighlightedByTag(block);
+    const isInMultiSelect = isMultiSelected(block.id);
 
     return (
       <div 
         key={block.id}
         role="button"
         tabIndex={0}
-        onClick={() => handleBlockClick(block.id)}
-        onKeyDown={(e) => e.key === "Enter" && handleBlockClick(block.id)}
+        onClick={(e) => handleBlockClick(block.id, e)}
+        onKeyDown={(e) => e.key === "Enter" && handleBlockClick(block.id, e as any)}
         style={{
           padding: 10,
           marginTop: 8,
-          background: "rgba(0,0,0,0.25)",
+          background: isInMultiSelect ? "rgba(168, 85, 247, 0.2)" : "rgba(0,0,0,0.25)",
           borderRadius: 10,
           cursor: "pointer",
-          border: isSelected 
-            ? "2px solid rgba(255,255,255,0.65)" 
-            : isHighlightedByTag 
-              ? "1px solid #ff69b4" 
-              : "1px solid rgba(255,255,255,0.12)",
-          boxShadow: isSelected 
-            ? "0 0 0 3px rgba(255,255,255,0.12)" 
-            : isHighlightedByTag 
-              ? "0 0 8px rgba(255,105,180,0.4)" 
-              : "none",
-          transition: "border 0.15s, box-shadow 0.15s"
+          border: isInMultiSelect
+            ? "2px solid #a855f7"
+            : isSelected 
+              ? "2px solid rgba(255,255,255,0.65)" 
+              : isHighlightedByTag 
+                ? "1px solid #ff69b4" 
+                : "1px solid rgba(255,255,255,0.12)",
+          boxShadow: isInMultiSelect
+            ? "0 0 0 3px rgba(168, 85, 247, 0.2)"
+            : isSelected 
+              ? "0 0 0 3px rgba(255,255,255,0.12)" 
+              : isHighlightedByTag 
+                ? "0 0 8px rgba(255,105,180,0.4)" 
+                : "none",
+          transition: "border 0.15s, box-shadow 0.15s, background 0.15s"
         }}
       >
         <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 2 }}>
@@ -154,7 +178,10 @@ export default function GraphCanvas({ sleeveJson, compiled, selectedTag, selecte
 
   return (
     <div style={{ height: "100%", overflow: "auto", padding: 12 }}>
-      <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7 }}>Graph Canvas</h3>
+      <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7 }}>
+        Graph Canvas
+        {selectMode && <span style={{ color: "#a855f7", marginLeft: 8 }}>(Select Mode)</span>}
+      </h3>
       <div style={{ display: "flex", gap: 16, minWidth: "fit-content" }}>
         {stacks.map((stack: any) => {
           const stackBlockIds: string[] = stack.blockIds ?? [];

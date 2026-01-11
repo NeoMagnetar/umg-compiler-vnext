@@ -8,9 +8,10 @@ interface RightPanelProps {
   setSleeveJson: (v: string) => void;
   resultJson: string;
   selectedBlockId?: string | null;
+  onSelectBlockId?: (id: string | null) => void;
 }
 
-export default function RightPanel({ sleeveJson, setSleeveJson, resultJson, selectedBlockId }: RightPanelProps) {
+export default function RightPanel({ sleeveJson, setSleeveJson, resultJson, selectedBlockId, onSelectBlockId }: RightPanelProps) {
   const [tab, setTab] = useState<"input" | "output" | "block">("input");
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function RightPanel({ sleeveJson, setSleeveJson, resultJson, sele
             sleeveJson={sleeveJson}
             selectedBlockId={selectedBlockId ?? null}
             onChangeSleeveJson={setSleeveJson}
+            onSelectBlockId={onSelectBlockId}
           />
         )}
       </div>

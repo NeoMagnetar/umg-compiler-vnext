@@ -50,11 +50,22 @@ interface LeftPanelProps {
   sleeveJson: string;
   selectedTag?: string | null;
   selectedBlockId?: string | null;
+  selectedBlockIds?: string[];
   onSelectTag?: (tag: string | null) => void;
   onChangeSleeveJson: (next: string) => void;
+  onClearMultiSelect?: () => void;
 }
 
-export default function LeftPanel({ compiled, sleeveJson, selectedTag, selectedBlockId, onSelectTag, onChangeSleeveJson }: LeftPanelProps) {
+export default function LeftPanel({ 
+  compiled, 
+  sleeveJson, 
+  selectedTag, 
+  selectedBlockId, 
+  selectedBlockIds = [],
+  onSelectTag, 
+  onChangeSleeveJson,
+  onClearMultiSelect 
+}: LeftPanelProps) {
   const indexes = compiled?.runtime?.indexes;
   const tags = indexes?.tags;
 
@@ -113,6 +124,8 @@ export default function LeftPanel({ compiled, sleeveJson, selectedTag, selectedB
         <StructurePanel 
           sleeveJson={sleeveJson}
           onChangeSleeveJson={onChangeSleeveJson}
+          selectedBlockIds={selectedBlockIds}
+          onClearMultiSelect={onClearMultiSelect}
         />
       </CollapsibleSection>
     </div>

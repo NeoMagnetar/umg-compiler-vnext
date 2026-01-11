@@ -391,3 +391,209 @@ export function getBlocksById(json: string): Record<string, any> {
   }
   return result;
 }
+
+export function deleteBlock(json: string, blockId: string): UpdateResult {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  if (Array.isArray(sleeve.blocks)) {
+    sleeve.blocks = sleeve.blocks.filter((b: any) => b.id !== blockId);
+  }
+
+  if (Array.isArray(sleeve.stacks)) {
+    for (const stack of sleeve.stacks) {
+      if (Array.isArray(stack.blockIds)) {
+        stack.blockIds = stack.blockIds.filter((id: string) => id !== blockId);
+      }
+    }
+  }
+
+  if (sleeve.ui?.ops) {
+    if (Array.isArray(sleeve.ui.ops.bundles)) {
+      sleeve.ui.ops.bundles = sleeve.ui.ops.bundles
+        .map((op: any) => ({
+          ...op,
+          blockIds: op.blockIds.filter((id: string) => id !== blockId)
+        }))
+        .filter((op: any) => op.blockIds.length >= 2);
+    }
+    if (Array.isArray(sleeve.ui.ops.merges)) {
+      sleeve.ui.ops.merges = sleeve.ui.ops.merges
+        .map((op: any) => ({
+          ...op,
+          blockIds: op.blockIds.filter((id: string) => id !== blockId)
+        }))
+        .filter((op: any) => op.blockIds.length >= 2);
+    }
+  }
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export interface OpOptions {
+  name?: string;
+  stackId: string;
+  lane: string;
+  blockIds: string[];
+}
+
+function generateOpId(type: string): string {
+  return `op_${type}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+}
+
+export function addBundleOp(json: string, options: OpOptions): UpdateResult {
+  if (options.blockIds.length < 2) {
+    return { error: "Bundle requires at least 2 blocks" };
+  }
+
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  sleeve.ui = sleeve.ui ?? {};
+  sleeve.ui.ops = sleeve.ui.ops ?? { bundles: [], merges: [] };
+  sleeve.ui.ops.bundles = sleeve.ui.ops.bundles ?? [];
+
+  const op = {
+    id: generateOpId("bundle"),
+    name: options.name,
+    createdAt: Date.now(),
+    stackId: options.stackId,
+    lane: options.lane,
+    blockIds: [...options.blockIds]
+  };
+
+  sleeve.ui.ops.bundles.push(op);
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export function addMergeOp(json: string, options: OpOptions): UpdateResult {
+  if (options.blockIds.length < 2) {
+    return { error: "Merge requires at least 2 blocks" };
+  }
+
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  sleeve.ui = sleeve.ui ?? {};
+  sleeve.ui.ops = sleeve.ui.ops ?? { bundles: [], merges: [] };
+  sleeve.ui.ops.merges = sleeve.ui.ops.merges ?? [];
+
+  const op = {
+    id: generateOpId("merge"),
+    name: options.name,
+    createdAt: Date.now(),
+    stackId: options.stackId,
+    lane: options.lane,
+    blockIds: [...options.blockIds]
+  };
+
+  sleeve.ui.ops.merges.push(op);
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export function deleteOp(json: string, opId: string): UpdateResult {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  if (!sleeve.ui?.ops) {
+    return { error: "No ops found" };
+  }
+
+  let found = false;
+  if (Array.isArray(sleeve.ui.ops.bundles)) {
+    const before = sleeve.ui.ops.bundles.length;
+    sleeve.ui.ops.bundles = sleeve.ui.ops.bundles.filter((op: any) => op.id !== opId);
+    if (sleeve.ui.ops.bundles.length < before) found = true;
+  }
+  if (Array.isArray(sleeve.ui.ops.merges)) {
+    const before = sleeve.ui.ops.merges.length;
+    sleeve.ui.ops.merges = sleeve.ui.ops.merges.filter((op: any) => op.id !== opId);
+    if (sleeve.ui.ops.merges.length < before) found = true;
+  }
+
+  if (!found) {
+    return { error: `Op not found: ${opId}` };
+  }
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export function getOps(json: string): { bundles: any[]; merges: any[] } {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve || !sleeve.ui?.ops) {
+    return { bundles: [], merges: [] };
+  }
+  return {
+    bundles: sleeve.ui.ops.bundles ?? [],
+    merges: sleeve.ui.ops.merges ?? []
+  };
+}
+
+export function getBlockStackAndLane(json: string, blockId: string): { stackId?: string; lane?: string } {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) return {};
+
+  const { block, stackId } = findBlockInSleeveById(sleeve, blockId);
+  if (!block) return {};
+
+  return {
+    stackId,
+    lane: block.moltType
+  };
+}
+
+export function validateMultiSelectForOp(
+  json: string, 
+  blockIds: string[]
+): { valid: boolean; stackId?: string; lane?: string; error?: string } {
+  if (blockIds.length < 2) {
+    return { valid: false, error: "Select at least 2 blocks" };
+  }
+
+  const first = getBlockStackAndLane(json, blockIds[0]);
+  if (!first.stackId || !first.lane) {
+    return { valid: false, error: "Could not find first block" };
+  }
+
+  for (let i = 1; i < blockIds.length; i++) {
+    const info = getBlockStackAndLane(json, blockIds[i]);
+    if (info.stackId !== first.stackId) {
+      return { valid: false, error: "Blocks must be in same stack" };
+    }
+    if (info.lane !== first.lane) {
+      return { valid: false, error: "Blocks must be in same lane (MOLT type)" };
+    }
+  }
+
+  return { valid: true, stackId: first.stackId, lane: first.lane };
+}

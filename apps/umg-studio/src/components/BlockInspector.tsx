@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { findBlockInSleeve, updateBlock, BlockPatch } from "@/lib/sleeveEdit";
+import { findBlockInSleeve, updateBlock, deleteBlock, BlockPatch } from "@/lib/sleeveEdit";
 
 interface BlockInspectorProps {
   sleeveJson: string;
   selectedBlockId: string | null;
   onChangeSleeveJson: (next: string) => void;
+  onSelectBlockId?: (id: string | null) => void;
 }
 
-export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSleeveJson }: BlockInspectorProps) {
+export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSleeveJson, onSelectBlockId }: BlockInspectorProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tagsInput, setTagsInput] = useState("");
@@ -18,6 +19,7 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
   const [blockFound, setBlockFound] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [originalTitle, setOriginalTitle] = useState("");
   const [originalContent, setOriginalContent] = useState("");
@@ -36,6 +38,7 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setError(null);
       setIsDirty(false);
       setLastSaved(false);
+      setShowDeleteConfirm(false);
       return;
     }
 
@@ -56,6 +59,7 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setError(null);
       setIsDirty(false);
       setLastSaved(false);
+      setShowDeleteConfirm(false);
 
       setOriginalTitle(t);
       setOriginalContent(c);
@@ -107,6 +111,19 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setLastSaved(true);
     }
   }, [sleeveJson, selectedBlockId, blockFound, title, content, tagsInput, priorityOrder, onChangeSleeveJson]);
+
+  const handleDelete = useCallback(() => {
+    if (!selectedBlockId) return;
+
+    const result = deleteBlock(sleeveJson, selectedBlockId);
+    if (result.error) {
+      setError(result.error);
+    } else if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      onSelectBlockId?.(null);
+    }
+    setShowDeleteConfirm(false);
+  }, [sleeveJson, selectedBlockId, onChangeSleeveJson, onSelectBlockId]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -248,28 +265,76 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
         borderTop: "1px solid rgba(255,255,255,0.1)",
         background: "rgba(0,0,0,0.2)",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12
+        flexDirection: "column",
+        gap: 8
       }}>
-        <div className="small" style={{ 
-          color: error ? "#ef4444" : isDirty ? "#eab308" : lastSaved ? "#22c55e" : "inherit",
-          opacity: error || isDirty || lastSaved ? 1 : 0.4
-        }}>
-          {error ? "Error" : isDirty ? "Unsaved changes" : lastSaved ? "Saved" : "No changes"}
-        </div>
-        <button
-          className="btn"
-          onClick={handleApply}
-          disabled={!isDirty}
-          style={{
-            opacity: isDirty ? 1 : 0.5,
-            cursor: isDirty ? "pointer" : "not-allowed"
-          }}
-        >
-          Apply
-          <span className="small" style={{ opacity: 0.6, marginLeft: 6 }}>Ctrl+Enter</span>
-        </button>
+        {showDeleteConfirm ? (
+          <div style={{ 
+            padding: 10, 
+            background: "rgba(239, 68, 68, 0.15)", 
+            borderRadius: 6,
+            borderLeft: "3px solid #ef4444"
+          }}>
+            <div className="small" style={{ marginBottom: 8, color: "#ef4444" }}>
+              Delete this block permanently?
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                className="btn"
+                onClick={handleDelete}
+                style={{ 
+                  flex: 1, 
+                  background: "rgba(239, 68, 68, 0.3)", 
+                  borderColor: "#ef4444",
+                  color: "#ef4444"
+                }}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="btn"
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div className="small" style={{ 
+              color: error ? "#ef4444" : isDirty ? "#eab308" : lastSaved ? "#22c55e" : "inherit",
+              opacity: error || isDirty || lastSaved ? 1 : 0.4
+            }}>
+              {error ? "Error" : isDirty ? "Unsaved changes" : lastSaved ? "Saved" : "No changes"}
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                className="btn"
+                onClick={() => setShowDeleteConfirm(true)}
+                style={{
+                  background: "transparent",
+                  borderColor: "#ef4444",
+                  color: "#ef4444"
+                }}
+              >
+                Delete
+              </button>
+              <button
+                className="btn"
+                onClick={handleApply}
+                disabled={!isDirty}
+                style={{
+                  opacity: isDirty ? 1 : 0.5,
+                  cursor: isDirty ? "pointer" : "not-allowed"
+                }}
+              >
+                Apply
+                <span className="small" style={{ opacity: 0.6, marginLeft: 6 }}>Ctrl+Enter</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
