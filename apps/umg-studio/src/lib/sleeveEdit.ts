@@ -31,6 +31,16 @@ export interface NewBlockOptions {
   priorityOrder?: number;
 }
 
+const MOLT_ORDER = [
+  "trigger",
+  "directive",
+  "instruction",
+  "subject",
+  "primary",
+  "philosophy",
+  "blueprint"
+] as const;
+
 export function parseSleeve(json: string): ParsedSleeve {
   try {
     const sleeve = JSON.parse(json);
@@ -180,6 +190,35 @@ export function addStack(json: string, options: NewStackOptions = {}): UpdateRes
   }
 }
 
+export function renameStack(json: string, stackId: string, name: string): UpdateResult {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  if (!Array.isArray(sleeve.stacks)) {
+    return { error: "No stacks in sleeve" };
+  }
+
+  const stack = sleeve.stacks.find((s: any) => s.id === stackId);
+  if (!stack) {
+    return { error: `Stack not found: ${stackId}` };
+  }
+
+  stack.name = name;
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
+export function getStackName(stack: any): string {
+  return stack?.name ?? stack?.id ?? "Unnamed";
+}
+
 export function addBlockToStack(json: string, stackId: string, options: NewBlockOptions): UpdateResult {
   const { sleeve, error } = parseSleeve(json);
   if (error || !sleeve) {
@@ -223,6 +262,89 @@ export function addBlockToStack(json: string, stackId: string, options: NewBlock
   }
 }
 
+export function insertBlockIntoStackByMolt(
+  json: string,
+  stackId: string,
+  blockTemplate: {
+    id: string;
+    title: string;
+    moltType: string;
+    content: string;
+    tags: string[];
+    priorityOrder: number;
+  }
+): UpdateResult {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve) {
+    return { error: error ?? "Failed to parse sleeve" };
+  }
+
+  if (!Array.isArray(sleeve.blocks)) {
+    sleeve.blocks = [];
+  }
+
+  if (!Array.isArray(sleeve.stacks)) {
+    return { error: "No stacks in sleeve" };
+  }
+
+  const stack = sleeve.stacks.find((s: any) => s.id === stackId);
+  if (!stack) {
+    return { error: `Stack not found: ${stackId}` };
+  }
+
+  const newBlock = {
+    id: blockTemplate.id,
+    title: blockTemplate.title,
+    moltType: blockTemplate.moltType,
+    priorityOrder: blockTemplate.priorityOrder,
+    content: blockTemplate.content,
+    tags: [...blockTemplate.tags]
+  };
+
+  sleeve.blocks.push(newBlock);
+
+  if (!Array.isArray(stack.blockIds)) {
+    stack.blockIds = [];
+  }
+
+  const blocksById: Record<string, any> = {};
+  for (const b of sleeve.blocks) {
+    if (b.id) blocksById[b.id] = b;
+  }
+
+  const targetMoltIndex = MOLT_ORDER.indexOf(blockTemplate.moltType as any);
+  
+  let insertIndex = stack.blockIds.length;
+  
+  for (let i = stack.blockIds.length - 1; i >= 0; i--) {
+    const existingBlock = blocksById[stack.blockIds[i]];
+    if (!existingBlock) continue;
+    
+    const existingMoltIndex = MOLT_ORDER.indexOf(existingBlock.moltType as any);
+    
+    if (existingMoltIndex === targetMoltIndex) {
+      insertIndex = i + 1;
+      break;
+    }
+    
+    if (existingMoltIndex < targetMoltIndex) {
+      insertIndex = i + 1;
+      break;
+    }
+    
+    insertIndex = i;
+  }
+
+  stack.blockIds.splice(insertIndex, 0, newBlock.id);
+
+  try {
+    const nextJson = JSON.stringify(sleeve, null, 2);
+    return { nextJson };
+  } catch (e: any) {
+    return { error: e.message ?? "Failed to serialize JSON" };
+  }
+}
+
 export function getStacks(json: string): { id: string; name: string }[] {
   const { sleeve, error } = parseSleeve(json);
   if (error || !sleeve || !Array.isArray(sleeve.stacks)) {
@@ -231,6 +353,18 @@ export function getStacks(json: string): { id: string; name: string }[] {
   return sleeve.stacks.map((s: any) => ({
     id: s.id ?? "",
     name: s.name ?? s.id ?? "Unnamed"
+  }));
+}
+
+export function getStacksWithBlockIds(json: string): { id: string; name: string; blockIds: string[] }[] {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve || !Array.isArray(sleeve.stacks)) {
+    return [];
+  }
+  return sleeve.stacks.map((s: any) => ({
+    id: s.id ?? "",
+    name: s.name ?? s.id ?? "Unnamed",
+    blockIds: Array.isArray(s.blockIds) ? s.blockIds : []
   }));
 }
 
@@ -244,4 +378,16 @@ export function getBlocks(json: string): { id: string; title: string; moltType: 
     title: b.title ?? b.id ?? "Unnamed",
     moltType: b.moltType ?? "instruction"
   }));
+}
+
+export function getBlocksById(json: string): Record<string, any> {
+  const { sleeve, error } = parseSleeve(json);
+  if (error || !sleeve || !Array.isArray(sleeve.blocks)) {
+    return {};
+  }
+  const result: Record<string, any> = {};
+  for (const b of sleeve.blocks) {
+    if (b.id) result[b.id] = b;
+  }
+  return result;
 }

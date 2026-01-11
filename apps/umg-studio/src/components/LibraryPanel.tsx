@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getBlocks, getStacks, findBlockInSleeve } from "@/lib/sleeveEdit";
+import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt } from "@/lib/sleeveEdit";
 import { 
   listLibraryBlocks, 
   saveBlockTemplate, 
@@ -7,7 +7,6 @@ import {
   mintBlockId,
   LibraryBlock 
 } from "@/lib/library/store";
-import { addBlockToStack } from "@/lib/sleeveEdit";
 
 const MOLT_TYPES = [
   "trigger",
@@ -28,10 +27,9 @@ interface LibraryPanelProps {
 export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSleeveJson }: LibraryPanelProps) {
   const [libraryBlocks, setLibraryBlocks] = useState<LibraryBlock[]>([]);
   const [insertStackId, setInsertStackId] = useState<string>("");
-  const [insertMoltType, setInsertMoltType] = useState<string>("instruction");
+  const [moltFilter, setMoltFilter] = useState<string>("all");
   const [message, setMessage] = useState<string | null>(null);
 
-  const blocks = getBlocks(sleeveJson);
   const stacks = getStacks(sleeveJson);
 
   useEffect(() => {
@@ -41,6 +39,10 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
   const selectedBlock = selectedBlockId 
     ? findBlockInSleeve(sleeveJson, selectedBlockId).block 
     : null;
+
+  const filteredLibraryBlocks = moltFilter === "all" 
+    ? libraryBlocks 
+    : libraryBlocks.filter(b => b.moltType === moltFilter);
 
   const handleSaveToLibrary = () => {
     if (!selectedBlock) return;
@@ -65,12 +67,12 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
       return;
     }
 
-    const newId = mintBlockId(insertMoltType, libBlock.title);
+    const newId = mintBlockId(libBlock.moltType, libBlock.title);
     
-    const result = addBlockToStack(sleeveJson, insertStackId, {
+    const result = insertBlockIntoStackByMolt(sleeveJson, insertStackId, {
       id: newId,
       title: libBlock.title,
-      moltType: insertMoltType,
+      moltType: libBlock.moltType,
       content: libBlock.content,
       tags: [...libBlock.tags],
       priorityOrder: libBlock.priorityOrder
@@ -129,56 +131,79 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
 
       <div>
         <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-          Insert Target
+          Insert Target Stack
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          <select
-            value={insertStackId}
-            onChange={(e) => setInsertStackId(e.target.value)}
+        <select
+          value={insertStackId}
+          onChange={(e) => setInsertStackId(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "5px 6px",
+            background: "rgba(0,0,0,0.3)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 4,
+            color: "inherit",
+            fontSize: 11
+          }}
+        >
+          <option value="">Select stack...</option>
+          {stacks.map(s => (
+            <option key={s.id} value={s.id}>{s.name} ({s.id})</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Filter by MOLT
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+          <button
+            onClick={() => setMoltFilter("all")}
             style={{
-              flex: 1,
-              padding: "5px 6px",
-              background: "rgba(0,0,0,0.3)",
-              border: "1px solid rgba(255,255,255,0.15)",
+              padding: "3px 6px",
+              background: moltFilter === "all" ? "rgba(255,255,255,0.15)" : "transparent",
+              border: "1px solid rgba(255,255,255,0.2)",
               borderRadius: 4,
               color: "inherit",
-              fontSize: 11
+              fontSize: 10,
+              cursor: "pointer"
             }}
           >
-            <option value="">Stack...</option>
-            {stacks.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-          <select
-            value={insertMoltType}
-            onChange={(e) => setInsertMoltType(e.target.value)}
-            style={{
-              flex: 1,
-              padding: "5px 6px",
-              background: "rgba(0,0,0,0.3)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 4,
-              color: "inherit",
-              fontSize: 11
-            }}
-          >
-            {MOLT_TYPES.map(t => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
+            All
+          </button>
+          {MOLT_TYPES.map(t => (
+            <button
+              key={t}
+              onClick={() => setMoltFilter(t)}
+              style={{
+                padding: "3px 6px",
+                background: moltFilter === t ? "rgba(255,255,255,0.15)" : "transparent",
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 4,
+                color: "inherit",
+                fontSize: 10,
+                cursor: "pointer",
+                textTransform: "capitalize"
+              }}
+            >
+              {t.slice(0, 3)}
+            </button>
+          ))}
         </div>
       </div>
 
       <div>
         <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-          Library Blocks ({libraryBlocks.length})
+          Library Templates ({filteredLibraryBlocks.length})
         </div>
-        {libraryBlocks.length === 0 ? (
-          <div className="small" style={{ opacity: 0.4, fontStyle: "italic" }}>No saved blocks</div>
+        {filteredLibraryBlocks.length === 0 ? (
+          <div className="small" style={{ opacity: 0.4, fontStyle: "italic" }}>
+            {moltFilter === "all" ? "No saved blocks" : `No ${moltFilter} blocks`}
+          </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {libraryBlocks.map(b => (
+            {filteredLibraryBlocks.map(b => (
               <div 
                 key={b.id}
                 style={{
@@ -224,34 +249,8 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
                     opacity: insertStackId ? 1 : 0.5
                   }}
                 >
-                  Insert into Sleeve
+                  Insert ({b.moltType})
                 </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-          Sleeve Blocks ({blocks.length})
-        </div>
-        {blocks.length === 0 ? (
-          <div className="small" style={{ opacity: 0.4, fontStyle: "italic" }}>No blocks in sleeve</div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {blocks.map(b => (
-              <div 
-                key={b.id}
-                style={{
-                  padding: "6px 8px",
-                  background: "rgba(255,255,255,0.03)",
-                  borderRadius: 4,
-                  fontSize: 12
-                }}
-              >
-                <div style={{ fontWeight: 500 }}>{b.title}</div>
-                <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{b.moltType}</div>
               </div>
             ))}
           </div>
