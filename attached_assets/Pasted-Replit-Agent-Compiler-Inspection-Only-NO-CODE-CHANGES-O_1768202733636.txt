@@ -1,0 +1,99 @@
+Replit Agent — Compiler Inspection Only (NO CODE CHANGES)
+Objective
+Inspect the current v0 compiler behavior so we can safely introduce Priority Resolution later without breaking anything.
+This task is read-only.
+Do not modify files, add helpers, or refactor.
+Step 1 — Confirm canonical compiler root
+Open and confirm these paths exist:
+compiler-v0/src/index.ts
+compiler-v0/src/types.ts
+Report:
+✅ exists / ❌ missing
+Do not search for:
+packages/compiler-v0
+UMG/packages/compiler-v0
+Those are known ghosts.
+Step 2 — Identify the true compile entry flow
+Open and read:
+compiler-v0/src/index.ts
+Whatever function actually performs compilation (often named one of):
+compile
+compileSleeve
+resolveRuntime
+buildRuntimeSpec
+Report:
+Function name
+File path
+High-level call order (bullet list, no speculation)
+Step 3 — Map selection / collision points (critical)
+Open and read any files that:
+choose one block among many
+sort blocks
+filter blocks by molt type
+Likely filenames (do not assume — verify):
+selectPrimary.ts
+selectDirective.ts
+selectInstruction.ts
+selectSubject.ts
+selectBlueprint.ts
+resolveAuthority.ts
+applyGovernance.ts
+For each file found, report:
+File path
+What condition triggers “multiple candidates”
+How a single winner is chosen
+Whether priority, order, or rank is referenced
+Whether ID fallback is used
+⚠️ Do NOT modify anything.
+Step 4 — Governance interaction check
+Open:
+compiler-v0/src/applyGovernance.ts (or equivalent)
+Report:
+Does governance:
+suppress blocks?
+force inclusion?
+influence ordering?
+Does it override priority or just eligibility?
+Step 5 — Bundle vs Merge handling
+Open:
+applyBundles.ts
+applyMerges.ts (or equivalents)
+Report:
+Do bundles:
+create new blocks?
+mark alternates?
+Do merges:
+create new block IDs?
+replace sources or preserve them?
+Step 6 — NeoBlock construction
+Open:
+buildNeoBlocks.ts
+buildNeoStacks.ts (or equivalents)
+Report:
+Where vertical synthesis occurs
+Whether ordering is assumed or enforced
+Whether priority appears here (it probably should not)
+Step 7 — Trace system inspection
+Open:
+trace.ts or wherever trace entries are recorded
+Report:
+How trace events are written
+What kinds of decisions are currently traced
+Whether selection / collision decisions are traced today
+Step 8 — Final report (no fixes)
+Return a single summary with:
+Exact files examined (paths)
+Where single-winner selection happens
+Where priority is currently:
+absent
+implicit
+numeric
+Where adding priority would be:
+safe
+dangerous
+forbidden
+No code changes. No suggestions. Just facts.
+Why this matters (for Replit, not philosophy)
+Priority must live only at collision points.
+If it leaks into ordering, synthesis, or governance, it breaks determinism.
+This inspection is the last safe step before touching the compiler.
