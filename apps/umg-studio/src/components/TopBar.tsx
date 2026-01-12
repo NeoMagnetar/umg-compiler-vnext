@@ -46,6 +46,7 @@ export default function TopBar({
   const [showImportModal, setShowImportModal] = useState<"library" | "sleeve" | null>(null);
   const [importText, setImportText] = useState("");
   const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const handleExportLibrary = () => {
     const json = exportLibrary();
@@ -114,7 +115,7 @@ export default function TopBar({
         </span>
       )}
 
-      <button className="btn" onClick={onReset} data-testid="button-reset">Reset</button>
+      {/* Reset button moved after Compile */}
 
       {selectedBlockId && (
         <div className="small mono" style={{ opacity: 0.75, display: "flex", alignItems: "center", gap: 6 }}>
@@ -342,6 +343,76 @@ export default function TopBar({
         >
           Compile+Ops
         </button>
+      )}
+      <button className="btn" onClick={() => setShowResetConfirm(true)} data-testid="button-reset">Reset</button>
+
+      {showResetConfirm && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: "#1a1a1a",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 8,
+            padding: 20,
+            width: "90%",
+            maxWidth: 350,
+            textAlign: "center"
+          }}>
+            <div style={{ fontWeight: 600, marginBottom: 16, fontSize: 15 }}>
+              Are you sure?
+            </div>
+            <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 20 }}>
+              This will reset the sleeve to the default state.
+            </div>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              <button
+                onClick={() => {
+                  onReset();
+                  setShowResetConfirm(false);
+                }}
+                data-testid="button-confirm-reset-yes"
+                style={{
+                  padding: "8px 24px",
+                  background: "rgba(239, 68, 68, 0.2)",
+                  border: "1px solid #ef4444",
+                  borderRadius: 4,
+                  color: "#ef4444",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer"
+                }}
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                data-testid="button-confirm-reset-no"
+                style={{
+                  padding: "8px 24px",
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 4,
+                  color: "inherit",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer"
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showImportModal && (
