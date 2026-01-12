@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt, getBlocksById, addStack, parseSleeve } from "@/lib/sleeveEdit";
+import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt, getBlocksById, addStack, parseSleeve, addBlockToStack } from "@/lib/sleeveEdit";
 import { 
   listLibraryBlocks, 
   saveBlockTemplate, 
@@ -47,6 +47,7 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
   const [showSaveSleeveForm, setShowSaveSleeveForm] = useState(false);
   const [newSleeveName, setNewSleeveName] = useState("");
   const [confirmLoadSleeveId, setConfirmLoadSleeveId] = useState<string | null>(null);
+  const [selectedMoltType, setSelectedMoltType] = useState<string>("instruction");
 
   const stacks = getStacks(sleeveJson);
   const blocksById = getBlocksById(sleeveJson);
@@ -84,6 +85,22 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
     
     setLibraryBlocks(listLibraryBlocks());
     showMessage("Saved to library!");
+  };
+
+  const handleAddBlock = () => {
+    if (!insertStackId) {
+      showMessage("Select a stack first");
+      return;
+    }
+    const result = addBlockToStack(sleeveJson, insertStackId, {
+      moltType: selectedMoltType
+    });
+    if (result.error) {
+      showMessage(`Error: ${result.error}`);
+    } else if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      showMessage("Block added!");
+    }
   };
 
   const handleInsertFromLibrary = (libBlock: LibraryBlock) => {
@@ -405,6 +422,47 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
                 <option key={s.id} value={s.id}>{s.name} ({s.id})</option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Add Block to Lane
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.5 }}>MOLT Type</label>
+              <select
+                value={selectedMoltType}
+                onChange={(e) => setSelectedMoltType(e.target.value)}
+                data-testid="select-molt-type"
+                style={{
+                  width: "100%",
+                  padding: "6px 8px",
+                  background: "rgba(0,0,0,0.3)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  borderRadius: 4,
+                  color: "inherit",
+                  fontSize: 12
+                }}
+              >
+                {MOLT_TYPES.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="btn"
+              onClick={handleAddBlock}
+              disabled={!insertStackId}
+              data-testid="button-add-block-to-lane"
+              style={{ 
+                width: "100%", 
+                fontSize: 12,
+                opacity: insertStackId ? 1 : 0.5,
+                cursor: insertStackId ? "pointer" : "not-allowed"
+              }}
+            >
+              + Add Block
+            </button>
           </div>
 
           </>
