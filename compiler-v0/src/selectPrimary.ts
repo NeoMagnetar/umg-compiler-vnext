@@ -1,4 +1,5 @@
 import type { Block, TraceEvent, RuntimeBundle } from "./types.js";
+import { resolveByPriority, type TracePushFn } from "./priority.js";
 
 export interface StackPrimaryInput {
   stackId: string;
@@ -46,12 +47,12 @@ export function selectPrimary(
     }
   }
 
-  const getEffectivePriority = (blockId: string): number => {
-    if (priorityOverrides.has(blockId)) {
-      return priorityOverrides.get(blockId)!;
+  const tracePush: TracePushFn = (evt) => {
+    if (evt.severity === "error") {
+      errors.push(evt);
+    } else {
+      notes.push(evt);
     }
-    const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
   };
 
   for (const stack of stacks) {
@@ -71,53 +72,62 @@ export function selectPrimary(
       continue;
     }
 
-    if (primaryIds.length > 1) {
-      const allInPrimaryBundle = primaryIds.every(id => primaryOnlyBundleBlockIds.has(id));
-
-      if (!allInPrimaryBundle) {
-        errors.push({
-          kind: "validation_failed",
-          severity: "error",
-          code: "ERR_MULTIPLE_PRIMARY_IN_STACK",
-          message: `Stack ${stack.stackId} has ${primaryIds.length} primary blocks not bundled as alternates.`,
-          relatedStackIds: [stack.stackId],
-          relatedBlockIds: primaryIds,
-        });
-        continue;
-      }
-
+    if (primaryIds.length === 1) {
+      const selectedId = primaryIds[0];
+      selections.push({
+        stackId: stack.stackId,
+        selectedPrimaryId: selectedId,
+        candidateIds: primaryIds,
+      });
       notes.push({
         kind: "pipeline_stage",
-        severity: "warning",
-        code: "WARN_MULTIPLE_PRIMARY_BUNDLED",
-        message: `Stack ${stack.stackId} has ${primaryIds.length} bundled primary alternates; selecting highest priority.`,
+        severity: "info",
+        code: "INFO_PRIMARY_SELECTED",
+        message: `Stack ${stack.stackId}: selected primary ${selectedId}.`,
+        relatedStackIds: [stack.stackId],
+        relatedBlockIds: [selectedId],
+      });
+      continue;
+    }
+
+    const allInPrimaryBundle = primaryIds.every(id => primaryOnlyBundleBlockIds.has(id));
+    if (!allInPrimaryBundle) {
+      errors.push({
+        kind: "validation_failed",
+        severity: "error",
+        code: "ERR_MULTIPLE_PRIMARY_IN_STACK",
+        message: `Stack ${stack.stackId} has ${primaryIds.length} primary blocks not bundled as alternates.`,
         relatedStackIds: [stack.stackId],
         relatedBlockIds: primaryIds,
       });
+      continue;
     }
 
-    const sorted = [...primaryIds].sort((a, b) => {
-      const prioA = getEffectivePriority(a);
-      const prioB = getEffectivePriority(b);
-      if (prioB !== prioA) return prioB - prioA;
-      return a.localeCompare(b);
+    notes.push({
+      kind: "pipeline_stage",
+      severity: "warning",
+      code: "WARN_MULTIPLE_PRIMARY_BUNDLED",
+      message: `Stack ${stack.stackId} has ${primaryIds.length} bundled primary alternates; resolving by priority.`,
+      relatedStackIds: [stack.stackId],
+      relatedBlockIds: primaryIds,
     });
 
-    const selectedId = sorted[0];
+    const candidates = primaryIds.map(id => blocksById.get(id)!).filter(Boolean);
+    const result = resolveByPriority(candidates, {
+      moltType: "primary",
+      stackId: stack.stackId,
+      reason: "select single primary from bundled alternates",
+    }, tracePush);
 
+    if (result.error) {
+      continue;
+    }
+
+    const selectedId = result.winner!.id;
     selections.push({
       stackId: stack.stackId,
       selectedPrimaryId: selectedId,
       candidateIds: primaryIds,
-    });
-
-    notes.push({
-      kind: "pipeline_stage",
-      severity: "info",
-      code: "INFO_PRIMARY_SELECTED",
-      message: `Stack ${stack.stackId}: selected primary ${selectedId}${primaryIds.length > 1 ? ` from ${primaryIds.length} candidates` : ""}.`,
-      relatedStackIds: [stack.stackId],
-      relatedBlockIds: [selectedId],
     });
   }
 

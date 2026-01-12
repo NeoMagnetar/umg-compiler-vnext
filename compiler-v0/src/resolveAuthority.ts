@@ -1,4 +1,5 @@
 import type { Block, MoltType, TraceEvent } from "./types.js";
+import { sortByPriorityGroupAndOrder } from "./priority.js";
 
 const MOLT_ORDER: MoltType[] = [
   "trigger",
@@ -36,14 +37,6 @@ export function resolveAuthority(
   const notes: ResolveAuthorityResult["notes"] = [];
   const stacks: AuthorityStackResult[] = [];
 
-  const getEffectivePriority = (blockId: string): number => {
-    if (priorityOverrides.has(blockId)) {
-      return priorityOverrides.get(blockId)!;
-    }
-    const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
-  };
-
   for (const input of stackInputs) {
     const byMoltType = Object.fromEntries(
       MOLT_ORDER.map(t => [t, [] as string[]])
@@ -57,12 +50,7 @@ export function resolveAuthority(
     }
 
     for (const molt of MOLT_ORDER) {
-      byMoltType[molt].sort((a, b) => {
-        const prioA = getEffectivePriority(a);
-        const prioB = getEffectivePriority(b);
-        if (prioB !== prioA) return prioB - prioA;
-        return a.localeCompare(b);
-      });
+      byMoltType[molt] = sortByPriorityGroupAndOrder(byMoltType[molt], blocksById, priorityOverrides);
     }
 
     const orderedBlockIds: string[] = [];

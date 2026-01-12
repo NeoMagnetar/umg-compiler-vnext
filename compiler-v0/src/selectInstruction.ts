@@ -1,4 +1,5 @@
 import type { Block, TraceEvent, RuntimeBundle } from "./types.js";
+import { resolveByPriority, sortByPriorityGroupAndOrder, type TracePushFn } from "./priority.js";
 
 export interface StackInstructionInput {
   stackId: string;
@@ -42,21 +43,12 @@ export function selectInstruction(
   const errors: SelectInstructionResult["errors"] = [];
   const selections: InstructionSelection[] = [];
 
-  const getEffectivePriority = (blockId: string): number => {
-    if (priorityOverrides.has(blockId)) {
-      return priorityOverrides.get(blockId)!;
+  const tracePush: TracePushFn = (evt) => {
+    if (evt.severity === "error") {
+      errors.push(evt);
+    } else {
+      notes.push(evt);
     }
-    const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
-  };
-
-  const sortByPriorityDesc = (ids: string[]): string[] => {
-    return [...ids].sort((a, b) => {
-      const prioA = getEffectivePriority(a);
-      const prioB = getEffectivePriority(b);
-      if (prioB !== prioA) return prioB - prioA;
-      return a.localeCompare(b);
-    });
   };
 
   for (const stack of stacks) {
@@ -94,35 +86,41 @@ export function selectInstruction(
       const intent = instructionOnlyBundleContainingAll.intent ?? "ranked";
 
       if (intent === "alternates") {
-        const sorted = sortByPriorityDesc(instructionIds);
-        const selectedId = sorted[0];
-
         notes.push({
           kind: "pipeline_stage",
           severity: "warning",
           code: "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
-          message: `Stack ${stack.stackId} has ${instructionIds.length} bundled instruction alternates; selecting highest priority.`,
+          message: `Stack ${stack.stackId} has ${instructionIds.length} bundled instruction alternates; resolving by priority.`,
           relatedStackIds: [stack.stackId],
           relatedBlockIds: instructionIds,
         });
 
-        notes.push({
-          kind: "pipeline_stage",
-          severity: "info",
-          code: "INFO_INSTRUCTION_SELECTED",
-          message: `Stack ${stack.stackId}: selected instruction ${selectedId} from ${instructionIds.length} candidates.`,
-          relatedStackIds: [stack.stackId],
-          relatedBlockIds: [selectedId],
-        });
+        const candidates = instructionIds.map(id => blocksById.get(id)!).filter(Boolean);
+        const result = resolveByPriority(candidates, {
+          moltType: "instruction",
+          stackId: stack.stackId,
+          reason: "select single instruction from bundled alternates",
+        }, tracePush);
+
+        if (result.error) {
+          selections.push({
+            stackId: stack.stackId,
+            activeInstructionIds: instructionIds,
+            candidateIds: instructionIds,
+          });
+          continue;
+        }
 
         selections.push({
           stackId: stack.stackId,
-          activeInstructionIds: [selectedId],
+          activeInstructionIds: [result.winner!.id],
           candidateIds: instructionIds,
         });
       } else {
-        const orderedInBundle = instructionOnlyBundleContainingAll.blockIds.filter(id =>
-          instructionIds.includes(id)
+        const orderedInBundle = sortByPriorityGroupAndOrder(
+          instructionOnlyBundleContainingAll.blockIds.filter(id => instructionIds.includes(id)),
+          blocksById,
+          priorityOverrides
         );
 
         notes.push({

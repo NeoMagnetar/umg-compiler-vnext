@@ -1,4 +1,5 @@
 import type { Block, TraceEvent, RuntimeBundle } from "./types.js";
+import { resolveByPriority, sortByPriorityGroupAndOrder, type TracePushFn } from "./priority.js";
 
 export interface StackSubjectInput {
   stackId: string;
@@ -42,21 +43,12 @@ export function selectSubject(
   const errors: SelectSubjectResult["errors"] = [];
   const selections: SubjectSelection[] = [];
 
-  const getEffectivePriority = (blockId: string): number => {
-    if (priorityOverrides.has(blockId)) {
-      return priorityOverrides.get(blockId)!;
+  const tracePush: TracePushFn = (evt) => {
+    if (evt.severity === "error") {
+      errors.push(evt);
+    } else {
+      notes.push(evt);
     }
-    const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
-  };
-
-  const sortByPriorityDesc = (ids: string[]): string[] => {
-    return [...ids].sort((a, b) => {
-      const prioA = getEffectivePriority(a);
-      const prioB = getEffectivePriority(b);
-      if (prioB !== prioA) return prioB - prioA;
-      return a.localeCompare(b);
-    });
   };
 
   for (const stack of stacks) {
@@ -94,35 +86,41 @@ export function selectSubject(
       const intent = subjectOnlyBundleContainingAll.intent ?? "ranked";
 
       if (intent === "alternates") {
-        const sorted = sortByPriorityDesc(subjectIds);
-        const selectedId = sorted[0];
-
         notes.push({
           kind: "pipeline_stage",
           severity: "warning",
           code: "WARN_MULTIPLE_SUBJECT_BUNDLED",
-          message: `Stack ${stack.stackId} has ${subjectIds.length} bundled subject alternates; selecting highest priority.`,
+          message: `Stack ${stack.stackId} has ${subjectIds.length} bundled subject alternates; resolving by priority.`,
           relatedStackIds: [stack.stackId],
           relatedBlockIds: subjectIds,
         });
 
-        notes.push({
-          kind: "pipeline_stage",
-          severity: "info",
-          code: "INFO_SUBJECT_SELECTED",
-          message: `Stack ${stack.stackId}: selected subject ${selectedId} from ${subjectIds.length} candidates.`,
-          relatedStackIds: [stack.stackId],
-          relatedBlockIds: [selectedId],
-        });
+        const candidates = subjectIds.map(id => blocksById.get(id)!).filter(Boolean);
+        const result = resolveByPriority(candidates, {
+          moltType: "subject",
+          stackId: stack.stackId,
+          reason: "select single subject from bundled alternates",
+        }, tracePush);
+
+        if (result.error) {
+          selections.push({
+            stackId: stack.stackId,
+            activeSubjectIds: subjectIds,
+            candidateIds: subjectIds,
+          });
+          continue;
+        }
 
         selections.push({
           stackId: stack.stackId,
-          activeSubjectIds: [selectedId],
+          activeSubjectIds: [result.winner!.id],
           candidateIds: subjectIds,
         });
       } else {
-        const orderedInBundle = subjectOnlyBundleContainingAll.blockIds.filter(id =>
-          subjectIds.includes(id)
+        const orderedInBundle = sortByPriorityGroupAndOrder(
+          subjectOnlyBundleContainingAll.blockIds.filter(id => subjectIds.includes(id)),
+          blocksById,
+          priorityOverrides
         );
 
         notes.push({

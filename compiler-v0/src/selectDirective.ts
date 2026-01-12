@@ -1,4 +1,5 @@
 import type { Block, TraceEvent, RuntimeBundle } from "./types.js";
+import { resolveByPriority, sortByPriorityGroupAndOrder, type TracePushFn } from "./priority.js";
 
 export interface StackDirectiveInput {
   stackId: string;
@@ -41,21 +42,12 @@ export function selectDirective(
   const errors: SelectDirectiveResult["errors"] = [];
   const selections: DirectiveSelection[] = [];
 
-  const getEffectivePriority = (blockId: string): number => {
-    if (priorityOverrides.has(blockId)) {
-      return priorityOverrides.get(blockId)!;
+  const tracePush: TracePushFn = (evt) => {
+    if (evt.severity === "error") {
+      errors.push(evt);
+    } else {
+      notes.push(evt);
     }
-    const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
-  };
-
-  const sortByPriorityDesc = (ids: string[]): string[] => {
-    return [...ids].sort((a, b) => {
-      const prioA = getEffectivePriority(a);
-      const prioB = getEffectivePriority(b);
-      if (prioB !== prioA) return prioB - prioA;
-      return a.localeCompare(b);
-    });
   };
 
   for (const stack of stacks) {
@@ -91,34 +83,39 @@ export function selectDirective(
       const intent = directiveOnlyBundleContainingAll.intent ?? "ranked";
 
       if (intent === "alternates") {
-        const sorted = sortByPriorityDesc(directiveIds);
-        const selectedId = sorted[0];
-
         notes.push({
           kind: "pipeline_stage",
           severity: "warning",
           code: "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-          message: `Stack ${stack.stackId} has ${directiveIds.length} bundled directive alternates; selecting highest priority.`,
+          message: `Stack ${stack.stackId} has ${directiveIds.length} bundled directive alternates; resolving by priority.`,
           relatedStackIds: [stack.stackId],
           relatedBlockIds: directiveIds,
         });
 
-        notes.push({
-          kind: "pipeline_stage",
-          severity: "info",
-          code: "INFO_DIRECTIVE_SELECTED",
-          message: `Stack ${stack.stackId}: selected directive ${selectedId} from ${directiveIds.length} candidates.`,
-          relatedStackIds: [stack.stackId],
-          relatedBlockIds: [selectedId],
-        });
+        const candidates = directiveIds.map(id => blocksById.get(id)!).filter(Boolean);
+        const result = resolveByPriority(candidates, {
+          moltType: "directive",
+          stackId: stack.stackId,
+          reason: "select single directive from bundled alternates",
+        }, tracePush);
+
+        if (result.error) {
+          selections.push({
+            stackId: stack.stackId,
+            activeDirectiveIds: directiveIds,
+          });
+          continue;
+        }
 
         selections.push({
           stackId: stack.stackId,
-          activeDirectiveIds: [selectedId],
+          activeDirectiveIds: [result.winner!.id],
         });
       } else {
-        const orderedInBundle = directiveOnlyBundleContainingAll.blockIds.filter(id =>
-          directiveIds.includes(id)
+        const orderedInBundle = sortByPriorityGroupAndOrder(
+          directiveOnlyBundleContainingAll.blockIds.filter(id => directiveIds.includes(id)),
+          blocksById,
+          priorityOverrides
         );
 
         notes.push({
@@ -136,7 +133,7 @@ export function selectDirective(
         });
       }
     } else {
-      const sorted = sortByPriorityDesc(directiveIds);
+      const sorted = sortByPriorityGroupAndOrder(directiveIds, blocksById, priorityOverrides);
 
       notes.push({
         kind: "pipeline_stage",

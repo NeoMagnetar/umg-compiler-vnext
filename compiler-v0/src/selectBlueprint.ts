@@ -1,4 +1,5 @@
 import type { Block, TraceEvent, RuntimeBundle } from "./types.js";
+import { resolveByPriority, sortByPriorityGroupAndOrder, type TracePushFn } from "./priority.js";
 
 export interface StackBlueprintInput {
   stackId: string;
@@ -42,21 +43,12 @@ export function selectBlueprint(
   const errors: SelectBlueprintResult["errors"] = [];
   const selections: BlueprintSelection[] = [];
 
-  const getEffectivePriority = (blockId: string): number => {
-    if (priorityOverrides.has(blockId)) {
-      return priorityOverrides.get(blockId)!;
+  const tracePush: TracePushFn = (evt) => {
+    if (evt.severity === "error") {
+      errors.push(evt);
+    } else {
+      notes.push(evt);
     }
-    const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
-  };
-
-  const sortByPriorityDesc = (ids: string[]): string[] => {
-    return [...ids].sort((a, b) => {
-      const prioA = getEffectivePriority(a);
-      const prioB = getEffectivePriority(b);
-      if (prioB !== prioA) return prioB - prioA;
-      return a.localeCompare(b);
-    });
   };
 
   for (const stack of stacks) {
@@ -94,35 +86,41 @@ export function selectBlueprint(
       const intent = blueprintOnlyBundleContainingAll.intent ?? "ranked";
 
       if (intent === "alternates") {
-        const sorted = sortByPriorityDesc(blueprintIds);
-        const selectedId = sorted[0];
-
         notes.push({
           kind: "pipeline_stage",
           severity: "warning",
           code: "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
-          message: `Stack ${stack.stackId} has ${blueprintIds.length} bundled blueprint alternates; selecting highest priority.`,
+          message: `Stack ${stack.stackId} has ${blueprintIds.length} bundled blueprint alternates; resolving by priority.`,
           relatedStackIds: [stack.stackId],
           relatedBlockIds: blueprintIds,
         });
 
-        notes.push({
-          kind: "pipeline_stage",
-          severity: "info",
-          code: "INFO_BLUEPRINT_SELECTED",
-          message: `Stack ${stack.stackId}: selected blueprint ${selectedId} from ${blueprintIds.length} candidates.`,
-          relatedStackIds: [stack.stackId],
-          relatedBlockIds: [selectedId],
-        });
+        const candidates = blueprintIds.map(id => blocksById.get(id)!).filter(Boolean);
+        const result = resolveByPriority(candidates, {
+          moltType: "blueprint",
+          stackId: stack.stackId,
+          reason: "select single blueprint from bundled alternates",
+        }, tracePush);
+
+        if (result.error) {
+          selections.push({
+            stackId: stack.stackId,
+            activeBlueprintIds: blueprintIds,
+            candidateIds: blueprintIds,
+          });
+          continue;
+        }
 
         selections.push({
           stackId: stack.stackId,
-          activeBlueprintIds: [selectedId],
+          activeBlueprintIds: [result.winner!.id],
           candidateIds: blueprintIds,
         });
       } else {
-        const orderedInBundle = blueprintOnlyBundleContainingAll.blockIds.filter(id =>
-          blueprintIds.includes(id)
+        const orderedInBundle = sortByPriorityGroupAndOrder(
+          blueprintOnlyBundleContainingAll.blockIds.filter(id => blueprintIds.includes(id)),
+          blocksById,
+          priorityOverrides
         );
 
         notes.push({

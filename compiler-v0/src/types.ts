@@ -9,12 +9,15 @@ export type MoltType =
 
 export type BlockRole = "primary_shell" | "merge_contributor" | "annotation" | "off";
 
+export type PriorityGroup = "Override" | "Explicit" | "Default" | "Fallback";
+
 export interface Block {
   id: string;
   title?: string;        // short UI label
   moltType: MoltType;
   role?: BlockRole;
-  priorityOrder?: number; // higher = stronger within same moltType
+  priorityGroup?: PriorityGroup; // categorical tier: Override > Explicit > Default > Fallback
+  priorityOrder?: number; // tie-breaker within same group (1 = highest, lower wins)
   content: string;
   tags?: string[];
 }
@@ -135,9 +138,23 @@ export interface Sleeve {
 
 export type Severity = "info" | "warning" | "error";
 
+export type TraceEventKind = "pipeline_stage" | "validation_failed" | "note" | "priority_resolution";
+
+export interface PriorityCandidate {
+  id: string;
+  priorityGroup: PriorityGroup;
+  priorityOrder?: number;
+}
+
+export interface PriorityResolutionContext {
+  moltType: MoltType;
+  stackId?: string;
+  reason: string;
+}
+
 export interface TraceEvent {
   id: string;
-  kind: "pipeline_stage" | "validation_failed" | "note";
+  kind: TraceEventKind;
   severity: Severity;
   code: string;
   message: string;
@@ -146,6 +163,10 @@ export interface TraceEvent {
   relatedStackIds?: string[];
   relatedTriggerIds?: string[];
   timestamp?: string;
+
+  priorityContext?: PriorityResolutionContext;
+  priorityCandidates?: PriorityCandidate[];
+  priorityWinnerId?: string;
 }
 
 export interface Trace {
