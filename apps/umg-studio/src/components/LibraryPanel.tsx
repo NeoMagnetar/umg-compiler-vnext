@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt, getBlocksById } from "@/lib/sleeveEdit";
+import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt, getBlocksById, addStack, parseSleeve } from "@/lib/sleeveEdit";
 import { 
   listLibraryBlocks, 
   saveBlockTemplate, 
@@ -7,8 +7,8 @@ import {
   mintBlockId,
   LibraryBlock 
 } from "@/lib/library/store";
-import { listNeoBlocks, NeoBlock, getTotalBlockCount } from "@/lib/library/neoblockStore";
-import { listNeoStacks, saveNeoStack, deleteNeoStack, NeoStack } from "@/lib/library/neostackStore";
+import { listNeoBlocks, loadNeoBlock, NeoBlock, getTotalBlockCount } from "@/lib/library/neoblockStore";
+import { listNeoStacks, saveNeoStack, deleteNeoStack, loadNeoStack, NeoStack } from "@/lib/library/neostackStore";
 import { listSleeves, saveSleeveTemplate, loadSleeveTemplate, deleteSleeveTemplate, SleeveTemplate } from "@/lib/library/sleeveStore";
 import NeoBlockPreview from "./NeoBlockPreview";
 
@@ -166,6 +166,130 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
     deleteSleeveTemplate(id);
     setSleeves(listSleeves());
     showMessage("Sleeve deleted");
+  };
+
+  const handleInsertNeoBlock = (neoBlock: NeoBlock) => {
+    if (!insertStackId) {
+      showMessage("Select a target stack first");
+      return;
+    }
+
+    let currentJson = sleeveJson;
+    let insertedCount = 0;
+    const laneOrder: (keyof NeoBlock["lanes"])[] = [
+      "trigger", "directive", "instruction", "subject", "primary", "philosophy", "blueprint"
+    ];
+
+    for (const lane of laneOrder) {
+      const blockIds = neoBlock.lanes[lane];
+      if (!blockIds || blockIds.length === 0) continue;
+
+      for (const sourceBlockId of blockIds) {
+        const sourceBlock = blocksById[sourceBlockId];
+        const newId = mintBlockId(lane, sourceBlock?.title ?? "template");
+        
+        const blockData = sourceBlock ?? {
+          title: "(missing template)",
+          moltType: lane,
+          content: "",
+          tags: ["placeholder"],
+          priorityOrder: 10
+        };
+
+        const result = insertBlockIntoStackByMolt(currentJson, insertStackId, {
+          id: newId,
+          title: blockData.title,
+          moltType: lane,
+          content: blockData.content || "",
+          tags: [...(blockData.tags || [])],
+          priorityOrder: blockData.priorityOrder ?? 10
+        });
+
+        if (result.nextJson) {
+          currentJson = result.nextJson;
+          insertedCount++;
+        }
+      }
+    }
+
+    if (insertedCount > 0) {
+      onChangeSleeveJson(currentJson);
+      showMessage(`Inserted ${insertedCount} blocks from NeoBlock`);
+    } else {
+      showMessage("Error: No blocks inserted");
+    }
+  };
+
+  const handleInsertNeoStack = (neoStackId: string) => {
+    const neoStack = loadNeoStack(neoStackId);
+    if (!neoStack) {
+      showMessage("Error: NeoStack not found");
+      return;
+    }
+
+    let currentJson = sleeveJson;
+    let stacksCreated = 0;
+    let blocksInserted = 0;
+    const laneOrder: (keyof NeoBlock["lanes"])[] = [
+      "trigger", "directive", "instruction", "subject", "primary", "philosophy", "blueprint"
+    ];
+
+    for (const neoBlockId of neoStack.neoBlockIds) {
+      const neoBlock = loadNeoBlock(neoBlockId);
+      if (!neoBlock) continue;
+
+      const newStackResult = addStack(currentJson, {
+        name: `Stack: ${neoBlock.name}`
+      });
+
+      if (!newStackResult.nextJson) continue;
+      currentJson = newStackResult.nextJson;
+
+      const { sleeve } = parseSleeve(currentJson);
+      const newStackId = sleeve?.stacks?.[sleeve.stacks.length - 1]?.id;
+      if (!newStackId) continue;
+
+      stacksCreated++;
+
+      for (const lane of laneOrder) {
+        const blockIds = neoBlock.lanes[lane];
+        if (!blockIds || blockIds.length === 0) continue;
+
+        for (const sourceBlockId of blockIds) {
+          const sourceBlock = blocksById[sourceBlockId];
+          const newId = mintBlockId(lane, sourceBlock?.title ?? "template");
+          
+          const blockData = sourceBlock ?? {
+            title: "(missing template)",
+            moltType: lane,
+            content: "",
+            tags: ["placeholder"],
+            priorityOrder: 10
+          };
+
+          const result = insertBlockIntoStackByMolt(currentJson, newStackId, {
+            id: newId,
+            title: blockData.title,
+            moltType: lane,
+            content: blockData.content || "",
+            tags: [...(blockData.tags || [])],
+            priorityOrder: blockData.priorityOrder ?? 10
+          });
+
+          if (result.nextJson) {
+            currentJson = result.nextJson;
+            blocksInserted++;
+          }
+        }
+      }
+    }
+
+    if (stacksCreated > 0) {
+      onChangeSleeveJson(currentJson);
+      showMessage(`Created ${stacksCreated} stacks with ${blocksInserted} blocks`);
+    } else {
+      showMessage("Error: No stacks created");
+    }
   };
 
   const toggleNeoBlockSelect = (id: string) => {
@@ -448,24 +572,45 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
                     </div>
                   )}
                   
-                  <button
-                    disabled
-                    data-testid={`button-insert-neoblock-${nb.id}`}
-                    style={{
-                      marginTop: 8,
-                      width: "100%",
-                      padding: "5px 8px",
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: 4,
-                      color: "inherit",
-                      fontSize: 10,
-                      cursor: "not-allowed",
-                      opacity: 0.4
-                    }}
-                  >
-                    Insert NeoBlock (coming soon)
-                  </button>
+                  <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+                    <select
+                      value={insertStackId}
+                      onChange={(e) => setInsertStackId(e.target.value)}
+                      data-testid={`select-neoblock-target-${nb.id}`}
+                      style={{
+                        width: "100%",
+                        padding: "4px 6px",
+                        background: "rgba(0,0,0,0.3)",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        borderRadius: 4,
+                        color: "inherit",
+                        fontSize: 10
+                      }}
+                    >
+                      <option value="">Select target stack...</option>
+                      {stacks.map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => handleInsertNeoBlock(nb)}
+                      disabled={!insertStackId}
+                      data-testid={`button-insert-neoblock-${nb.id}`}
+                      style={{
+                        width: "100%",
+                        padding: "5px 8px",
+                        background: insertStackId ? "rgba(34, 197, 94, 0.2)" : "rgba(255,255,255,0.03)",
+                        border: insertStackId ? "1px solid rgba(34, 197, 94, 0.3)" : "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: 4,
+                        color: insertStackId ? "#22c55e" : "inherit",
+                        fontSize: 10,
+                        cursor: insertStackId ? "pointer" : "not-allowed",
+                        opacity: insertStackId ? 1 : 0.4
+                      }}
+                    >
+                      Insert NeoBlock into Stack
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -658,6 +803,24 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
                       })}
                     </div>
                   )}
+                  
+                  <button
+                    onClick={() => handleInsertNeoStack(ns.id)}
+                    data-testid={`button-insert-neostack-${ns.id}`}
+                    style={{
+                      marginTop: 8,
+                      width: "100%",
+                      padding: "5px 8px",
+                      background: "rgba(34, 197, 94, 0.2)",
+                      border: "1px solid rgba(34, 197, 94, 0.3)",
+                      borderRadius: 4,
+                      color: "#22c55e",
+                      fontSize: 10,
+                      cursor: "pointer"
+                    }}
+                  >
+                    Insert NeoStack into Sleeve
+                  </button>
                 </div>
               ))}
             </div>
