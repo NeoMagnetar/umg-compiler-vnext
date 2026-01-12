@@ -24,21 +24,36 @@ export default function RightPanel({ sleeveJson, setSleeveJson, resultJson, sele
     <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 8 }}>
       <div style={{ display: "flex", gap: 8 }}>
         <button 
-          className={`btn ${tab === "input" ? "hotpink" : ""}`} 
+          className="btn"
           onClick={() => setTab("input")}
+          style={{
+            background: tab === "input" ? "rgba(0, 255, 0, 0.15)" : undefined,
+            borderColor: tab === "input" ? "rgba(0, 255, 0, 0.3)" : undefined,
+            color: tab === "input" ? "#00ff00" : undefined
+          }}
         >
           Input
         </button>
         <button 
-          className={`btn ${tab === "output" ? "hotpink" : ""}`} 
+          className="btn"
           onClick={() => setTab("output")}
+          style={{
+            background: tab === "output" ? "rgba(0, 255, 0, 0.15)" : undefined,
+            borderColor: tab === "output" ? "rgba(0, 255, 0, 0.3)" : undefined,
+            color: tab === "output" ? "#00ff00" : undefined
+          }}
         >
           Output
         </button>
         <button 
-          className={`btn ${tab === "block" ? "hotpink" : ""}`} 
+          className="btn"
           onClick={() => setTab("block")}
-          style={{ position: "relative" }}
+          style={{
+            position: "relative",
+            background: tab === "block" ? "rgba(0, 255, 0, 0.15)" : undefined,
+            borderColor: tab === "block" ? "rgba(0, 255, 0, 0.3)" : undefined,
+            color: tab === "block" ? "#00ff00" : undefined
+          }}
         >
           Block
           {selectedBlockId && (
@@ -48,7 +63,7 @@ export default function RightPanel({ sleeveJson, setSleeveJson, resultJson, sele
               right: -4,
               width: 8,
               height: 8,
-              background: "#ff69b4",
+              background: "#00ff00",
               borderRadius: "50%"
             }} />
           )}

@@ -165,10 +165,10 @@ export default function CenterWorkspace({
             data-testid={`tab-${tab.id}`}
             style={{
               padding: "6px 16px",
-              background: activeTab === tab.id ? "rgba(255,255,255,0.1)" : "transparent",
-              border: activeTab === tab.id ? "1px solid rgba(255,255,255,0.2)" : "1px solid transparent",
+              background: activeTab === tab.id ? "rgba(0, 255, 0, 0.15)" : "transparent",
+              border: activeTab === tab.id ? "1px solid rgba(0, 255, 0, 0.3)" : "1px solid transparent",
               borderRadius: 6,
-              color: activeTab === tab.id ? "#fff" : "rgba(255,255,255,0.5)",
+              color: activeTab === tab.id ? "#00ff00" : "rgba(255,255,255,0.5)",
               fontSize: 12,
               fontWeight: activeTab === tab.id ? 600 : 400,
               cursor: "pointer",

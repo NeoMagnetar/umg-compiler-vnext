@@ -332,10 +332,10 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
               flex: 1,
               minWidth: 70,
               padding: "8px 10px",
-              background: tab === t.key ? "rgba(168, 85, 247, 0.2)" : "rgba(255,255,255,0.05)",
-              border: tab === t.key ? "1px solid rgba(168, 85, 247, 0.4)" : "1px solid rgba(255,255,255,0.1)",
+              background: tab === t.key ? "rgba(0, 255, 0, 0.15)" : "rgba(255,255,255,0.05)",
+              border: tab === t.key ? "1px solid rgba(0, 255, 0, 0.3)" : "1px solid rgba(255,255,255,0.1)",
               borderRadius: 6,
-              color: tab === t.key ? "#a855f7" : "inherit",
+              color: tab === t.key ? "#00ff00" : "inherit",
               fontSize: 11,
               fontWeight: tab === t.key ? 600 : 400,
               cursor: "pointer"

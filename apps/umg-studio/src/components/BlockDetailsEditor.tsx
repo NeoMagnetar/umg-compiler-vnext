@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { findBlockInSleeve, updateBlock, deleteBlock, BlockPatch } from "@/lib/sleeveEdit";
+import { saveBlockTemplate, listLibraryBlocks } from "@/lib/library/store";
 
 interface BlockDetailsEditorProps {
   sleeveJson: string;
@@ -19,6 +20,7 @@ export default function BlockDetailsEditor({
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   const blockData = useMemo(() => {
     if (!selectedBlockId) return null;
@@ -108,6 +110,21 @@ export default function BlockDetailsEditor({
       onClearSelection?.();
     }
     setShowDeleteConfirm(false);
+  };
+
+  const handleSaveToLibrary = () => {
+    if (!blockData) return;
+    
+    saveBlockTemplate({
+      title: blockData.title ?? "Untitled",
+      moltType: blockData.moltType ?? "instruction",
+      content: blockData.content ?? "",
+      tags: blockData.tags ?? [],
+      priorityOrder: blockData.priorityOrder ?? 10
+    });
+    
+    setSaveMessage("Saved to library!");
+    setTimeout(() => setSaveMessage(null), 2000);
   };
 
   return (
@@ -298,6 +315,39 @@ export default function BlockDetailsEditor({
       </div>
 
       <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        {saveMessage && (
+          <div style={{
+            padding: 8,
+            marginBottom: 8,
+            background: "rgba(0, 255, 0, 0.15)",
+            borderRadius: 4,
+            fontSize: 11,
+            color: "#00ff00",
+            textAlign: "center"
+          }}>
+            {saveMessage}
+          </div>
+        )}
+        
+        <button
+          onClick={handleSaveToLibrary}
+          data-testid="button-save-block-library"
+          style={{
+            width: "100%",
+            padding: "8px 12px",
+            background: "rgba(0, 255, 0, 0.15)",
+            border: "1px solid rgba(0, 255, 0, 0.3)",
+            borderRadius: 4,
+            color: "#00ff00",
+            fontSize: 12,
+            cursor: "pointer",
+            fontWeight: 500,
+            marginBottom: 8
+          }}
+        >
+          Save to Library
+        </button>
+
         <button
           onClick={() => setShowDeleteConfirm(true)}
           data-testid="button-delete-block"

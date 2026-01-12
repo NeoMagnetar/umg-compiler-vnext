@@ -78,10 +78,10 @@ export default function BottomPanel({
       data-testid={`bottom-panel-tab-${tab}`}
       style={{
         padding: "4px 12px",
-        background: activeTab === tab ? "rgba(255,255,255,0.1)" : "transparent",
-        border: "none",
+        background: activeTab === tab ? "rgba(0, 255, 0, 0.15)" : "transparent",
+        border: activeTab === tab ? "1px solid rgba(0, 255, 0, 0.3)" : "1px solid transparent",
         borderRadius: 4,
-        color: activeTab === tab ? "#fff" : "rgba(255,255,255,0.6)",
+        color: activeTab === tab ? "#00ff00" : "rgba(255,255,255,0.6)",
         fontSize: 11,
         cursor: "pointer",
         transition: "all 0.15s"

@@ -27,6 +27,7 @@ export default function TemplatePanel({ sleeveJson, onChangeSleeveJson }: Templa
   const [insertStackId, setInsertStackId] = useState<string>("");
   const [moltFilter, setMoltFilter] = useState<string>("all");
   const [message, setMessage] = useState<string | null>(null);
+  const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
 
   const stacks = getStacks(sleeveJson);
 
@@ -164,52 +165,109 @@ export default function TemplatePanel({ sleeveJson, onChangeSleeveJson }: Templa
             {moltFilter === "all" ? "No saved blocks" : `No ${moltFilter} blocks`}
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {filteredLibraryBlocks.map(b => (
               <div 
                 key={b.id}
                 style={{
-                  padding: "8px 10px",
-                  background: "rgba(255,255,255,0.03)",
-                  borderRadius: 4,
-                  fontSize: 12
+                  padding: 10,
+                  background: "rgba(0, 255, 0, 0.05)",
+                  borderRadius: 6,
+                  border: "1px solid rgba(0, 255, 0, 0.15)"
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
-                    <div style={{ fontWeight: 500 }}>{b.title}</div>
-                    <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{b.moltType}</div>
+                    <div style={{ fontWeight: 500, fontSize: 12 }}>{b.title}</div>
+                    <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
+                      {b.moltType} | {b.tags?.length || 0} tags
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleDeleteFromLibrary(b.id)}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#ef4444",
-                      cursor: "pointer",
-                      fontSize: 14,
-                      padding: 2,
-                      opacity: 0.6
-                    }}
-                    title="Remove from library"
-                  >
-                    ×
-                  </button>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <button
+                      onClick={() => setExpandedBlockId(expandedBlockId === b.id ? null : b.id)}
+                      style={{
+                        padding: "3px 8px",
+                        background: expandedBlockId === b.id ? "rgba(0, 255, 0, 0.2)" : "transparent",
+                        border: "1px solid rgba(0, 255, 0, 0.3)",
+                        borderRadius: 4,
+                        color: "#00ff00",
+                        fontSize: 10,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {expandedBlockId === b.id ? "Hide" : "Details"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteFromLibrary(b.id)}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        color: "#ef4444",
+                        cursor: "pointer",
+                        fontSize: 14,
+                        padding: 2,
+                        opacity: 0.6
+                      }}
+                      title="Remove from library"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
+                
+                {expandedBlockId === b.id && (
+                  <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                    {b.content && (
+                      <div style={{
+                        padding: 8,
+                        background: "rgba(0,0,0,0.3)",
+                        borderRadius: 4,
+                        fontSize: 11,
+                        whiteSpace: "pre-wrap",
+                        maxHeight: 120,
+                        overflow: "auto",
+                        lineHeight: 1.4
+                      }}>
+                        {b.content}
+                      </div>
+                    )}
+                    {b.tags && b.tags.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        {b.tags.map((tag, i) => (
+                          <span 
+                            key={i}
+                            style={{ 
+                              fontSize: 9, 
+                              padding: "2px 6px", 
+                              background: "rgba(255,105,180,0.15)",
+                              borderRadius: 3,
+                              color: "#ff69b4"
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <button
                   onClick={() => handleInsertFromLibrary(b)}
                   disabled={!insertStackId}
                   data-testid={`button-insert-template-${b.id}`}
                   style={{
-                    marginTop: 6,
-                    padding: "4px 8px",
-                    background: insertStackId ? "rgba(59, 130, 246, 0.2)" : "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                    marginTop: 8,
+                    width: "100%",
+                    padding: "5px 8px",
+                    background: insertStackId ? "rgba(0, 255, 0, 0.2)" : "rgba(255,255,255,0.03)",
+                    border: insertStackId ? "1px solid rgba(0, 255, 0, 0.3)" : "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 4,
-                    color: "inherit",
+                    color: insertStackId ? "#00ff00" : "inherit",
                     fontSize: 10,
                     cursor: insertStackId ? "pointer" : "not-allowed",
-                    opacity: insertStackId ? 1 : 0.5
+                    opacity: insertStackId ? 1 : 0.4
                   }}
                 >
                   Insert into Stack
