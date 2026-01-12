@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
-import { GraphNode, GraphEdge, GraphData } from "@/lib/graphTypes";
+import { GraphNode } from "@/lib/graphTypes";
 import { parseSleeve } from "@/lib/sleeveEdit";
+import { buildMoltGraph, CompressedGroup } from "@/lib/moltCompression";
+import { Pos } from "@/lib/layoutStore";
 
 const MOLT_ORDER = [
   "trigger",
@@ -26,17 +28,21 @@ interface MoltGraphViewProps {
   sleeveJson: string;
   selectedNodeId?: string | null;
   onSelectNode?: (node: GraphNode | null) => void;
+  compressedGroups?: CompressedGroup[];
+  positions?: Record<string, Pos>;
 }
 
-export default function MoltGraphView({ 
-  sleeveJson, 
-  selectedNodeId, 
-  onSelectNode 
+export default function MoltGraphView({
+  sleeveJson,
+  selectedNodeId,
+  onSelectNode,
+  compressedGroups = [],
+  positions = {}
 }: MoltGraphViewProps) {
-  const { graphData, blocksById, stacks } = useMemo(() => {
+  const { graphData, blocksById, sortedStacks, blockIdToGroup } = useMemo(() => {
     const { sleeve, error } = parseSleeve(sleeveJson);
     if (error || !sleeve) {
-      return { graphData: { nodes: [], edges: [] }, blocksById: {}, stacks: [] };
+      return { graphData: { nodes: [], edges: [] }, blocksById: {}, sortedStacks: [], blockIdToGroup: {} };
     }
 
     const blocksById: Record<string, any> = {};
@@ -48,35 +54,29 @@ export default function MoltGraphView({
     }
 
     const stacks = sleeve.stacks ?? [];
-    const nodes: GraphNode[] = [];
-    const edges: GraphEdge[] = [];
+    const sortedStacks = [...stacks].sort((a, b) => {
+      const aName = (a.name ?? a.id).toLowerCase();
+      const bName = (b.name ?? b.id).toLowerCase();
+      if (aName !== bName) return aName.localeCompare(bName);
+      return a.id.localeCompare(b.id);
+    });
 
-    for (const stack of stacks) {
-      const stackBlockIds: string[] = stack.blockIds ?? [];
-      let prevBlockId: string | null = null;
-
-      for (const blockId of stackBlockIds) {
-        const block = blocksById[blockId];
-        if (block) {
-          nodes.push({
-            id: block.id,
-            label: block.title ?? block.id,
-            kind: "block",
-            payload: block,
-            moltType: block.moltType,
-            tags: block.tags
-          });
-
-          if (prevBlockId) {
-            edges.push({ from: prevBlockId, to: block.id });
-          }
-          prevBlockId = block.id;
-        }
+    const blockIdToGroup: Record<string, CompressedGroup> = {};
+    for (const group of compressedGroups) {
+      for (const blockId of group.blockIds) {
+        blockIdToGroup[blockId] = group;
       }
     }
 
-    return { graphData: { nodes, edges }, blocksById, stacks };
-  }, [sleeveJson]);
+    const graphData = buildMoltGraph({
+      stacks: sortedStacks,
+      blocksById,
+      compressedGroups,
+      positions
+    });
+
+    return { graphData, blocksById, sortedStacks, blockIdToGroup };
+  }, [sleeveJson, compressedGroups, positions]);
 
   const handleNodeClick = (node: GraphNode) => {
     if (onSelectNode) {
@@ -84,7 +84,7 @@ export default function MoltGraphView({
     }
   };
 
-  if (stacks.length === 0) {
+  if (sortedStacks.length === 0) {
     return (
       <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <p className="small" style={{ opacity: 0.5 }}>No stacks defined in sleeve</p>
@@ -92,29 +92,121 @@ export default function MoltGraphView({
     );
   }
 
+  const renderBlockCard = (block: any, isSelected: boolean) => {
+    const node = graphData.nodes.find(n => n.id === block.id);
+    return (
+      <div
+        key={block.id}
+        role="button"
+        tabIndex={0}
+        onClick={() => node && handleNodeClick(node)}
+        onKeyDown={(e) => e.key === "Enter" && node && handleNodeClick(node)}
+        data-testid={`graph-node-${block.id}`}
+        style={{
+          padding: 10,
+          marginTop: 8,
+          background: "rgba(0,0,0,0.25)",
+          borderRadius: 10,
+          cursor: "pointer",
+          border: isSelected
+            ? "2px solid rgba(255,255,255,0.65)"
+            : "1px solid rgba(255,255,255,0.12)",
+          boxShadow: isSelected
+            ? "0 0 0 3px rgba(255,255,255,0.12)"
+            : "none",
+          transition: "border 0.15s, box-shadow 0.15s"
+        }}
+      >
+        <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 2 }}>
+          {block.title ?? block.id}
+        </div>
+        <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
+          {block.id}
+        </div>
+      </div>
+    );
+  };
+
+  const renderCompressedCard = (group: CompressedGroup, isSelected: boolean) => {
+    const node = graphData.nodes.find(n => n.id === group.id);
+    const modeColor = group.mode === "bundle" ? "#22c55e" : "#a855f7";
+
+    return (
+      <div
+        key={group.id}
+        role="button"
+        tabIndex={0}
+        onClick={() => node && handleNodeClick(node)}
+        onKeyDown={(e) => e.key === "Enter" && node && handleNodeClick(node)}
+        data-testid={`compressed-node-${group.id}`}
+        style={{
+          padding: 10,
+          marginTop: 8,
+          background: `${modeColor}22`,
+          borderRadius: 10,
+          cursor: "pointer",
+          border: isSelected
+            ? `2px solid ${modeColor}`
+            : `1px solid ${modeColor}66`,
+          boxShadow: isSelected
+            ? `0 0 0 3px ${modeColor}33`
+            : "none",
+          transition: "border 0.15s, box-shadow 0.15s"
+        }}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          marginBottom: 4
+        }}>
+          <span style={{
+            fontSize: 9,
+            fontWeight: 700,
+            padding: "2px 6px",
+            background: modeColor,
+            color: "#000",
+            borderRadius: 4,
+            textTransform: "uppercase"
+          }}>
+            {group.mode}
+          </span>
+          <span style={{ fontSize: 11, opacity: 0.7 }}>
+            ({group.blockIds.length} blocks)
+          </span>
+        </div>
+        <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
+          {group.blockIds.slice(0, 2).join(", ")}
+          {group.blockIds.length > 2 && "..."}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div style={{ 
-      height: "100%", 
+    <div style={{
+      height: "100%",
       width: "100%",
-      overflow: "auto", 
+      overflow: "auto",
       padding: 12
     }}>
       <div style={{ display: "flex", gap: 16, minWidth: "fit-content" }}>
-        {stacks.map((stack: any) => {
+        {sortedStacks.map((stack: any) => {
           const stackBlockIds: string[] = stack.blockIds ?? [];
+          const processedGroups = new Set<string>();
 
           return (
-            <div 
-              key={stack.id} 
-              style={{ 
-                minWidth: 220, 
-                background: "rgba(255,255,255,0.03)", 
+            <div
+              key={stack.id}
+              style={{
+                minWidth: 220,
+                background: "rgba(255,255,255,0.03)",
                 borderRadius: 8,
                 border: "1px solid rgba(255,255,255,0.1)"
               }}
             >
-              <div style={{ 
-                padding: "10px 12px", 
+              <div style={{
+                padding: "10px 12px",
                 borderBottom: "1px solid rgba(255,255,255,0.1)",
                 background: "rgba(255,255,255,0.02)"
               }}>
@@ -130,7 +222,7 @@ export default function MoltGraphView({
                     .filter(b => b && b.moltType === molt);
 
                   return (
-                    <div 
+                    <div
                       key={molt}
                       style={{
                         marginBottom: 6,
@@ -141,10 +233,10 @@ export default function MoltGraphView({
                         minHeight: 32
                       }}
                     >
-                      <div style={{ 
-                        fontSize: 10, 
-                        textTransform: "uppercase", 
-                        opacity: 0.6, 
+                      <div style={{
+                        fontSize: 10,
+                        textTransform: "uppercase",
+                        opacity: 0.6,
                         marginBottom: blocksInLane.length > 0 ? 6 : 0,
                         letterSpacing: "0.5px",
                         pointerEvents: "none"
@@ -153,9 +245,9 @@ export default function MoltGraphView({
                       </div>
 
                       {blocksInLane.length === 0 ? (
-                        <div style={{ 
-                          fontSize: 11, 
-                          opacity: 0.3, 
+                        <div style={{
+                          fontSize: 11,
+                          opacity: 0.3,
                           fontStyle: "italic",
                           padding: "4px 0"
                         }}>
@@ -163,40 +255,18 @@ export default function MoltGraphView({
                         </div>
                       ) : (
                         blocksInLane.map((block: any) => {
+                          const group = blockIdToGroup[block.id];
+
+                          if (group && !processedGroups.has(group.id)) {
+                            processedGroups.add(group.id);
+                            const isSelected = selectedNodeId === group.id;
+                            return renderCompressedCard(group, isSelected);
+                          } else if (group) {
+                            return null;
+                          }
+
                           const isSelected = block.id === selectedNodeId;
-                          const node = graphData.nodes.find(n => n.id === block.id);
-                          
-                          return (
-                            <div 
-                              key={block.id}
-                              role="button"
-                              tabIndex={0}
-                              onClick={() => node && handleNodeClick(node)}
-                              onKeyDown={(e) => e.key === "Enter" && node && handleNodeClick(node)}
-                              data-testid={`graph-node-${block.id}`}
-                              style={{
-                                padding: 10,
-                                marginTop: 8,
-                                background: "rgba(0,0,0,0.25)",
-                                borderRadius: 10,
-                                cursor: "pointer",
-                                border: isSelected 
-                                  ? "2px solid rgba(255,255,255,0.65)" 
-                                  : "1px solid rgba(255,255,255,0.12)",
-                                boxShadow: isSelected 
-                                  ? "0 0 0 3px rgba(255,255,255,0.12)" 
-                                  : "none",
-                                transition: "border 0.15s, box-shadow 0.15s"
-                              }}
-                            >
-                              <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 2 }}>
-                                {block.title ?? block.id}
-                              </div>
-                              <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
-                                {block.id}
-                              </div>
-                            </div>
-                          );
+                          return renderBlockCard(block, isSelected);
                         })
                       )}
                     </div>

@@ -8,6 +8,11 @@ export type GraphNodeKind =
   | "governance"
   | "compressed";
 
+export interface Pos {
+  x: number;
+  y: number;
+}
+
 export interface GraphNode {
   id: string;
   label: string;
@@ -15,6 +20,14 @@ export interface GraphNode {
   payload: any;
   moltType?: string;
   tags?: string[];
+  pos?: Pos;
+}
+
+export interface CompressedGroupPayload {
+  groupId: string;
+  mode: "bundle" | "merge";
+  blockIds: string[];
+  derivedSummary: string;
 }
 
 export interface GraphEdge {

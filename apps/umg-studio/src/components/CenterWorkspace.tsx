@@ -1,22 +1,41 @@
-import React, { useState, useCallback } from "react";
-import { GraphNode } from "@/lib/graphTypes";
+import React, { useState, useCallback, useEffect } from "react";
+import { GraphNode, Pos } from "@/lib/graphTypes";
+import { CompressedGroup } from "@/lib/moltCompression";
+import { loadLayout, saveLayout, LayoutState, updateNeoPosition } from "@/lib/layoutStore";
 import MoltGraphView from "./graphs/MoltGraphView";
 import NeoGraphView from "./graphs/NeoGraphView";
 import SleeveGraphView from "./graphs/SleeveGraphView";
 import BottomPanel from "./BottomPanel";
 
 type TabId = "molt" | "neo" | "sleeve";
+type PlacementMode = "idle" | "placing" | "moving";
 
 interface CenterWorkspaceProps {
   sleeveJson: string;
   compiled: any;
+  compressedGroups?: CompressedGroup[];
+  onCompressSelection?: (mode: "bundle" | "merge", blockIds: string[], stackId: string) => void;
 }
 
-export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspaceProps) {
+export default function CenterWorkspace({
+  sleeveJson,
+  compiled,
+  compressedGroups = [],
+  onCompressSelection
+}: CenterWorkspaceProps) {
   const [activeTab, setActiveTab] = useState<TabId>("molt");
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [bottomPanelOpen, setBottomPanelOpen] = useState(false);
   const [bottomPanelHeight, setBottomPanelHeight] = useState(180);
+
+  const [layout, setLayout] = useState<LayoutState>(() => loadLayout());
+  const [placementMode, setPlacementMode] = useState<PlacementMode>("idle");
+  const [activePlacementNodeId, setActivePlacementNodeId] = useState<string | null>(null);
+  const [cursorPos, setCursorPos] = useState<Pos | null>(null);
+
+  useEffect(() => {
+    setLayout(loadLayout());
+  }, []);
 
   const handleSelectNode = useCallback((node: GraphNode | null) => {
     setSelectedNode(node);
@@ -28,6 +47,44 @@ export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspac
   const toggleBottomPanel = useCallback(() => {
     setBottomPanelOpen(prev => !prev);
   }, []);
+
+  const handleSetPlacementNode = useCallback((nodeId: string | null) => {
+    if (!nodeId) {
+      setPlacementMode("idle");
+      setActivePlacementNodeId(null);
+      return;
+    }
+
+    const isPlaced = layout.neo[nodeId] !== undefined;
+
+    if (isPlaced) {
+      setPlacementMode("moving");
+    } else {
+      setPlacementMode("placing");
+    }
+    setActivePlacementNodeId(nodeId);
+  }, [layout.neo]);
+
+  const handlePickCell = useCallback((pos: Pos) => {
+    if (placementMode === "idle" || !activePlacementNodeId) {
+      setCursorPos(pos);
+      return;
+    }
+
+    const nextLayout = updateNeoPosition(layout, activePlacementNodeId, pos);
+    setLayout(nextLayout);
+    saveLayout(nextLayout);
+
+    setPlacementMode("idle");
+    setActivePlacementNodeId(null);
+    setCursorPos(null);
+  }, [placementMode, activePlacementNodeId, layout]);
+
+  const handleUpdateNeoPosition = useCallback((nodeId: string, pos: Pos) => {
+    const nextLayout = updateNeoPosition(layout, nodeId, pos);
+    setLayout(nextLayout);
+    saveLayout(nextLayout);
+  }, [layout]);
 
   const tabs: { id: TabId; label: string }[] = [
     { id: "molt", label: "MOLT" },
@@ -43,6 +100,8 @@ export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspac
             sleeveJson={sleeveJson}
             selectedNodeId={selectedNode?.id}
             onSelectNode={handleSelectNode}
+            compressedGroups={compressedGroups}
+            positions={layout.molt}
           />
         );
       case "neo":
@@ -51,6 +110,13 @@ export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspac
             compiled={compiled}
             selectedNodeId={selectedNode?.id}
             onSelectNode={handleSelectNode}
+            positions={layout.neo}
+            onUpdatePosition={handleUpdateNeoPosition}
+            placementMode={placementMode}
+            activePlacementNodeId={activePlacementNodeId}
+            onSetPlacementNode={handleSetPlacementNode}
+            cursorPos={cursorPos}
+            onPickCell={handlePickCell}
           />
         );
       case "sleeve":
@@ -67,17 +133,18 @@ export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspac
   };
 
   return (
-    <div style={{ 
-      height: "100%", 
+    <div style={{
+      height: "100%",
       width: "100%",
-      display: "flex", 
+      display: "flex",
       flexDirection: "column",
       minHeight: 0,
       overflow: "hidden"
     }}>
-      <div style={{ 
-        display: "flex", 
-        gap: 4, 
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
         padding: "8px 12px",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
         background: "rgba(0,0,0,0.2)",
@@ -103,11 +170,33 @@ export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspac
             {tab.label}
           </button>
         ))}
+
+        {activeTab === "neo" && placementMode !== "idle" && (
+          <button
+            onClick={() => {
+              setPlacementMode("idle");
+              setActivePlacementNodeId(null);
+            }}
+            data-testid="button-cancel-placement"
+            style={{
+              marginLeft: 8,
+              padding: "4px 10px",
+              background: "rgba(239, 68, 68, 0.2)",
+              border: "1px solid rgba(239, 68, 68, 0.4)",
+              borderRadius: 4,
+              color: "#ef4444",
+              fontSize: 11,
+              cursor: "pointer"
+            }}
+          >
+            Cancel
+          </button>
+        )}
       </div>
 
-      <div style={{ 
-        flex: 1, 
-        minHeight: 0, 
+      <div style={{
+        flex: 1,
+        minHeight: 0,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column"
@@ -115,7 +204,7 @@ export default function CenterWorkspace({ sleeveJson, compiled }: CenterWorkspac
         <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
           {renderGraphView()}
         </div>
-        
+
         <BottomPanel
           selectedNode={selectedNode}
           isOpen={bottomPanelOpen}

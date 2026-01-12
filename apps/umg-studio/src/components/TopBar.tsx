@@ -20,6 +20,8 @@ interface TopBarProps {
   isMobile?: boolean;
   onOpenLeftDrawer?: () => void;
   onOpenRightDrawer?: () => void;
+  onBundleSelection?: () => void;
+  onMergeSelection?: () => void;
 }
 
 export default function TopBar({ 
@@ -40,7 +42,9 @@ export default function TopBar({
   opsReport,
   isMobile,
   onOpenLeftDrawer,
-  onOpenRightDrawer
+  onOpenRightDrawer,
+  onBundleSelection,
+  onMergeSelection
 }: TopBarProps) {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showImportModal, setShowImportModal] = useState<"library" | "sleeve" | null>(null);
@@ -154,6 +158,39 @@ export default function TopBar({
             ×
           </button>
         </div>
+      )}
+
+      {(multiSelectCount ?? 0) >= 2 && (
+        <>
+          <button
+            className="btn"
+            onClick={onBundleSelection}
+            data-testid="button-bundle-selection"
+            style={{
+              fontSize: 11,
+              padding: "4px 10px",
+              background: "rgba(34, 197, 94, 0.2)",
+              borderColor: "#22c55e",
+              color: "#22c55e"
+            }}
+          >
+            Bundle
+          </button>
+          <button
+            className="btn"
+            onClick={onMergeSelection}
+            data-testid="button-merge-selection"
+            style={{
+              fontSize: 11,
+              padding: "4px 10px",
+              background: "rgba(168, 85, 247, 0.2)",
+              borderColor: "#a855f7",
+              color: "#a855f7"
+            }}
+          >
+            Merge
+          </button>
+        </>
       )}
 
       <span style={{ flex: 1 }} />

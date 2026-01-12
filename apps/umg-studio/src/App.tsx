@@ -6,8 +6,9 @@ import CenterWorkspace from "@/components/CenterWorkspace";
 import RightPanel from "@/components/RightPanel";
 import { compileFromJson } from "@/lib/compile";
 import { loadSleeveJson, saveSleeveJson } from "@/lib/storage";
-import { blockExistsInSleeve, addBlockToStack } from "@/lib/sleeveEdit";
+import { blockExistsInSleeve, addBlockToStack, parseSleeve } from "@/lib/sleeveEdit";
 import { applyOpsToSleeveJson, hasOps, ApplyOpsReport } from "@/lib/applyOps";
+import { CompressedGroup, createCompressedGroup } from "@/lib/moltCompression";
 import fixture from "@/fixtures/sleeve.minimal.json?raw";
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
   const [compileMode, setCompileMode] = useState<"raw" | "withOps">("raw");
   const [opsReport, setOpsReport] = useState<ApplyOpsReport | null>(null);
   const lastCompiledJsonRef = useRef<string>(loadSleeveJson(fixture));
+  const [compressedGroups, setCompressedGroups] = useState<CompressedGroup[]>([]);
 
   const compiled = useMemo(() => {
     try { return JSON.parse(resultJson); } catch { return null; }
@@ -111,6 +113,38 @@ export default function App() {
     setSelectMode(prev => !prev);
   }, []);
 
+  const findStackForBlocks = useCallback((blockIds: string[]): string | null => {
+    const { sleeve } = parseSleeve(sleeveJson);
+    if (!sleeve) return null;
+
+    for (const stack of sleeve.stacks ?? []) {
+      const stackBlockIds = new Set(stack.blockIds ?? []);
+      if (blockIds.every(id => stackBlockIds.has(id))) {
+        return stack.id;
+      }
+    }
+    return null;
+  }, [sleeveJson]);
+
+  const handleCompressSelection = useCallback((mode: "bundle" | "merge") => {
+    if (selectedBlockIds.length < 2) return;
+
+    const stackId = findStackForBlocks(selectedBlockIds);
+    if (!stackId) {
+      console.warn("Selected blocks must be in the same stack");
+      return;
+    }
+
+    const group = createCompressedGroup(mode, selectedBlockIds, stackId);
+    setCompressedGroups(prev => [...prev, group]);
+    setSelectedBlockIds([]);
+    setSelectMode(false);
+  }, [selectedBlockIds, findStackForBlocks]);
+
+  const handleUncompress = useCallback((groupId: string) => {
+    setCompressedGroups(prev => prev.filter(g => g.id !== groupId));
+  }, []);
+
   return (
     <Layout
       isMobile={isMobile}
@@ -138,6 +172,8 @@ export default function App() {
           isMobile={isMobile}
           onOpenLeftDrawer={() => setLeftDrawerOpen(true)}
           onOpenRightDrawer={() => setRightDrawerOpen(true)}
+          onBundleSelection={() => handleCompressSelection("bundle")}
+          onMergeSelection={() => handleCompressSelection("merge")}
         />
       }
       left={
@@ -156,6 +192,7 @@ export default function App() {
         <CenterWorkspace 
           sleeveJson={sleeveJson}
           compiled={compiled}
+          compressedGroups={compressedGroups}
         />
       }
       right={
