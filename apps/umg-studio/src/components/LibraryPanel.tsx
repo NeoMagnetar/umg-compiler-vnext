@@ -340,6 +340,23 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <button
+        className="btn"
+        onClick={handleAddStack}
+        data-testid="button-add-stack"
+        style={{ 
+          width: "100%", 
+          fontSize: 12,
+          padding: "10px 12px",
+          background: "rgba(0, 255, 0, 0.15)",
+          border: "1px solid rgba(0, 255, 0, 0.3)",
+          color: "#00ff00",
+          fontWeight: 600
+        }}
+      >
+        + New Stack
+      </button>
+
       <div style={{ 
         display: "flex", 
         gap: 4, 
@@ -428,14 +445,6 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
                 <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{s.id}</div>
               </div>
             ))}
-            <button
-              className="btn"
-              onClick={handleAddStack}
-              data-testid="button-add-stack"
-              style={{ width: "100%", fontSize: 11, marginTop: 4 }}
-            >
-              + New Stack
-            </button>
           </div>
 
           <div>
