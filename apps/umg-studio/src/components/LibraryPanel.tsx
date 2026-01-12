@@ -354,8 +354,29 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
           fontWeight: 600
         }}
       >
-        + New Stack
+        + New MOLT Stack
       </button>
+
+      <div>
+        <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Stacks ({stacks.length})
+        </div>
+        {stacks.map(s => (
+          <div 
+            key={s.id}
+            style={{
+              padding: 6,
+              marginBottom: 4,
+              background: "rgba(255,255,255,0.03)",
+              borderRadius: 4,
+              fontSize: 11
+            }}
+          >
+            <div style={{ fontWeight: 500 }}>{s.name}</div>
+            <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{s.id}</div>
+          </div>
+        ))}
+      </div>
 
       <div style={{ 
         display: "flex", 
@@ -425,27 +446,6 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
               </button>
             </div>
           )}
-
-          <div>
-            <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-              Stacks ({stacks.length})
-            </div>
-            {stacks.map(s => (
-              <div 
-                key={s.id}
-                style={{
-                  padding: 6,
-                  marginBottom: 4,
-                  background: "rgba(255,255,255,0.03)",
-                  borderRadius: 4,
-                  fontSize: 11
-                }}
-              >
-                <div style={{ fontWeight: 500 }}>{s.name}</div>
-                <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{s.id}</div>
-              </div>
-            ))}
-          </div>
 
           <div>
             <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
