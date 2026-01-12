@@ -285,7 +285,6 @@ export default function BottomPanel({
         flexShrink: 0,
         flexWrap: "wrap"
       }}>
-        <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>Inspector</span>
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
           {renderTabButton("details", "Details")}
           {renderTabButton("json", "JSON")}
