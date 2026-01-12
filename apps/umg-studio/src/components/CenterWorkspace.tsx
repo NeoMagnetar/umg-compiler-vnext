@@ -223,6 +223,7 @@ export default function CenterWorkspace({
           onGenerate={onGenerate}
           sleeveJson={sleeveJson}
           onChangeSleeveJson={onChangeSleeveJson}
+          onClearSelection={() => setSelectedNode(null)}
         />
       </div>
     </div>

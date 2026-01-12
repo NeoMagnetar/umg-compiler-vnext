@@ -14,6 +14,7 @@ interface BottomPanelProps {
   onGenerate?: (item: ParsedItem) => void;
   sleeveJson?: string;
   onChangeSleeveJson?: (nextJson: string) => void;
+  onClearSelection?: () => void;
 }
 
 type DetailTab = "details" | "json" | "trace" | "prompt";
@@ -27,7 +28,8 @@ export default function BottomPanel({
   isMobile = false,
   onGenerate,
   sleeveJson = "",
-  onChangeSleeveJson
+  onChangeSleeveJson,
+  onClearSelection
 }: BottomPanelProps) {
   const [activeTab, setActiveTab] = useState<DetailTab>("details");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -115,6 +117,7 @@ export default function BottomPanel({
             sleeveJson={sleeveJson}
             selectedBlockId={selectedNode.id}
             onChangeSleeveJson={onChangeSleeveJson}
+            onClearSelection={onClearSelection}
           />
         );
       }

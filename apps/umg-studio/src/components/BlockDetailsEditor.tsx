@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { findBlockInSleeve, updateBlock, BlockPatch } from "@/lib/sleeveEdit";
+import { findBlockInSleeve, updateBlock, deleteBlock, BlockPatch } from "@/lib/sleeveEdit";
 
 interface BlockDetailsEditorProps {
   sleeveJson: string;
   selectedBlockId: string | null;
   onChangeSleeveJson: (nextJson: string) => void;
+  onClearSelection?: () => void;
 }
 
 export default function BlockDetailsEditor({
   sleeveJson,
   selectedBlockId,
-  onChangeSleeveJson
+  onChangeSleeveJson,
+  onClearSelection
 }: BlockDetailsEditorProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const blockData = useMemo(() => {
     if (!selectedBlockId) return null;
@@ -96,6 +99,15 @@ export default function BlockDetailsEditor({
       e.preventDefault();
       handleAddTag();
     }
+  };
+
+  const handleDelete = () => {
+    const result = deleteBlock(sleeveJson, selectedBlockId);
+    if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      onClearSelection?.();
+    }
+    setShowDeleteConfirm(false);
   };
 
   return (
@@ -284,6 +296,92 @@ export default function BlockDetailsEditor({
           </button>
         </div>
       </div>
+
+      <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <button
+          onClick={() => setShowDeleteConfirm(true)}
+          data-testid="button-delete-block"
+          style={{
+            width: "100%",
+            padding: "8px 12px",
+            background: "rgba(239, 68, 68, 0.15)",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+            borderRadius: 4,
+            color: "#ef4444",
+            fontSize: 12,
+            cursor: "pointer",
+            fontWeight: 500
+          }}
+        >
+          Delete Block
+        </button>
+      </div>
+
+      {showDeleteConfirm && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: "#1a1a1a",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 8,
+            padding: 20,
+            width: "90%",
+            maxWidth: 350,
+            textAlign: "center"
+          }}>
+            <div style={{ fontWeight: 600, marginBottom: 12, fontSize: 15 }}>
+              Delete Block?
+            </div>
+            <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 16 }}>
+              This will remove "{blockData.title || blockData.id}" from the sleeve.
+            </div>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              <button
+                onClick={handleDelete}
+                data-testid="button-confirm-delete-yes"
+                style={{
+                  padding: "8px 24px",
+                  background: "rgba(239, 68, 68, 0.2)",
+                  border: "1px solid #ef4444",
+                  borderRadius: 4,
+                  color: "#ef4444",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer"
+                }}
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                data-testid="button-confirm-delete-no"
+                style={{
+                  padding: "8px 24px",
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 4,
+                  color: "inherit",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: "pointer"
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
