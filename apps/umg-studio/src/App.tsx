@@ -222,6 +222,7 @@ export default function App() {
           compressedGroups={compressedGroups}
           isMobile={isMobile}
           onGenerate={handleGenerate}
+          onChangeSleeveJson={setSleeveJson}
         />
       }
       right={

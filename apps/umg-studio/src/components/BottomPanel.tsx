@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { GraphNode } from "@/lib/graphTypes";
 import { ParsedItem } from "@/lib/promptParse";
 import PromptBuilder from "./PromptBuilder";
+import BlockDetailsEditor from "./BlockDetailsEditor";
 
 interface BottomPanelProps {
   selectedNode: GraphNode | null;
@@ -11,6 +12,8 @@ interface BottomPanelProps {
   onHeightChange: (height: number) => void;
   isMobile?: boolean;
   onGenerate?: (item: ParsedItem) => void;
+  sleeveJson?: string;
+  onChangeSleeveJson?: (nextJson: string) => void;
 }
 
 type DetailTab = "details" | "json" | "trace" | "prompt";
@@ -22,7 +25,9 @@ export default function BottomPanel({
   height,
   onHeightChange,
   isMobile = false,
-  onGenerate
+  onGenerate,
+  sleeveJson = "",
+  onChangeSleeveJson
 }: BottomPanelProps) {
   const [activeTab, setActiveTab] = useState<DetailTab>("details");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -104,6 +109,16 @@ export default function BottomPanel({
     }
 
     if (activeTab === "details") {
+      if (selectedNode.kind === "block" && sleeveJson && onChangeSleeveJson) {
+        return (
+          <BlockDetailsEditor
+            sleeveJson={sleeveJson}
+            selectedBlockId={selectedNode.id}
+            onChangeSleeveJson={onChangeSleeveJson}
+          />
+        );
+      }
+      
       return (
         <div style={{ padding: 12 }}>
           <div style={{ marginBottom: 12 }}>
