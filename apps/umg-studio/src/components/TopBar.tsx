@@ -15,8 +15,6 @@ interface TopBarProps {
   multiSelectCount?: number;
   onClearMultiSelect?: () => void;
   hasOps?: boolean;
-  compileMode?: "raw" | "withOps";
-  opsReport?: { bundlesApplied: number; mergesApplied: number; blocksCreated: number } | null;
   isMobile?: boolean;
   onOpenLeftDrawer?: () => void;
   onOpenRightDrawer?: () => void;
@@ -38,8 +36,6 @@ export default function TopBar({
   multiSelectCount,
   onClearMultiSelect,
   hasOps,
-  compileMode,
-  opsReport,
   isMobile,
   onOpenLeftDrawer,
   onOpenRightDrawer,
@@ -117,6 +113,20 @@ export default function TopBar({
           unsaved
         </span>
       )}
+
+      {isMobile && onOpenRightDrawer && (
+        <button
+          className="btn"
+          onClick={onOpenRightDrawer}
+          data-testid="button-open-output-drawer"
+          style={{ fontSize: 11, padding: "4px 10px" }}
+        >
+          Output
+        </button>
+      )}
+
+      <button className="btn" onClick={onReset} data-testid="button-reset">Reset</button>
+
       {selectedBlockId && (
         <div className="small mono" style={{ opacity: 0.75, display: "flex", alignItems: "center", gap: 6 }}>
           <span>Selected: <span className="hotpink">{selectedBlockId}</span></span>
@@ -195,27 +205,6 @@ export default function TopBar({
 
       <span style={{ flex: 1 }} />
 
-      {compileMode && opsReport && (
-        <div className="small" style={{ 
-          padding: "3px 8px",
-          background: compileMode === "withOps" ? "rgba(168, 85, 247, 0.15)" : "rgba(255,255,255,0.05)",
-          borderRadius: 10,
-          fontSize: 10,
-          display: "flex",
-          gap: 8
-        }}>
-          <span style={{ color: compileMode === "withOps" ? "#a855f7" : "inherit" }}>
-            {compileMode === "withOps" ? "With Ops" : "Raw"}
-          </span>
-          {compileMode === "withOps" && (
-            <>
-              <span>B:{opsReport.bundlesApplied}</span>
-              <span>M:{opsReport.mergesApplied}</span>
-            </>
-          )}
-        </div>
-      )}
-      
       {!isMobile && (
         <button
           className="btn"
@@ -352,17 +341,6 @@ export default function TopBar({
           }}
         >
           Compile+Ops
-        </button>
-      )}
-      <button className="btn" onClick={onReset} data-testid="button-reset">Reset</button>
-      {isMobile && onOpenRightDrawer && (
-        <button
-          className="btn"
-          onClick={onOpenRightDrawer}
-          data-testid="button-open-output-drawer"
-          style={{ fontSize: 11, padding: "4px 10px" }}
-        >
-          Output
         </button>
       )}
 

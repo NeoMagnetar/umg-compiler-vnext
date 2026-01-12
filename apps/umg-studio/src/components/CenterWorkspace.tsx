@@ -18,6 +18,9 @@ interface CenterWorkspaceProps {
   onCompressSelection?: (mode: "bundle" | "merge", blockIds: string[], stackId: string) => void;
   isMobile?: boolean;
   onGenerate?: (item: ParsedItem) => void;
+  onCompile?: () => void;
+  selectMode?: boolean;
+  onToggleSelectMode?: () => void;
 }
 
 export default function CenterWorkspace({
@@ -26,7 +29,10 @@ export default function CenterWorkspace({
   compressedGroups = [],
   onCompressSelection,
   isMobile = false,
-  onGenerate
+  onGenerate,
+  onCompile,
+  selectMode,
+  onToggleSelectMode
 }: CenterWorkspaceProps) {
   const [activeTab, setActiveTab] = useState<TabId>("molt");
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
@@ -218,6 +224,10 @@ export default function CenterWorkspace({
           onHeightChange={setBottomPanelHeight}
           isMobile={isMobile}
           onGenerate={onGenerate}
+          onCompile={onCompile}
+          sleeveJson={sleeveJson}
+          selectMode={selectMode}
+          onToggleSelectMode={onToggleSelectMode}
         />
       </div>
     </div>

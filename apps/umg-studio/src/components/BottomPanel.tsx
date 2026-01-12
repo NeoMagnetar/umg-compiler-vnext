@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { GraphNode } from "@/lib/graphTypes";
 import { ParsedItem } from "@/lib/promptParse";
 import PromptBuilder from "./PromptBuilder";
+import { downloadAsFile } from "@/lib/libraryExport";
 
 interface BottomPanelProps {
   selectedNode: GraphNode | null;
@@ -11,6 +12,10 @@ interface BottomPanelProps {
   onHeightChange: (height: number) => void;
   isMobile?: boolean;
   onGenerate?: (item: ParsedItem) => void;
+  onCompile?: () => void;
+  sleeveJson?: string;
+  selectMode?: boolean;
+  onToggleSelectMode?: () => void;
 }
 
 type DetailTab = "details" | "json" | "trace" | "prompt";
@@ -22,7 +27,11 @@ export default function BottomPanel({
   height,
   onHeightChange,
   isMobile = false,
-  onGenerate
+  onGenerate,
+  onCompile,
+  sleeveJson,
+  selectMode,
+  onToggleSelectMode
 }: BottomPanelProps) {
   const [activeTab, setActiveTab] = useState<DetailTab>("details");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -62,6 +71,12 @@ export default function BottomPanel({
   const handleGenerate = (item: ParsedItem) => {
     onGenerate?.(item);
     setActiveTab("details");
+  };
+
+  const handleExport = () => {
+    if (sleeveJson) {
+      downloadAsFile(sleeveJson, `sleeve-${Date.now()}.json`);
+    }
   };
 
   const renderTabButton = (tab: DetailTab, label: string) => (
@@ -285,7 +300,45 @@ export default function BottomPanel({
         flexShrink: 0,
         flexWrap: "wrap"
       }}>
-        <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>Inspector</span>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            className="btn"
+            onClick={onCompile}
+            data-testid="bottom-panel-compile"
+            style={{
+              fontSize: 10,
+              padding: "3px 8px"
+            }}
+          >
+            Compile
+          </button>
+          <button
+            className="btn"
+            onClick={handleExport}
+            data-testid="bottom-panel-export"
+            style={{
+              fontSize: 10,
+              padding: "3px 8px"
+            }}
+          >
+            Export
+          </button>
+          <button
+            className="btn"
+            onClick={onToggleSelectMode}
+            data-testid="bottom-panel-select"
+            style={{
+              fontSize: 10,
+              padding: "3px 8px",
+              background: selectMode ? "rgba(168, 85, 247, 0.2)" : "transparent",
+              borderColor: selectMode ? "#a855f7" : "rgba(255,255,255,0.2)",
+              color: selectMode ? "#a855f7" : "inherit"
+            }}
+          >
+            Select
+          </button>
+        </div>
+        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.1)" }} />
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
           {renderTabButton("details", "Details")}
           {renderTabButton("json", "JSON")}
