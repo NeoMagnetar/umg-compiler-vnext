@@ -94,7 +94,8 @@ export function resolveByPriority(
     const orderA = a.priorityOrder;
     const orderB = b.priorityOrder;
     if (orderA !== undefined && orderB !== undefined) {
-      return orderA - orderB;
+      const orderDiff = orderA - orderB;
+      if (orderDiff !== 0) return orderDiff;
     }
 
     return a.id.localeCompare(b.id);

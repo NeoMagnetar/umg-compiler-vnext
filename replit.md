@@ -28,13 +28,28 @@ Preferred communication style: Simple, everyday language.
 
 ### Compiler Architecture (compiler-v0)
 - **Purpose**: Processes "sleeve" configurations containing blocks, stacks, triggers, and governance rules
-- **Pipeline Stages**:
-  1. Normalize segments (validate merge/bundle configurations)
-  2. Apply governance rules (forbid, require, prefer, limit)
-  3. Apply merges (combine blocks into result blocks)
-  4. Apply bundles (group blocks for runtime)
-  5. Sort by MOLT type priority (trigger → directive → instruction → subject → primary → philosophy → blueprint)
-- **Output**: Runtime configuration with trace events for debugging
+- **Pipeline Stages** (10-step deterministic pipeline):
+  1. Schema validation (sleeve requires id, blocks[], stacks[])
+  2. Block dedup + moltType/role validation
+  3. Stack references validation
+  4. `normalizeSegments` - validates bundle/merge segment definitions
+  5. `applyMerges` - substitutes merge source blocks with resultBlock
+  6. `applyBundles` - records bundles for runtime (no substitution)
+  7. `applyGovernance` - applies forbid/require/prefer/limit, builds priorityOverrides map
+  8. Filter live blocks (exclude forbidden + role=off)
+  9. `resolveAuthority` - sorts blocks by MOLT then priorityGroup + priorityOrder
+  10. Selection phases: selectPrimary, selectDirective, selectInstruction, selectSubject, selectBlueprint
+  11. Build NeoBlocks, NeoStacks, PromptSpec, TagIndexes
+- **MOLT Order**: trigger → directive → instruction → subject → primary → philosophy → blueprint
+- **Priority Resolution System** (Phase 10):
+  - **PriorityGroup** (categorical tier): Override > Explicit > Default > Fallback
+  - Blocks without `priorityGroup` default to "Default"
+  - **priorityOrder** (tie-breaker): lower number = higher priority (1 = highest)
+  - Collision points: selectPrimary (required single), select* with intent=alternates bundles
+  - Ambiguous priority (multiple blocks same group without priorityOrder) → FAIL with ERR_PRIORITY_AMBIGUOUS
+  - Priority resolution trace events emitted with kind="priority_resolution"
+- **Output**: RuntimeSpec with trace events for debugging
+- **Canonical Path**: `/compiler-v0/src`
 
 ### Data Storage
 - **Schema**: Drizzle ORM with PostgreSQL dialect
