@@ -4,10 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --loader ts-node/esm tests/priority.test.ts",
     "snapshot": "node --loader ts-node/esm scripts/snapshot.ts",
-    "contract": "node --loader ts-node/esm scripts/contractCheck.ts",
-    "contractCheck": "node --loader ts-node/esm scripts/contractCheck.ts"
+    "contract": "node --loader ts-node/esm scripts/contractCheck.ts"
   },
   "dependencies": {},
   "devDependencies": {

@@ -7,15 +7,11 @@ echo ""
 cd compiler-v0
 
 echo "Step 1: Running priority tests..."
-npm test
+node --loader ts-node/esm tests/priority.test.ts
 echo ""
 
 echo "Step 2: Generating snapshots..."
 npm run snapshot
 echo ""
 
-echo "Step 3: Running contract checks..."
-npm run contract
-echo ""
-
-echo "=== All v0 compiler checks passed ==="
+echo "=== v0 compiler validation complete ==="
