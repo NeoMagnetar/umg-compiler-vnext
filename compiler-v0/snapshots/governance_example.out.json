@@ -7,8 +7,8 @@
         "stackId": "stack_main",
         "domainKey": "main",
         "orderedBlockIds": [
-          "blk_instr_a",
           "blk_instr_b",
+          "blk_instr_a",
           "blk_primary_main"
         ]
       }
@@ -17,8 +17,8 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instr_a",
-        "blk_instr_b"
+        "blk_instr_b",
+        "blk_instr_a"
       ],
       "subject": [],
       "primary": [
@@ -62,16 +62,16 @@
         "id": "nb_stack_main",
         "stackId": "stack_main",
         "orderedBlockIds": [
-          "blk_instr_a",
           "blk_instr_b",
+          "blk_instr_a",
           "blk_primary_main"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instr_a",
-            "blk_instr_b"
+            "blk_instr_b",
+            "blk_instr_a"
           ],
           "subject": [],
           "primary": [
@@ -447,8 +447,8 @@
           "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_instr_a",
-          "blk_instr_b"
+          "blk_instr_b",
+          "blk_instr_a"
         ],
         "id": "evt_00022",
         "timestamp": "TEST_TIME"

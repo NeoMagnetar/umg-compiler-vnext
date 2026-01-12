@@ -7,14 +7,14 @@
         "stackId": "stack_torture",
         "domainKey": "domain_torture",
         "orderedBlockIds": [
-          "blk_directive_alt_1",
           "blk_directive_alt_2",
-          "blk_instr_ranked_c",
-          "blk_instr_ranked_b",
+          "blk_directive_alt_1",
           "blk_instr_ranked_a",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_c",
           "blk_subject_allowed",
-          "blk_primary_2",
           "blk_primary_1",
+          "blk_primary_2",
           "blk_philosophy_1",
           "blk_philosophy_2",
           "blk_merge_result",
@@ -25,20 +25,20 @@
     "blocksByMoltType": {
       "trigger": [],
       "directive": [
-        "blk_directive_alt_1",
-        "blk_directive_alt_2"
+        "blk_directive_alt_2",
+        "blk_directive_alt_1"
       ],
       "instruction": [
-        "blk_instr_ranked_c",
+        "blk_instr_ranked_a",
         "blk_instr_ranked_b",
-        "blk_instr_ranked_a"
+        "blk_instr_ranked_c"
       ],
       "subject": [
         "blk_subject_allowed"
       ],
       "primary": [
-        "blk_primary_2",
-        "blk_primary_1"
+        "blk_primary_1",
+        "blk_primary_2"
       ],
       "philosophy": [
         "blk_philosophy_1",
@@ -118,14 +118,14 @@
         "id": "nb_stack_torture",
         "stackId": "stack_torture",
         "orderedBlockIds": [
-          "blk_directive_alt_1",
           "blk_directive_alt_2",
-          "blk_instr_ranked_c",
-          "blk_instr_ranked_b",
+          "blk_directive_alt_1",
           "blk_instr_ranked_a",
+          "blk_instr_ranked_b",
+          "blk_instr_ranked_c",
           "blk_subject_allowed",
-          "blk_primary_2",
           "blk_primary_1",
+          "blk_primary_2",
           "blk_philosophy_1",
           "blk_philosophy_2",
           "blk_merge_result",
@@ -134,20 +134,20 @@
         "byMoltType": {
           "trigger": [],
           "directive": [
-            "blk_directive_alt_1",
-            "blk_directive_alt_2"
+            "blk_directive_alt_2",
+            "blk_directive_alt_1"
           ],
           "instruction": [
-            "blk_instr_ranked_c",
+            "blk_instr_ranked_a",
             "blk_instr_ranked_b",
-            "blk_instr_ranked_a"
+            "blk_instr_ranked_c"
           ],
           "subject": [
             "blk_subject_allowed"
           ],
           "primary": [
-            "blk_primary_2",
-            "blk_primary_1"
+            "blk_primary_1",
+            "blk_primary_2"
           ],
           "philosophy": [
             "blk_philosophy_1",
@@ -171,7 +171,7 @@
         "mergeIds": [
           "seg_merge_blueprints"
         ],
-        "selectedPrimaryId": "blk_primary_2",
+        "selectedPrimaryId": "blk_primary_1",
         "active": {
           "triggerIds": [],
           "directiveIds": [
@@ -185,7 +185,7 @@
           "subjectIds": [
             "blk_subject_allowed"
           ],
-          "primaryId": "blk_primary_2",
+          "primaryId": "blk_primary_1",
           "philosophyIds": [
             "blk_philosophy_1",
             "blk_philosophy_2"
@@ -209,7 +209,7 @@
       "stack_torture": "nb_stack_torture"
     },
     "primaryByStackId": {
-      "stack_torture": "blk_primary_2"
+      "stack_torture": "blk_primary_1"
     },
     "promptSpec": {
       "sleeveId": "sleeve_torture",
@@ -249,9 +249,9 @@
             {
               "type": "primary",
               "blockIds": [
-                "blk_primary_2"
+                "blk_primary_1"
               ],
-              "text": "Primary 2 (higher priority, should win)"
+              "text": "Primary 1 (lower priority)"
             },
             {
               "type": "philosophy",
@@ -269,7 +269,7 @@
               "text": "MERGED: source 1 + source 2 combined."
             }
           ],
-          "fullText": "Directive Alt 1 (low priority, but boosted by governance)\n\n---\n\nRanked Instruction A\n\nRanked Instruction B\n\nRanked Instruction C\n\n---\n\nSubject ALLOWED - should be active\n\n---\n\nPrimary 2 (higher priority, should win)\n\n---\n\nPhilosophy 1\n\nPhilosophy 2\n\n---\n\nMERGED: source 1 + source 2 combined."
+          "fullText": "Directive Alt 1 (low priority, but boosted by governance)\n\n---\n\nRanked Instruction A\n\nRanked Instruction B\n\nRanked Instruction C\n\n---\n\nSubject ALLOWED - should be active\n\n---\n\nPrimary 1 (lower priority)\n\n---\n\nPhilosophy 1\n\nPhilosophy 2\n\n---\n\nMERGED: source 1 + source 2 combined."
         }
       ]
     },
@@ -603,28 +603,44 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_PRIMARY_BUNDLED",
-        "message": "Stack stack_torture has 2 bundled primary alternates; selecting highest priority.",
+        "message": "Stack stack_torture has 2 bundled primary alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_torture"
         ],
         "relatedBlockIds": [
-          "blk_primary_2",
-          "blk_primary_1"
+          "blk_primary_1",
+          "blk_primary_2"
         ],
         "id": "evt_00024",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_PRIMARY_SELECTED",
-        "message": "Stack stack_torture: selected primary blk_primary_2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_torture"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
+        "message": "Priority resolution: blk_primary_1 selected (group=Default, order=10). Context: select single primary from bundled alternates",
         "relatedBlockIds": [
+          "blk_primary_1",
           "blk_primary_2"
         ],
+        "priorityContext": {
+          "moltType": "primary",
+          "stackId": "stack_torture",
+          "reason": "select single primary from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_primary_1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          },
+          {
+            "id": "blk_primary_2",
+            "priorityGroup": "Default",
+            "priorityOrder": 50
+          }
+        ],
+        "priorityWinnerId": "blk_primary_1",
         "id": "evt_00025",
         "timestamp": "TEST_TIME"
       },
@@ -640,28 +656,44 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-        "message": "Stack stack_torture has 2 bundled directive alternates; selecting highest priority.",
+        "message": "Stack stack_torture has 2 bundled directive alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_torture"
         ],
         "relatedBlockIds": [
-          "blk_directive_alt_1",
-          "blk_directive_alt_2"
+          "blk_directive_alt_2",
+          "blk_directive_alt_1"
         ],
         "id": "evt_00027",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_DIRECTIVE_SELECTED",
-        "message": "Stack stack_torture: selected directive blk_directive_alt_1 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_torture"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
+        "message": "Priority resolution: blk_directive_alt_1 selected (group=Default, order=10). Context: select single directive from bundled alternates",
         "relatedBlockIds": [
+          "blk_directive_alt_2",
           "blk_directive_alt_1"
         ],
+        "priorityContext": {
+          "moltType": "directive",
+          "stackId": "stack_torture",
+          "reason": "select single directive from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_directive_alt_2",
+            "priorityGroup": "Default",
+            "priorityOrder": 100
+          },
+          {
+            "id": "blk_directive_alt_1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          }
+        ],
+        "priorityWinnerId": "blk_directive_alt_1",
         "id": "evt_00028",
         "timestamp": "TEST_TIME"
       },

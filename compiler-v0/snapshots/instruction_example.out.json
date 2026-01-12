@@ -7,8 +7,8 @@
         "stackId": "stack_a",
         "domainKey": "domain_a",
         "orderedBlockIds": [
-          "blk_instruction_a2",
           "blk_instruction_a1",
+          "blk_instruction_a2",
           "blk_primary_a"
         ]
       },
@@ -16,8 +16,8 @@
         "stackId": "stack_b",
         "domainKey": "domain_b",
         "orderedBlockIds": [
-          "blk_instruction_b2",
           "blk_instruction_b1",
+          "blk_instruction_b2",
           "blk_primary_b"
         ]
       }
@@ -26,10 +26,10 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instruction_a2",
         "blk_instruction_a1",
-        "blk_instruction_b2",
-        "blk_instruction_b1"
+        "blk_instruction_a2",
+        "blk_instruction_b1",
+        "blk_instruction_b2"
       ],
       "subject": [],
       "primary": [
@@ -83,16 +83,16 @@
         "id": "nb_stack_a",
         "stackId": "stack_a",
         "orderedBlockIds": [
-          "blk_instruction_a2",
           "blk_instruction_a1",
+          "blk_instruction_a2",
           "blk_primary_a"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instruction_a2",
-            "blk_instruction_a1"
+            "blk_instruction_a1",
+            "blk_instruction_a2"
           ],
           "subject": [],
           "primary": [
@@ -111,7 +111,7 @@
           "triggerIds": [],
           "directiveIds": [],
           "instructionIds": [
-            "blk_instruction_a2"
+            "blk_instruction_a1"
           ],
           "subjectIds": [],
           "primaryId": "blk_primary_a",
@@ -123,16 +123,16 @@
         "id": "nb_stack_b",
         "stackId": "stack_b",
         "orderedBlockIds": [
-          "blk_instruction_b2",
           "blk_instruction_b1",
+          "blk_instruction_b2",
           "blk_primary_b"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instruction_b2",
-            "blk_instruction_b1"
+            "blk_instruction_b1",
+            "blk_instruction_b2"
           ],
           "subject": [],
           "primary": [
@@ -206,9 +206,9 @@
             {
               "type": "instruction",
               "blockIds": [
-                "blk_instruction_a2"
+                "blk_instruction_a1"
               ],
-              "text": "Instruction A2 - highest priority, should be selected"
+              "text": "Instruction A1 - lower priority"
             },
             {
               "type": "subject",
@@ -233,7 +233,7 @@
               "text": ""
             }
           ],
-          "fullText": "Instruction A2 - highest priority, should be selected\n\n---\n\nPrimary for stack A"
+          "fullText": "Instruction A1 - lower priority\n\n---\n\nPrimary for stack A"
         },
         {
           "neoBlockId": "nb_stack_b",
@@ -559,28 +559,44 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
-        "message": "Stack stack_a has 2 bundled instruction alternates; selecting highest priority.",
+        "message": "Stack stack_a has 2 bundled instruction alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_instruction_a2",
-          "blk_instruction_a1"
+          "blk_instruction_a1",
+          "blk_instruction_a2"
         ],
         "id": "evt_00021",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_INSTRUCTION_SELECTED",
-        "message": "Stack stack_a: selected instruction blk_instruction_a2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
+        "message": "Priority resolution: blk_instruction_a1 selected (group=Default, order=10). Context: select single instruction from bundled alternates",
         "relatedBlockIds": [
+          "blk_instruction_a1",
           "blk_instruction_a2"
         ],
+        "priorityContext": {
+          "moltType": "instruction",
+          "stackId": "stack_a",
+          "reason": "select single instruction from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_instruction_a1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          },
+          {
+            "id": "blk_instruction_a2",
+            "priorityGroup": "Default",
+            "priorityOrder": 50
+          }
+        ],
+        "priorityWinnerId": "blk_instruction_a1",
         "id": "evt_00022",
         "timestamp": "TEST_TIME"
       },
@@ -593,8 +609,8 @@
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_instruction_b2",
-          "blk_instruction_b1"
+          "blk_instruction_b1",
+          "blk_instruction_b2"
         ],
         "id": "evt_00023",
         "timestamp": "TEST_TIME"

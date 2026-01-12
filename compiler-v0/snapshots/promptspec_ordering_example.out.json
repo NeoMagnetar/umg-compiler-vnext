@@ -7,11 +7,11 @@
         "stackId": "stack_main",
         "domainKey": "domain_main",
         "orderedBlockIds": [
-          "blk_instr_unbundled_high",
-          "blk_instr_bundle_c",
-          "blk_instr_bundle_b",
-          "blk_instr_bundle_a",
           "blk_instr_unbundled_low",
+          "blk_instr_bundle_a",
+          "blk_instr_bundle_b",
+          "blk_instr_bundle_c",
+          "blk_instr_unbundled_high",
           "blk_primary"
         ]
       }
@@ -20,11 +20,11 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instr_unbundled_high",
-        "blk_instr_bundle_c",
-        "blk_instr_bundle_b",
+        "blk_instr_unbundled_low",
         "blk_instr_bundle_a",
-        "blk_instr_unbundled_low"
+        "blk_instr_bundle_b",
+        "blk_instr_bundle_c",
+        "blk_instr_unbundled_high"
       ],
       "subject": [],
       "primary": [
@@ -71,22 +71,22 @@
         "id": "nb_stack_main",
         "stackId": "stack_main",
         "orderedBlockIds": [
-          "blk_instr_unbundled_high",
-          "blk_instr_bundle_c",
-          "blk_instr_bundle_b",
-          "blk_instr_bundle_a",
           "blk_instr_unbundled_low",
+          "blk_instr_bundle_a",
+          "blk_instr_bundle_b",
+          "blk_instr_bundle_c",
+          "blk_instr_unbundled_high",
           "blk_primary"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instr_unbundled_high",
-            "blk_instr_bundle_c",
-            "blk_instr_bundle_b",
+            "blk_instr_unbundled_low",
             "blk_instr_bundle_a",
-            "blk_instr_unbundled_low"
+            "blk_instr_bundle_b",
+            "blk_instr_bundle_c",
+            "blk_instr_unbundled_high"
           ],
           "subject": [],
           "primary": [
@@ -426,11 +426,11 @@
           "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_instr_unbundled_high",
-          "blk_instr_bundle_c",
-          "blk_instr_bundle_b",
+          "blk_instr_unbundled_low",
           "blk_instr_bundle_a",
-          "blk_instr_unbundled_low"
+          "blk_instr_bundle_b",
+          "blk_instr_bundle_c",
+          "blk_instr_unbundled_high"
         ],
         "id": "evt_00018",
         "timestamp": "TEST_TIME"

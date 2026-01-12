@@ -269,7 +269,13 @@ export default function TopBar({
         )}
       </div>
       
-      <button className="btn" onClick={onCompile} data-testid="button-compile-raw" style={{ position: "relative" }}>
+      <button 
+        className="btn" 
+        onClick={onCompile} 
+        data-testid="button-compile-raw" 
+        title="v0 compile resolves structure (governance + bundles + merges) and emits RuntimeSpec + Trace. It does not execute cognition."
+        style={{ position: "relative" }}
+      >
         Compile
         {isDirty && (
           <span style={{

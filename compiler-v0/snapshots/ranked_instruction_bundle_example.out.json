@@ -7,11 +7,11 @@
         "stackId": "stack_main",
         "domainKey": "domain_main",
         "orderedBlockIds": [
-          "blk_instruction_5",
-          "blk_instruction_4",
-          "blk_instruction_3",
-          "blk_instruction_2",
           "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_4",
+          "blk_instruction_5",
           "blk_primary"
         ]
       }
@@ -20,11 +20,11 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instruction_5",
-        "blk_instruction_4",
-        "blk_instruction_3",
+        "blk_instruction_1",
         "blk_instruction_2",
-        "blk_instruction_1"
+        "blk_instruction_3",
+        "blk_instruction_4",
+        "blk_instruction_5"
       ],
       "subject": [],
       "primary": [
@@ -59,22 +59,22 @@
         "id": "nb_stack_main",
         "stackId": "stack_main",
         "orderedBlockIds": [
-          "blk_instruction_5",
-          "blk_instruction_4",
-          "blk_instruction_3",
-          "blk_instruction_2",
           "blk_instruction_1",
+          "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_4",
+          "blk_instruction_5",
           "blk_primary"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instruction_5",
-            "blk_instruction_4",
-            "blk_instruction_3",
+            "blk_instruction_1",
             "blk_instruction_2",
-            "blk_instruction_1"
+            "blk_instruction_3",
+            "blk_instruction_4",
+            "blk_instruction_5"
           ],
           "subject": [],
           "primary": [
