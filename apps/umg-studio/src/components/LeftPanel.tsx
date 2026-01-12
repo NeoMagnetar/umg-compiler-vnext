@@ -106,7 +106,7 @@ export default function LeftPanel({
       </CollapsibleSection>
 
       <CollapsibleSection 
-        title="Block Library" 
+        title="Block Base" 
         isOpen={sections.library}
         onToggle={() => handleToggle("library")}
       >
@@ -158,7 +158,7 @@ export default function LeftPanel({
       </CollapsibleSection>
 
       <CollapsibleSection 
-        title="Template" 
+        title="Block Library" 
         isOpen={sections.template}
         onToggle={() => handleToggle("template")}
       >
