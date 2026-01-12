@@ -142,12 +142,25 @@ function checkBundleIntents(
   
   const { neoBlocks } = result.runtime;
 
-  const getEffectivePriority = (blockId: string): number => {
+  const PRIORITY_GROUP_RANK: Record<string, number> = {
+    Override: 0,
+    Explicit: 1,
+    Default: 2,
+    Fallback: 3,
+  };
+
+  const getGroupRank = (blockId: string): number => {
+    const block = blocksById.get(blockId);
+    const group = block?.priorityGroup ?? "Default";
+    return PRIORITY_GROUP_RANK[group] ?? 2;
+  };
+
+  const getEffectivePriorityOrder = (blockId: string): number | undefined => {
     if (priorityOverrides.has(blockId)) {
       return priorityOverrides.get(blockId)!;
     }
     const block = blocksById.get(blockId);
-    return block?.priorityOrder ?? 0;
+    return block?.priorityOrder;
   };
 
   for (const bundle of bundles) {
@@ -190,9 +203,22 @@ function checkBundleIntents(
         );
       } else {
         const sorted = [...bundleBlockIds].sort((a, b) => {
-          const prioA = getEffectivePriority(a);
-          const prioB = getEffectivePriority(b);
-          if (prioB !== prioA) return prioB - prioA;
+          const groupA = getGroupRank(a);
+          const groupB = getGroupRank(b);
+          if (groupA !== groupB) return groupA - groupB;
+
+          const blockA = blocksById.get(a);
+          const blockB = blocksById.get(b);
+          const prioA = blockA?.priorityOrder;
+          const prioB = blockB?.priorityOrder;
+          if (prioA !== undefined && prioB !== undefined) {
+            if (prioA !== prioB) return prioA - prioB;
+          } else if (prioA !== undefined) {
+            return -1;
+          } else if (prioB !== undefined) {
+            return 1;
+          }
+
           return a.localeCompare(b);
         });
         const expectedWinner = sorted[0];
