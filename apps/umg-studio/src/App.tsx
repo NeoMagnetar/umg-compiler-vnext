@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useRef, useCallback } from "react";
-import Layout from "@/components/Layout";
+import Layout, { useIsMobile } from "@/components/Layout";
 import TopBar from "@/components/TopBar";
 import LeftPanel from "@/components/LeftPanel";
-import GraphCanvas from "@/components/GraphCanvas";
+import CenterWorkspace from "@/components/CenterWorkspace";
 import RightPanel from "@/components/RightPanel";
 import { compileFromJson } from "@/lib/compile";
 import { loadSleeveJson, saveSleeveJson } from "@/lib/storage";
@@ -11,6 +11,10 @@ import { applyOpsToSleeveJson, hasOps, ApplyOpsReport } from "@/lib/applyOps";
 import fixture from "@/fixtures/sleeve.minimal.json?raw";
 
 export default function App() {
+  const isMobile = useIsMobile();
+  const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
+  const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
+
   const [sleeveJson, setSleeveJson] = useState(() => loadSleeveJson(fixture));
   const [resultJson, setResultJson] = useState<string>(() => {
     const c = compileFromJson(loadSleeveJson(fixture));
@@ -109,6 +113,11 @@ export default function App() {
 
   return (
     <Layout
+      isMobile={isMobile}
+      leftDrawerOpen={leftDrawerOpen}
+      rightDrawerOpen={rightDrawerOpen}
+      onCloseLeftDrawer={() => setLeftDrawerOpen(false)}
+      onCloseRightDrawer={() => setRightDrawerOpen(false)}
       top={
         <TopBar 
           onCompile={onCompile} 
@@ -126,6 +135,9 @@ export default function App() {
           hasOps={sleeveHasOps}
           compileMode={compileMode}
           opsReport={opsReport}
+          isMobile={isMobile}
+          onOpenLeftDrawer={() => setLeftDrawerOpen(true)}
+          onOpenRightDrawer={() => setRightDrawerOpen(true)}
         />
       }
       left={
@@ -141,16 +153,9 @@ export default function App() {
         />
       }
       center={
-        <GraphCanvas 
+        <CenterWorkspace 
           sleeveJson={sleeveJson}
-          compiled={compiled} 
-          selectedTag={selectedTag} 
-          selectedBlockId={selectedBlockId}
-          onSelectBlockId={setSelectedBlockId}
-          onAddBlock={handleAddBlock}
-          selectedBlockIds={selectedBlockIds}
-          onToggleMultiSelect={toggleMultiSelect}
-          selectMode={selectMode}
+          compiled={compiled}
         />
       }
       right={

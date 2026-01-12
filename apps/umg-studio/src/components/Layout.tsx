@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
+import MobileDrawer from "./MobileDrawer";
 
 interface LayoutProps {
   top: React.ReactNode;
   left: React.ReactNode;
   center: React.ReactNode;
   right: React.ReactNode;
+  isMobile: boolean;
+  leftDrawerOpen: boolean;
+  rightDrawerOpen: boolean;
+  onCloseLeftDrawer: () => void;
+  onCloseRightDrawer: () => void;
 }
 
-function useIsMobile(breakpoint = 1024) {
+export function useIsMobile(breakpoint = 1024) {
   const [isMobile, setIsMobile] = useState(() => 
     typeof window !== "undefined" ? window.innerWidth < breakpoint : false
   );
@@ -23,9 +29,17 @@ function useIsMobile(breakpoint = 1024) {
   return isMobile;
 }
 
-export default function Layout({ top, left, center, right }: LayoutProps) {
-  const isMobile = useIsMobile();
-
+export default function Layout({ 
+  top, 
+  left, 
+  center, 
+  right, 
+  isMobile,
+  leftDrawerOpen,
+  rightDrawerOpen,
+  onCloseLeftDrawer,
+  onCloseRightDrawer
+}: LayoutProps) {
   return (
     <div style={{ 
       display: "flex", 
@@ -72,7 +86,7 @@ export default function Layout({ top, left, center, right }: LayoutProps) {
             minHeight: 0,
             height: "100%",
             width: "100%",
-            overflow: "auto"
+            overflow: "hidden"
           }}>
             {center}
           </div>
@@ -89,6 +103,27 @@ export default function Layout({ top, left, center, right }: LayoutProps) {
           </aside>
         )}
       </div>
+
+      {isMobile && (
+        <>
+          <MobileDrawer
+            isOpen={leftDrawerOpen}
+            onClose={onCloseLeftDrawer}
+            side="left"
+            title="Library"
+          >
+            {left}
+          </MobileDrawer>
+          <MobileDrawer
+            isOpen={rightDrawerOpen}
+            onClose={onCloseRightDrawer}
+            side="right"
+            title="Output"
+          >
+            {right}
+          </MobileDrawer>
+        </>
+      )}
     </div>
   );
 }

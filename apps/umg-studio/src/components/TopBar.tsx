@@ -17,6 +17,9 @@ interface TopBarProps {
   hasOps?: boolean;
   compileMode?: "raw" | "withOps";
   opsReport?: { bundlesApplied: number; mergesApplied: number; blocksCreated: number } | null;
+  isMobile?: boolean;
+  onOpenLeftDrawer?: () => void;
+  onOpenRightDrawer?: () => void;
 }
 
 export default function TopBar({ 
@@ -34,7 +37,10 @@ export default function TopBar({
   onClearMultiSelect,
   hasOps,
   compileMode,
-  opsReport
+  opsReport,
+  isMobile,
+  onOpenLeftDrawer,
+  onOpenRightDrawer
 }: TopBarProps) {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showImportModal, setShowImportModal] = useState<"library" | "sleeve" | null>(null);
@@ -84,6 +90,16 @@ export default function TopBar({
 
   return (
     <div style={{ display: "flex", alignItems: "center", height: "100%", padding: "0 16px", gap: 12 }}>
+      {isMobile && onOpenLeftDrawer && (
+        <button
+          className="btn"
+          onClick={onOpenLeftDrawer}
+          data-testid="button-open-library-drawer"
+          style={{ fontSize: 11, padding: "4px 10px" }}
+        >
+          Library
+        </button>
+      )}
       <span style={{ fontWeight: 600, fontSize: 15 }}>UMG Studio</span>
       {isDirty && (
         <span style={{ 
@@ -298,6 +314,16 @@ export default function TopBar({
         </button>
       )}
       <button className="btn" onClick={onReset} data-testid="button-reset">Reset</button>
+      {isMobile && onOpenRightDrawer && (
+        <button
+          className="btn"
+          onClick={onOpenRightDrawer}
+          data-testid="button-open-output-drawer"
+          style={{ fontSize: 11, padding: "4px 10px" }}
+        >
+          Output
+        </button>
+      )}
 
       {showImportModal && (
         <div style={{
