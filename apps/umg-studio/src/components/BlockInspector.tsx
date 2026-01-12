@@ -12,7 +12,6 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tagsInput, setTagsInput] = useState("");
-  const [priorityOrder, setPriorityOrder] = useState<number>(0);
   const [moltType, setMoltType] = useState("");
   const [stackId, setStackId] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,14 +23,12 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
   const [originalTitle, setOriginalTitle] = useState("");
   const [originalContent, setOriginalContent] = useState("");
   const [originalTagsInput, setOriginalTagsInput] = useState("");
-  const [originalPriorityOrder, setOriginalPriorityOrder] = useState<number>(0);
 
   useEffect(() => {
     if (!selectedBlockId) {
       setTitle("");
       setContent("");
       setTagsInput("");
-      setPriorityOrder(0);
       setMoltType("");
       setStackId("");
       setBlockFound(false);
@@ -47,12 +44,10 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       const t = block.title ?? "";
       const c = block.content ?? "";
       const tags = (block.tags ?? []).join(", ");
-      const p = block.priorityOrder ?? 0;
 
       setTitle(t);
       setContent(c);
       setTagsInput(tags);
-      setPriorityOrder(p);
       setMoltType(block.moltType ?? "instruction");
       setStackId(foundStackId ?? "(unknown)");
       setBlockFound(true);
@@ -64,7 +59,6 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setOriginalTitle(t);
       setOriginalContent(c);
       setOriginalTagsInput(tags);
-      setOriginalPriorityOrder(p);
     } else {
       setBlockFound(false);
       setError(`Block "${selectedBlockId}" not found in sleeve JSON`);
@@ -76,11 +70,10 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
     const dirty = 
       title !== originalTitle ||
       content !== originalContent ||
-      tagsInput !== originalTagsInput ||
-      priorityOrder !== originalPriorityOrder;
+      tagsInput !== originalTagsInput;
     setIsDirty(dirty);
     if (dirty) setLastSaved(false);
-  }, [title, content, tagsInput, priorityOrder, originalTitle, originalContent, originalTagsInput, originalPriorityOrder, blockFound]);
+  }, [title, content, tagsInput, originalTitle, originalContent, originalTagsInput, blockFound]);
 
   const handleApply = useCallback(() => {
     if (!selectedBlockId || !blockFound) return;
@@ -93,8 +86,7 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
     const patch: BlockPatch = {
       title,
       content,
-      tags,
-      priorityOrder
+      tags
     };
 
     const result = updateBlock(sleeveJson, selectedBlockId, patch);
@@ -106,11 +98,10 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
       setOriginalTitle(title);
       setOriginalContent(content);
       setOriginalTagsInput(tagsInput);
-      setOriginalPriorityOrder(priorityOrder);
       setIsDirty(false);
       setLastSaved(true);
     }
-  }, [sleeveJson, selectedBlockId, blockFound, title, content, tagsInput, priorityOrder, onChangeSleeveJson]);
+  }, [sleeveJson, selectedBlockId, blockFound, title, content, tagsInput, onChangeSleeveJson]);
 
   const handleDelete = useCallback(() => {
     if (!selectedBlockId) return;
@@ -231,24 +222,6 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
             placeholder="tag1, tag2, tag3"
             style={{
               width: "100%",
-              padding: "8px 10px",
-              background: "rgba(0,0,0,0.3)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 6,
-              color: "inherit",
-              fontSize: 13
-            }}
-          />
-        </div>
-
-        <div>
-          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Priority Order</label>
-          <input
-            type="number"
-            value={priorityOrder}
-            onChange={(e) => setPriorityOrder(parseInt(e.target.value) || 0)}
-            style={{
-              width: 100,
               padding: "8px 10px",
               background: "rgba(0,0,0,0.3)",
               border: "1px solid rgba(255,255,255,0.15)",
