@@ -7,9 +7,9 @@
         "stackId": "stack_main",
         "domainKey": "domain_main",
         "orderedBlockIds": [
-          "blk_instruction_1",
-          "blk_instruction_3",
           "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_1",
           "blk_primary"
         ]
       }
@@ -18,9 +18,9 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instruction_1",
+        "blk_instruction_2",
         "blk_instruction_3",
-        "blk_instruction_2"
+        "blk_instruction_1"
       ],
       "subject": [],
       "primary": [
@@ -53,18 +53,18 @@
         "id": "nb_stack_main",
         "stackId": "stack_main",
         "orderedBlockIds": [
-          "blk_instruction_1",
-          "blk_instruction_3",
           "blk_instruction_2",
+          "blk_instruction_3",
+          "blk_instruction_1",
           "blk_primary"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instruction_1",
+            "blk_instruction_2",
             "blk_instruction_3",
-            "blk_instruction_2"
+            "blk_instruction_1"
           ],
           "subject": [],
           "primary": [
@@ -83,7 +83,7 @@
           "triggerIds": [],
           "directiveIds": [],
           "instructionIds": [
-            "blk_instruction_1"
+            "blk_instruction_2"
           ],
           "subjectIds": [],
           "primaryId": "blk_primary",
@@ -127,9 +127,9 @@
             {
               "type": "instruction",
               "blockIds": [
-                "blk_instruction_1"
+                "blk_instruction_2"
               ],
-              "text": "Instruction 1: Lower priority option"
+              "text": "Instruction 2: Higher priority option - should be selected"
             },
             {
               "type": "subject",
@@ -154,7 +154,7 @@
               "text": ""
             }
           ],
-          "fullText": "Instruction 1: Lower priority option\n\n---\n\nPrimary block for the stack"
+          "fullText": "Instruction 2: Higher priority option - should be selected\n\n---\n\nPrimary block for the stack"
         }
       ]
     },
@@ -331,51 +331,29 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
-        "message": "Stack stack_main has 3 bundled instruction alternates; resolving by priority.",
+        "message": "Stack stack_main has 3 bundled instruction alternates; selecting highest priority.",
         "relatedStackIds": [
           "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_instruction_1",
+          "blk_instruction_2",
           "blk_instruction_3",
-          "blk_instruction_2"
+          "blk_instruction_1"
         ],
         "id": "evt_00014",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "priority_resolution",
+        "kind": "pipeline_stage",
         "severity": "info",
-        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
-        "message": "Priority resolution: blk_instruction_1 selected (group=Default, order=10). Context: select single instruction from bundled alternates",
+        "code": "INFO_INSTRUCTION_SELECTED",
+        "message": "Stack stack_main: selected instruction blk_instruction_2 from 3 candidates.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
         "relatedBlockIds": [
-          "blk_instruction_1",
-          "blk_instruction_3",
           "blk_instruction_2"
         ],
-        "priorityContext": {
-          "moltType": "instruction",
-          "stackId": "stack_main",
-          "reason": "select single instruction from bundled alternates"
-        },
-        "priorityCandidates": [
-          {
-            "id": "blk_instruction_1",
-            "priorityGroup": "Default",
-            "priorityOrder": 10
-          },
-          {
-            "id": "blk_instruction_3",
-            "priorityGroup": "Default",
-            "priorityOrder": 30
-          },
-          {
-            "id": "blk_instruction_2",
-            "priorityGroup": "Default",
-            "priorityOrder": 50
-          }
-        ],
-        "priorityWinnerId": "blk_instruction_1",
         "id": "evt_00015",
         "timestamp": "TEST_TIME"
       },

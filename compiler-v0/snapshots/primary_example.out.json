@@ -8,9 +8,9 @@
         "domainKey": "main",
         "orderedBlockIds": [
           "blk_instr_base",
-          "blk_primary_alpha",
+          "blk_primary_beta",
           "blk_primary_gamma",
-          "blk_primary_beta"
+          "blk_primary_alpha"
         ]
       }
     ],
@@ -22,9 +22,9 @@
       ],
       "subject": [],
       "primary": [
-        "blk_primary_alpha",
+        "blk_primary_beta",
         "blk_primary_gamma",
-        "blk_primary_beta"
+        "blk_primary_alpha"
       ],
       "philosophy": [],
       "blueprint": []
@@ -53,9 +53,9 @@
         "stackId": "stack_main",
         "orderedBlockIds": [
           "blk_instr_base",
-          "blk_primary_alpha",
+          "blk_primary_beta",
           "blk_primary_gamma",
-          "blk_primary_beta"
+          "blk_primary_alpha"
         ],
         "byMoltType": {
           "trigger": [],
@@ -65,9 +65,9 @@
           ],
           "subject": [],
           "primary": [
-            "blk_primary_alpha",
+            "blk_primary_beta",
             "blk_primary_gamma",
-            "blk_primary_beta"
+            "blk_primary_alpha"
           ],
           "philosophy": [],
           "blueprint": []
@@ -77,7 +77,7 @@
           "seg_bundle_primaries"
         ],
         "mergeIds": [],
-        "selectedPrimaryId": "blk_primary_alpha",
+        "selectedPrimaryId": "blk_primary_beta",
         "active": {
           "triggerIds": [],
           "directiveIds": [],
@@ -85,7 +85,7 @@
             "blk_instr_base"
           ],
           "subjectIds": [],
-          "primaryId": "blk_primary_alpha",
+          "primaryId": "blk_primary_beta",
           "philosophyIds": [],
           "blueprintIds": []
         }
@@ -104,7 +104,7 @@
       "stack_main": "nb_stack_main"
     },
     "primaryByStackId": {
-      "stack_main": "blk_primary_alpha"
+      "stack_main": "blk_primary_beta"
     },
     "promptSpec": {
       "sleeveId": "sleeve_primary_demo",
@@ -138,9 +138,9 @@
             {
               "type": "primary",
               "blockIds": [
-                "blk_primary_alpha"
+                "blk_primary_beta"
               ],
-              "text": "Primary Alpha - lower priority"
+              "text": "Primary Beta - highest priority, should be selected"
             },
             {
               "type": "philosophy",
@@ -153,7 +153,7 @@
               "text": ""
             }
           ],
-          "fullText": "Base instruction content\n\n---\n\nPrimary Alpha - lower priority"
+          "fullText": "Base instruction content\n\n---\n\nPrimary Beta - highest priority, should be selected"
         }
       ]
     },
@@ -300,51 +300,29 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_PRIMARY_BUNDLED",
-        "message": "Stack stack_main has 3 bundled primary alternates; resolving by priority.",
+        "message": "Stack stack_main has 3 bundled primary alternates; selecting highest priority.",
         "relatedStackIds": [
           "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_primary_alpha",
+          "blk_primary_beta",
           "blk_primary_gamma",
-          "blk_primary_beta"
+          "blk_primary_alpha"
         ],
         "id": "evt_00011",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "priority_resolution",
+        "kind": "pipeline_stage",
         "severity": "info",
-        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
-        "message": "Priority resolution: blk_primary_alpha selected (group=Default, order=10). Context: select single primary from bundled alternates",
+        "code": "INFO_PRIMARY_SELECTED",
+        "message": "Stack stack_main: selected primary blk_primary_beta from 3 candidates.",
+        "relatedStackIds": [
+          "stack_main"
+        ],
         "relatedBlockIds": [
-          "blk_primary_alpha",
-          "blk_primary_gamma",
           "blk_primary_beta"
         ],
-        "priorityContext": {
-          "moltType": "primary",
-          "stackId": "stack_main",
-          "reason": "select single primary from bundled alternates"
-        },
-        "priorityCandidates": [
-          {
-            "id": "blk_primary_alpha",
-            "priorityGroup": "Default",
-            "priorityOrder": 10
-          },
-          {
-            "id": "blk_primary_gamma",
-            "priorityGroup": "Default",
-            "priorityOrder": 30
-          },
-          {
-            "id": "blk_primary_beta",
-            "priorityGroup": "Default",
-            "priorityOrder": 50
-          }
-        ],
-        "priorityWinnerId": "blk_primary_alpha",
         "id": "evt_00012",
         "timestamp": "TEST_TIME"
       },

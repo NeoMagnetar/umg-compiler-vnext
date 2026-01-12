@@ -7,11 +7,11 @@
         "stackId": "stack_main",
         "domainKey": "domain_main",
         "orderedBlockIds": [
-          "blk_instruction_unbundled_low",
-          "blk_instruction_bundled_1",
-          "blk_instruction_bundled_2",
-          "blk_instruction_bundled_3",
           "blk_instruction_unbundled_high",
+          "blk_instruction_bundled_3",
+          "blk_instruction_bundled_2",
+          "blk_instruction_bundled_1",
+          "blk_instruction_unbundled_low",
           "blk_primary"
         ]
       }
@@ -20,11 +20,11 @@
       "trigger": [],
       "directive": [],
       "instruction": [
-        "blk_instruction_unbundled_low",
-        "blk_instruction_bundled_1",
-        "blk_instruction_bundled_2",
+        "blk_instruction_unbundled_high",
         "blk_instruction_bundled_3",
-        "blk_instruction_unbundled_high"
+        "blk_instruction_bundled_2",
+        "blk_instruction_bundled_1",
+        "blk_instruction_unbundled_low"
       ],
       "subject": [],
       "primary": [
@@ -71,22 +71,22 @@
         "id": "nb_stack_main",
         "stackId": "stack_main",
         "orderedBlockIds": [
-          "blk_instruction_unbundled_low",
-          "blk_instruction_bundled_1",
-          "blk_instruction_bundled_2",
-          "blk_instruction_bundled_3",
           "blk_instruction_unbundled_high",
+          "blk_instruction_bundled_3",
+          "blk_instruction_bundled_2",
+          "blk_instruction_bundled_1",
+          "blk_instruction_unbundled_low",
           "blk_primary"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [],
           "instruction": [
-            "blk_instruction_unbundled_low",
-            "blk_instruction_bundled_1",
-            "blk_instruction_bundled_2",
+            "blk_instruction_unbundled_high",
             "blk_instruction_bundled_3",
-            "blk_instruction_unbundled_high"
+            "blk_instruction_bundled_2",
+            "blk_instruction_bundled_1",
+            "blk_instruction_unbundled_low"
           ],
           "subject": [],
           "primary": [
@@ -426,11 +426,11 @@
           "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_instruction_unbundled_low",
-          "blk_instruction_bundled_1",
-          "blk_instruction_bundled_2",
+          "blk_instruction_unbundled_high",
           "blk_instruction_bundled_3",
-          "blk_instruction_unbundled_high"
+          "blk_instruction_bundled_2",
+          "blk_instruction_bundled_1",
+          "blk_instruction_unbundled_low"
         ],
         "id": "evt_00018",
         "timestamp": "TEST_TIME"

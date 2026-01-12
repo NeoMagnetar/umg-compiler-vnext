@@ -76,10 +76,11 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
     const dirty = 
       title !== originalTitle ||
       content !== originalContent ||
-      tagsInput !== originalTagsInput;
+      tagsInput !== originalTagsInput ||
+      priorityOrder !== originalPriorityOrder;
     setIsDirty(dirty);
     if (dirty) setLastSaved(false);
-  }, [title, content, tagsInput, originalTitle, originalContent, originalTagsInput, blockFound]);
+  }, [title, content, tagsInput, priorityOrder, originalTitle, originalContent, originalTagsInput, originalPriorityOrder, blockFound]);
 
   const handleApply = useCallback(() => {
     if (!selectedBlockId || !blockFound) return;
@@ -92,7 +93,8 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
     const patch: BlockPatch = {
       title,
       content,
-      tags
+      tags,
+      priorityOrder
     };
 
     const result = updateBlock(sleeveJson, selectedBlockId, patch);
@@ -240,40 +242,21 @@ export default function BlockInspector({ sleeveJson, selectedBlockId, onChangeSl
         </div>
 
         <div>
-          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>
-            Priority Order
-            <span style={{ 
-              marginLeft: 6, 
-              fontSize: 9, 
-              padding: "1px 5px", 
-              background: "rgba(234, 179, 8, 0.15)", 
-              color: "#eab308",
-              borderRadius: 4
-            }}>
-              v0: display only
-            </span>
-          </label>
+          <label className="small" style={{ display: "block", marginBottom: 4, opacity: 0.7 }}>Priority Order</label>
           <input
             type="number"
             value={priorityOrder}
             onChange={(e) => setPriorityOrder(parseInt(e.target.value) || 0)}
-            disabled
-            title="Priority fields are read-only in v0 authoring. Priority is resolved by the compiler at collision points only."
             style={{
               width: 100,
               padding: "8px 10px",
-              background: "rgba(0,0,0,0.2)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: 6,
               color: "inherit",
-              fontSize: 13,
-              opacity: 0.6,
-              cursor: "not-allowed"
+              fontSize: 13
             }}
           />
-          <div className="small" style={{ marginTop: 4, opacity: 0.5, fontSize: 10 }}>
-            Priority is resolved by the compiler at collision points (alternates bundles). Not editable in v0.
-          </div>
         </div>
       </div>
 

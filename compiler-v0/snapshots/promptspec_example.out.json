@@ -7,8 +7,8 @@
         "stackId": "stack_a",
         "domainKey": "domain_a",
         "orderedBlockIds": [
-          "blk_directive_a1",
           "blk_directive_a2",
+          "blk_directive_a1",
           "blk_instruction_a",
           "blk_primary_a",
           "blk_blueprint_a"
@@ -30,8 +30,8 @@
     "blocksByMoltType": {
       "trigger": [],
       "directive": [
-        "blk_directive_a1",
         "blk_directive_a2",
+        "blk_directive_a1",
         "blk_directive_b"
       ],
       "instruction": [
@@ -131,8 +131,8 @@
         "id": "nb_stack_a",
         "stackId": "stack_a",
         "orderedBlockIds": [
-          "blk_directive_a1",
           "blk_directive_a2",
+          "blk_directive_a1",
           "blk_instruction_a",
           "blk_primary_a",
           "blk_blueprint_a"
@@ -140,8 +140,8 @@
         "byMoltType": {
           "trigger": [],
           "directive": [
-            "blk_directive_a1",
-            "blk_directive_a2"
+            "blk_directive_a2",
+            "blk_directive_a1"
           ],
           "instruction": [
             "blk_instruction_a"
@@ -166,7 +166,7 @@
         "active": {
           "triggerIds": [],
           "directiveIds": [
-            "blk_directive_a1"
+            "blk_directive_a2"
           ],
           "instructionIds": [
             "blk_instruction_a"
@@ -279,9 +279,9 @@
             {
               "type": "directive",
               "blockIds": [
-                "blk_directive_a1"
+                "blk_directive_a2"
               ],
-              "text": "Directive A1: Be concise."
+              "text": "Directive A2: Be helpful and thorough."
             },
             {
               "type": "instruction",
@@ -315,7 +315,7 @@
               "text": "Blueprint A: Use markdown formatting for clarity."
             }
           ],
-          "fullText": "Directive A1: Be concise.\n\n---\n\nInstruction A: Answer questions step by step.\n\n---\n\nYou are an AI assistant for Stack A.\n\n---\n\nBlueprint A: Use markdown formatting for clarity."
+          "fullText": "Directive A2: Be helpful and thorough.\n\n---\n\nInstruction A: Answer questions step by step.\n\n---\n\nYou are an AI assistant for Stack A.\n\n---\n\nBlueprint A: Use markdown formatting for clarity."
         },
         {
           "neoBlockId": "nb_stack_b",
@@ -784,44 +784,28 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-        "message": "Stack stack_a has 2 bundled directive alternates; resolving by priority.",
+        "message": "Stack stack_a has 2 bundled directive alternates; selecting highest priority.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_directive_a1",
-          "blk_directive_a2"
+          "blk_directive_a2",
+          "blk_directive_a1"
         ],
         "id": "evt_00030",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "priority_resolution",
+        "kind": "pipeline_stage",
         "severity": "info",
-        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
-        "message": "Priority resolution: blk_directive_a1 selected (group=Default, order=10). Context: select single directive from bundled alternates",
+        "code": "INFO_DIRECTIVE_SELECTED",
+        "message": "Stack stack_a: selected directive blk_directive_a2 from 2 candidates.",
+        "relatedStackIds": [
+          "stack_a"
+        ],
         "relatedBlockIds": [
-          "blk_directive_a1",
           "blk_directive_a2"
         ],
-        "priorityContext": {
-          "moltType": "directive",
-          "stackId": "stack_a",
-          "reason": "select single directive from bundled alternates"
-        },
-        "priorityCandidates": [
-          {
-            "id": "blk_directive_a1",
-            "priorityGroup": "Default",
-            "priorityOrder": 10
-          },
-          {
-            "id": "blk_directive_a2",
-            "priorityGroup": "Default",
-            "priorityOrder": 50
-          }
-        ],
-        "priorityWinnerId": "blk_directive_a1",
         "id": "evt_00031",
         "timestamp": "TEST_TIME"
       },

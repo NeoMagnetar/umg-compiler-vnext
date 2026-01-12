@@ -8,8 +8,8 @@
         "domainKey": "domain_a",
         "orderedBlockIds": [
           "blk_primary_a",
-          "blk_blueprint_a1",
-          "blk_blueprint_a2"
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
         ]
       },
       {
@@ -19,8 +19,8 @@
           "blk_primary_b",
           "blk_philosophy_b1",
           "blk_philosophy_b2",
-          "blk_blueprint_b1",
-          "blk_blueprint_b2"
+          "blk_blueprint_b2",
+          "blk_blueprint_b1"
         ]
       }
     ],
@@ -38,10 +38,10 @@
         "blk_philosophy_b2"
       ],
       "blueprint": [
-        "blk_blueprint_a1",
         "blk_blueprint_a2",
-        "blk_blueprint_b1",
-        "blk_blueprint_b2"
+        "blk_blueprint_a1",
+        "blk_blueprint_b2",
+        "blk_blueprint_b1"
       ]
     },
     "bundles": [
@@ -103,8 +103,8 @@
         "stackId": "stack_a",
         "orderedBlockIds": [
           "blk_primary_a",
-          "blk_blueprint_a1",
-          "blk_blueprint_a2"
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
         ],
         "byMoltType": {
           "trigger": [],
@@ -116,8 +116,8 @@
           ],
           "philosophy": [],
           "blueprint": [
-            "blk_blueprint_a1",
-            "blk_blueprint_a2"
+            "blk_blueprint_a2",
+            "blk_blueprint_a1"
           ]
         },
         "bundleIds": [
@@ -134,7 +134,7 @@
           "primaryId": "blk_primary_a",
           "philosophyIds": [],
           "blueprintIds": [
-            "blk_blueprint_a1"
+            "blk_blueprint_a2"
           ]
         }
       },
@@ -145,8 +145,8 @@
           "blk_primary_b",
           "blk_philosophy_b1",
           "blk_philosophy_b2",
-          "blk_blueprint_b1",
-          "blk_blueprint_b2"
+          "blk_blueprint_b2",
+          "blk_blueprint_b1"
         ],
         "byMoltType": {
           "trigger": [],
@@ -161,8 +161,8 @@
             "blk_philosophy_b2"
           ],
           "blueprint": [
-            "blk_blueprint_b1",
-            "blk_blueprint_b2"
+            "blk_blueprint_b2",
+            "blk_blueprint_b1"
           ]
         },
         "bundleIds": [
@@ -257,12 +257,12 @@
             {
               "type": "blueprint",
               "blockIds": [
-                "blk_blueprint_a1"
+                "blk_blueprint_a2"
               ],
-              "text": "Blueprint A1 - lower priority"
+              "text": "Blueprint A2 - highest priority, should be selected"
             }
           ],
-          "fullText": "Primary for stack A\n\n---\n\nBlueprint A1 - lower priority"
+          "fullText": "Primary for stack A\n\n---\n\nBlueprint A2 - highest priority, should be selected"
         },
         {
           "neoBlockId": "nb_stack_b",
@@ -665,44 +665,28 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
-        "message": "Stack stack_a has 2 bundled blueprint alternates; resolving by priority.",
+        "message": "Stack stack_a has 2 bundled blueprint alternates; selecting highest priority.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_blueprint_a1",
-          "blk_blueprint_a2"
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
         ],
         "id": "evt_00027",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "priority_resolution",
+        "kind": "pipeline_stage",
         "severity": "info",
-        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
-        "message": "Priority resolution: blk_blueprint_a1 selected (group=Default, order=10). Context: select single blueprint from bundled alternates",
+        "code": "INFO_BLUEPRINT_SELECTED",
+        "message": "Stack stack_a: selected blueprint blk_blueprint_a2 from 2 candidates.",
+        "relatedStackIds": [
+          "stack_a"
+        ],
         "relatedBlockIds": [
-          "blk_blueprint_a1",
           "blk_blueprint_a2"
         ],
-        "priorityContext": {
-          "moltType": "blueprint",
-          "stackId": "stack_a",
-          "reason": "select single blueprint from bundled alternates"
-        },
-        "priorityCandidates": [
-          {
-            "id": "blk_blueprint_a1",
-            "priorityGroup": "Default",
-            "priorityOrder": 10
-          },
-          {
-            "id": "blk_blueprint_a2",
-            "priorityGroup": "Default",
-            "priorityOrder": 50
-          }
-        ],
-        "priorityWinnerId": "blk_blueprint_a1",
         "id": "evt_00028",
         "timestamp": "TEST_TIME"
       },
@@ -715,8 +699,8 @@
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_blueprint_b1",
-          "blk_blueprint_b2"
+          "blk_blueprint_b2",
+          "blk_blueprint_b1"
         ],
         "id": "evt_00029",
         "timestamp": "TEST_TIME"

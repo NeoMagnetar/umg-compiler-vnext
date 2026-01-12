@@ -7,8 +7,8 @@
         "stackId": "stack_a",
         "domainKey": "domain_a",
         "orderedBlockIds": [
-          "blk_directive_a1",
           "blk_directive_a2",
+          "blk_directive_a1",
           "blk_primary_a"
         ]
       },
@@ -16,8 +16,8 @@
         "stackId": "stack_b",
         "domainKey": "domain_b",
         "orderedBlockIds": [
-          "blk_directive_b1",
           "blk_directive_b2",
+          "blk_directive_b1",
           "blk_primary_b"
         ]
       }
@@ -25,10 +25,10 @@
     "blocksByMoltType": {
       "trigger": [],
       "directive": [
-        "blk_directive_a1",
         "blk_directive_a2",
-        "blk_directive_b1",
-        "blk_directive_b2"
+        "blk_directive_a1",
+        "blk_directive_b2",
+        "blk_directive_b1"
       ],
       "instruction": [],
       "subject": [],
@@ -83,15 +83,15 @@
         "id": "nb_stack_a",
         "stackId": "stack_a",
         "orderedBlockIds": [
-          "blk_directive_a1",
           "blk_directive_a2",
+          "blk_directive_a1",
           "blk_primary_a"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [
-            "blk_directive_a1",
-            "blk_directive_a2"
+            "blk_directive_a2",
+            "blk_directive_a1"
           ],
           "instruction": [],
           "subject": [],
@@ -110,7 +110,7 @@
         "active": {
           "triggerIds": [],
           "directiveIds": [
-            "blk_directive_a1"
+            "blk_directive_a2"
           ],
           "instructionIds": [],
           "subjectIds": [],
@@ -123,15 +123,15 @@
         "id": "nb_stack_b",
         "stackId": "stack_b",
         "orderedBlockIds": [
-          "blk_directive_b1",
           "blk_directive_b2",
+          "blk_directive_b1",
           "blk_primary_b"
         ],
         "byMoltType": {
           "trigger": [],
           "directive": [
-            "blk_directive_b1",
-            "blk_directive_b2"
+            "blk_directive_b2",
+            "blk_directive_b1"
           ],
           "instruction": [],
           "subject": [],
@@ -201,9 +201,9 @@
             {
               "type": "directive",
               "blockIds": [
-                "blk_directive_a1"
+                "blk_directive_a2"
               ],
-              "text": "Directive A1 - lower priority"
+              "text": "Directive A2 - highest priority, should be selected"
             },
             {
               "type": "instruction",
@@ -233,7 +233,7 @@
               "text": ""
             }
           ],
-          "fullText": "Directive A1 - lower priority\n\n---\n\nPrimary for stack A"
+          "fullText": "Directive A2 - highest priority, should be selected\n\n---\n\nPrimary for stack A"
         },
         {
           "neoBlockId": "nb_stack_b",
@@ -551,44 +551,28 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-        "message": "Stack stack_a has 2 bundled directive alternates; resolving by priority.",
+        "message": "Stack stack_a has 2 bundled directive alternates; selecting highest priority.",
         "relatedStackIds": [
           "stack_a"
         ],
         "relatedBlockIds": [
-          "blk_directive_a1",
-          "blk_directive_a2"
+          "blk_directive_a2",
+          "blk_directive_a1"
         ],
         "id": "evt_00020",
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "priority_resolution",
+        "kind": "pipeline_stage",
         "severity": "info",
-        "code": "INFO_PRIORITY_RESOLVED_BY_ORDER",
-        "message": "Priority resolution: blk_directive_a1 selected (group=Default, order=10). Context: select single directive from bundled alternates",
+        "code": "INFO_DIRECTIVE_SELECTED",
+        "message": "Stack stack_a: selected directive blk_directive_a2 from 2 candidates.",
+        "relatedStackIds": [
+          "stack_a"
+        ],
         "relatedBlockIds": [
-          "blk_directive_a1",
           "blk_directive_a2"
         ],
-        "priorityContext": {
-          "moltType": "directive",
-          "stackId": "stack_a",
-          "reason": "select single directive from bundled alternates"
-        },
-        "priorityCandidates": [
-          {
-            "id": "blk_directive_a1",
-            "priorityGroup": "Default",
-            "priorityOrder": 10
-          },
-          {
-            "id": "blk_directive_a2",
-            "priorityGroup": "Default",
-            "priorityOrder": 50
-          }
-        ],
-        "priorityWinnerId": "blk_directive_a1",
         "id": "evt_00021",
         "timestamp": "TEST_TIME"
       },
@@ -601,8 +585,8 @@
           "stack_b"
         ],
         "relatedBlockIds": [
-          "blk_directive_b1",
-          "blk_directive_b2"
+          "blk_directive_b2",
+          "blk_directive_b1"
         ],
         "id": "evt_00022",
         "timestamp": "TEST_TIME"
