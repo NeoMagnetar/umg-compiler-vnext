@@ -103,6 +103,16 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
     }
   };
 
+  const handleAddStack = () => {
+    const result = addStack(sleeveJson, {});
+    if (result.error) {
+      showMessage(`Error: ${result.error}`);
+    } else if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      showMessage("Stack created!");
+    }
+  };
+
   const handleInsertFromLibrary = (libBlock: LibraryBlock) => {
     if (!insertStackId) {
       showMessage("Select a stack first");
@@ -398,6 +408,35 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
               </button>
             </div>
           )}
+
+          <div>
+            <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Stacks ({stacks.length})
+            </div>
+            {stacks.map(s => (
+              <div 
+                key={s.id}
+                style={{
+                  padding: 6,
+                  marginBottom: 4,
+                  background: "rgba(255,255,255,0.03)",
+                  borderRadius: 4,
+                  fontSize: 11
+                }}
+              >
+                <div style={{ fontWeight: 500 }}>{s.name}</div>
+                <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{s.id}</div>
+              </div>
+            ))}
+            <button
+              className="btn"
+              onClick={handleAddStack}
+              data-testid="button-add-stack"
+              style={{ width: "100%", fontSize: 11, marginTop: 4 }}
+            >
+              + New Stack
+            </button>
+          </div>
 
           <div>
             <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
