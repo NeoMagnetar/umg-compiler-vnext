@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { GraphNode, Pos } from "@/lib/graphTypes";
 import { CompressedGroup } from "@/lib/moltCompression";
+import { ParsedItem } from "@/lib/promptParse";
 import { loadLayout, saveLayout, LayoutState, updateNeoPosition } from "@/lib/layoutStore";
 import MoltGraphView from "./graphs/MoltGraphView";
 import NeoGraphView from "./graphs/NeoGraphView";
@@ -15,17 +16,21 @@ interface CenterWorkspaceProps {
   compiled: any;
   compressedGroups?: CompressedGroup[];
   onCompressSelection?: (mode: "bundle" | "merge", blockIds: string[], stackId: string) => void;
+  isMobile?: boolean;
+  onGenerate?: (item: ParsedItem) => void;
 }
 
 export default function CenterWorkspace({
   sleeveJson,
   compiled,
   compressedGroups = [],
-  onCompressSelection
+  onCompressSelection,
+  isMobile = false,
+  onGenerate
 }: CenterWorkspaceProps) {
   const [activeTab, setActiveTab] = useState<TabId>("molt");
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [bottomPanelOpen, setBottomPanelOpen] = useState(false);
+  const [bottomPanelOpen, setBottomPanelOpen] = useState(!isMobile);
   const [bottomPanelHeight, setBottomPanelHeight] = useState(180);
 
   const [layout, setLayout] = useState<LayoutState>(() => loadLayout());
@@ -87,8 +92,8 @@ export default function CenterWorkspace({
   }, [layout]);
 
   const tabs: { id: TabId; label: string }[] = [
-    { id: "molt", label: "MOLT" },
-    { id: "neo", label: "NEO" },
+    { id: "molt", label: "MOLT STACK" },
+    { id: "neo", label: "NEOBLOCKS" },
     { id: "sleeve", label: "SLEEVE" }
   ];
 
@@ -211,6 +216,8 @@ export default function CenterWorkspace({
           onToggle={toggleBottomPanel}
           height={bottomPanelHeight}
           onHeightChange={setBottomPanelHeight}
+          isMobile={isMobile}
+          onGenerate={onGenerate}
         />
       </div>
     </div>

@@ -9,6 +9,7 @@ import { loadSleeveJson, saveSleeveJson } from "@/lib/storage";
 import { blockExistsInSleeve, addBlockToStack, parseSleeve } from "@/lib/sleeveEdit";
 import { applyOpsToSleeveJson, hasOps, ApplyOpsReport } from "@/lib/applyOps";
 import { CompressedGroup, createCompressedGroup } from "@/lib/moltCompression";
+import { ParsedItem, ParsedNeoBlock, ParsedNeoStack } from "@/lib/promptParse";
 import fixture from "@/fixtures/sleeve.minimal.json?raw";
 
 export default function App() {
@@ -29,6 +30,8 @@ export default function App() {
   const [opsReport, setOpsReport] = useState<ApplyOpsReport | null>(null);
   const lastCompiledJsonRef = useRef<string>(loadSleeveJson(fixture));
   const [compressedGroups, setCompressedGroups] = useState<CompressedGroup[]>([]);
+  const [generatedNeoBlocks, setGeneratedNeoBlocks] = useState<ParsedNeoBlock[]>([]);
+  const [generatedNeoStacks, setGeneratedNeoStacks] = useState<ParsedNeoStack[]>([]);
 
   const compiled = useMemo(() => {
     try { return JSON.parse(resultJson); } catch { return null; }
@@ -145,6 +148,32 @@ export default function App() {
     setCompressedGroups(prev => prev.filter(g => g.id !== groupId));
   }, []);
 
+  const handleGenerate = useCallback((item: ParsedItem) => {
+    if (item.type === "neoblock") {
+      setGeneratedNeoBlocks(prev => [...prev, item as ParsedNeoBlock]);
+    } else if (item.type === "neostack") {
+      const stack = item as ParsedNeoStack;
+      const newBlocks: ParsedNeoBlock[] = [];
+      for (const containsTitle of stack.contains) {
+        const exists = generatedNeoBlocks.some(b => b.title === containsTitle);
+        if (!exists) {
+          const placeholderId = `nb_${containsTitle.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 20)}_${Math.random().toString(36).slice(2, 6)}`;
+          newBlocks.push({
+            type: "neoblock",
+            id: placeholderId,
+            title: containsTitle,
+            tags: ["draft"],
+            desc: "Auto-created placeholder"
+          });
+        }
+      }
+      if (newBlocks.length > 0) {
+        setGeneratedNeoBlocks(prev => [...prev, ...newBlocks]);
+      }
+      setGeneratedNeoStacks(prev => [...prev, stack]);
+    }
+  }, [generatedNeoBlocks]);
+
   return (
     <Layout
       isMobile={isMobile}
@@ -193,6 +222,8 @@ export default function App() {
           sleeveJson={sleeveJson}
           compiled={compiled}
           compressedGroups={compressedGroups}
+          isMobile={isMobile}
+          onGenerate={handleGenerate}
         />
       }
       right={

@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TagExplorer from "./TagExplorer";
 import LibraryPanel from "./LibraryPanel";
 import StructurePanel from "./StructurePanel";
+import { loadSidebarState, saveSidebarState, SidebarState } from "@/lib/sidebarState";
 
 interface SectionProps {
   title: string;
-  defaultOpen?: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
   children: React.ReactNode;
 }
 
-function CollapsibleSection({ title, defaultOpen = true, children }: SectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
+function CollapsibleSection({ title, isOpen, onToggle, children }: SectionProps) {
   return (
     <div style={{ marginBottom: 8 }}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
+        data-testid={`section-toggle-${title.toLowerCase().replace(/\s+/g, "-")}`}
         style={{
           width: "100%",
           padding: "8px 10px",
@@ -66,6 +67,20 @@ export default function LeftPanel({
   onChangeSleeveJson,
   onClearMultiSelect 
 }: LeftPanelProps) {
+  const [sections, setSections] = useState<SidebarState>(() => loadSidebarState());
+
+  useEffect(() => {
+    setSections(loadSidebarState());
+  }, []);
+
+  const handleToggle = (section: keyof SidebarState) => {
+    setSections(prev => {
+      const next = { ...prev, [section]: !prev[section] };
+      saveSidebarState(next);
+      return next;
+    });
+  };
+
   const indexes = compiled?.runtime?.indexes;
   const tags = indexes?.tags;
 
@@ -76,7 +91,29 @@ export default function LeftPanel({
         <div className="small" style={{ opacity: 0.5, marginTop: 2 }}>Sidebar</div>
       </div>
 
-      <CollapsibleSection title="Block Library" defaultOpen={false}>
+      <CollapsibleSection 
+        title="Template" 
+        isOpen={sections.template}
+        onToggle={() => handleToggle("template")}
+      >
+        <div style={{ fontSize: 11, opacity: 0.6 }}>
+          <p style={{ marginBottom: 8 }}>Template settings and presets for quick sleeve creation.</p>
+          <div style={{
+            padding: 8,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 4,
+            fontSize: 10
+          }}>
+            No templates loaded. Use the PROMPT tab in the bottom panel to create NeoBlocks and NeoStacks.
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection 
+        title="Block Library" 
+        isOpen={sections.library}
+        onToggle={() => handleToggle("library")}
+      >
         <LibraryPanel 
           sleeveJson={sleeveJson} 
           selectedBlockId={selectedBlockId ?? null}
@@ -84,7 +121,11 @@ export default function LeftPanel({
         />
       </CollapsibleSection>
 
-      <CollapsibleSection title="Tags" defaultOpen={true}>
+      <CollapsibleSection 
+        title="Tags" 
+        isOpen={sections.tags}
+        onToggle={() => handleToggle("tags")}
+      >
         {selectedTag && (
           <div 
             style={{ 
@@ -120,7 +161,11 @@ export default function LeftPanel({
         )}
       </CollapsibleSection>
 
-      <CollapsibleSection title="Structure" defaultOpen={true}>
+      <CollapsibleSection 
+        title="Structure" 
+        isOpen={sections.structure}
+        onToggle={() => handleToggle("structure")}
+      >
         <StructurePanel 
           sleeveJson={sleeveJson}
           onChangeSleeveJson={onChangeSleeveJson}

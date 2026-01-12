@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { GraphNode } from "@/lib/graphTypes";
+import { ParsedItem } from "@/lib/promptParse";
+import PromptBuilder from "./PromptBuilder";
 
 interface BottomPanelProps {
   selectedNode: GraphNode | null;
@@ -7,20 +9,27 @@ interface BottomPanelProps {
   onToggle: () => void;
   height: number;
   onHeightChange: (height: number) => void;
+  isMobile?: boolean;
+  onGenerate?: (item: ParsedItem) => void;
 }
 
-type DetailTab = "details" | "json" | "trace";
+type DetailTab = "details" | "json" | "trace" | "prompt";
 
 export default function BottomPanel({ 
   selectedNode, 
   isOpen, 
   onToggle,
   height,
-  onHeightChange
+  onHeightChange,
+  isMobile = false,
+  onGenerate
 }: BottomPanelProps) {
   const [activeTab, setActiveTab] = useState<DetailTab>("details");
   const panelRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startY: number; startHeight: number } | null>(null);
+
+  const mobileMaxHeight = typeof window !== "undefined" ? window.innerHeight * 0.45 : 300;
+  const effectiveHeight = isMobile ? Math.min(height, mobileMaxHeight) : height;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,7 +41,8 @@ export default function BottomPanel({
   const handleMouseMove = (e: MouseEvent) => {
     if (!dragRef.current) return;
     const delta = dragRef.current.startY - e.clientY;
-    const newHeight = Math.max(100, Math.min(500, dragRef.current.startHeight + delta));
+    const maxH = isMobile ? mobileMaxHeight : 500;
+    const newHeight = Math.max(100, Math.min(maxH, dragRef.current.startHeight + delta));
     onHeightChange(newHeight);
   };
 
@@ -48,6 +58,11 @@ export default function BottomPanel({
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
+
+  const handleGenerate = (item: ParsedItem) => {
+    onGenerate?.(item);
+    setActiveTab("details");
+  };
 
   const renderTabButton = (tab: DetailTab, label: string) => (
     <button
@@ -70,6 +85,10 @@ export default function BottomPanel({
   );
 
   const renderContent = () => {
+    if (activeTab === "prompt") {
+      return <PromptBuilder onGenerate={handleGenerate} />;
+    }
+
     if (!selectedNode) {
       return (
         <div style={{ 
@@ -202,22 +221,25 @@ export default function BottomPanel({
     return (
       <div 
         style={{ 
-          height: 32,
+          height: 36,
           borderTop: "1px solid rgba(255,255,255,0.1)",
           background: "rgba(0,0,0,0.3)",
           display: "flex",
           alignItems: "center",
-          padding: "0 12px",
+          justifyContent: "center",
           cursor: "pointer",
           flexShrink: 0
         }}
         onClick={onToggle}
         data-testid="bottom-panel-collapsed"
       >
-        <span style={{ fontSize: 11, opacity: 0.6 }}>
-          {selectedNode ? `Inspecting: ${selectedNode.label}` : "Inspector"}
+        <span style={{ 
+          fontSize: 16, 
+          opacity: 0.5,
+          transform: "translateY(-2px)"
+        }}>
+          ▲
         </span>
-        <span style={{ marginLeft: "auto", opacity: 0.4 }}>▲</span>
       </div>
     );
   }
@@ -226,7 +248,7 @@ export default function BottomPanel({
     <div 
       ref={panelRef}
       style={{ 
-        height,
+        height: effectiveHeight,
         borderTop: "1px solid rgba(255,255,255,0.1)",
         background: "rgba(0,0,0,0.4)",
         display: "flex",
@@ -238,25 +260,37 @@ export default function BottomPanel({
       <div 
         onMouseDown={handleMouseDown}
         style={{
-          height: 4,
+          height: 8,
           background: "transparent",
           cursor: "ns-resize",
-          flexShrink: 0
+          flexShrink: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
         }}
-      />
+      >
+        <div style={{
+          width: 40,
+          height: 4,
+          background: "rgba(255,255,255,0.2)",
+          borderRadius: 2
+        }} />
+      </div>
       <div style={{ 
         display: "flex", 
         alignItems: "center", 
         padding: "4px 12px",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
         gap: 8,
-        flexShrink: 0
+        flexShrink: 0,
+        flexWrap: "wrap"
       }}>
         <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>Inspector</span>
-        <div style={{ display: "flex", gap: 4 }}>
+        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
           {renderTabButton("details", "Details")}
           {renderTabButton("json", "JSON")}
           {renderTabButton("trace", "Trace")}
+          {renderTabButton("prompt", "PROMPT")}
         </div>
         <button
           onClick={onToggle}
