@@ -160,7 +160,7 @@ export default function GraphCanvas({
 
   if (!sleeve) {
     return (
-      <div style={{ height: "100%", overflow: "auto", padding: 12 }}>
+      <div style={{ height: "100%", width: "100%", minHeight: 0, overflow: "auto", padding: 12 }}>
         <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7 }}>Graph Canvas</h3>
         <p style={{ color: "#ff6b6b" }}>Invalid sleeve JSON</p>
       </div>
@@ -169,7 +169,7 @@ export default function GraphCanvas({
 
   if (stacks.length === 0) {
     return (
-      <div style={{ height: "100%", overflow: "auto", padding: 12 }}>
+      <div style={{ height: "100%", width: "100%", minHeight: 0, overflow: "auto", padding: 12 }}>
         <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7 }}>Graph Canvas</h3>
         <p className="small" style={{ opacity: 0.5 }}>No stacks defined in sleeve</p>
       </div>
@@ -177,12 +177,20 @@ export default function GraphCanvas({
   }
 
   return (
-    <div style={{ height: "100%", overflow: "auto", padding: 12 }}>
-      <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7 }}>
+    <div style={{ 
+      height: "100%", 
+      width: "100%",
+      minHeight: 0,
+      overflow: "auto", 
+      padding: 12,
+      display: "flex",
+      flexDirection: "column"
+    }}>
+      <h3 style={{ margin: "0 0 12px", fontSize: 13, opacity: 0.7, flexShrink: 0 }}>
         Graph Canvas
         {selectMode && <span style={{ color: "#a855f7", marginLeft: 8 }}>(Select Mode)</span>}
       </h3>
-      <div style={{ display: "flex", gap: 16, minWidth: "fit-content" }}>
+      <div style={{ display: "flex", gap: 16, minWidth: "fit-content", flex: 1 }}>
         {stacks.map((stack: any) => {
           const stackBlockIds: string[] = stack.blockIds ?? [];
 

@@ -48,10 +48,10 @@ args = "npm run dev"
 waitForPort = 5000
 
 [[workflows.workflow]]
-name = "Run ui"
+name = "Umg run"
 mode = "sequential"
 author = 40243054
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev -- --host 0.0.0.0 --port 5000"
+args = "cd apps/umg-studio && npm run dev -- --host 0.0.0.0 --port 5173"
