@@ -7,6 +7,7 @@ import RightPanel from "@/components/RightPanel";
 import { compileFromJson } from "@/lib/compile";
 import { loadSleeveJson, saveSleeveJson } from "@/lib/storage";
 import { blockExistsInSleeve, addBlockToStack } from "@/lib/sleeveEdit";
+import { applyOpsToSleeveJson, hasOps, ApplyOpsReport } from "@/lib/applyOps";
 import fixture from "@/fixtures/sleeve.minimal.json?raw";
 
 export default function App() {
@@ -19,6 +20,8 @@ export default function App() {
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [selectedBlockIds, setSelectedBlockIds] = useState<string[]>([]);
   const [selectMode, setSelectMode] = useState(false);
+  const [compileMode, setCompileMode] = useState<"raw" | "withOps">("raw");
+  const [opsReport, setOpsReport] = useState<ApplyOpsReport | null>(null);
   const lastCompiledJsonRef = useRef<string>(loadSleeveJson(fixture));
 
   const compiled = useMemo(() => {
@@ -32,13 +35,43 @@ export default function App() {
     return blockExistsInSleeve(sleeveJson, selectedBlockId);
   }, [sleeveJson, selectedBlockId]);
 
+  const sleeveHasOps = useMemo(() => hasOps(sleeveJson), [sleeveJson]);
+
   const onCompile = () => {
     saveSleeveJson(sleeveJson);
     const c = compileFromJson(sleeveJson);
     setResultJson(JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2));
     lastCompiledJsonRef.current = sleeveJson;
+    setCompileMode("raw");
+    setOpsReport({ bundlesApplied: 0, mergesApplied: 0, blocksCreated: 0, blocksRemovedFromStacks: 0, errors: [] });
     setSelectedTag(null);
   };
+
+  const onCompileWithOps = useCallback(() => {
+    saveSleeveJson(sleeveJson);
+    const applied = applyOpsToSleeveJson(sleeveJson);
+    if (applied.error) {
+      setResultJson(JSON.stringify({ hasErrors: true, error: applied.error }, null, 2));
+      return;
+    }
+    const derivedJson = applied.nextJson!;
+    const c = compileFromJson(derivedJson);
+    setResultJson(JSON.stringify(c.result ?? { hasErrors: true, error: c.error }, null, 2));
+    lastCompiledJsonRef.current = sleeveJson;
+    setCompileMode("withOps");
+    setOpsReport(applied.report ?? null);
+    setSelectedTag(null);
+  }, [sleeveJson]);
+
+  const onImportSleeve = useCallback((json: string) => {
+    saveSleeveJson(json);
+    setSleeveJson(json);
+    const c = compileFromJson(json);
+    setResultJson(JSON.stringify(c.result ?? { hasErrors: true }, null, 2));
+    lastCompiledJsonRef.current = json;
+    setSelectedBlockId(null);
+    setSelectedBlockIds([]);
+  }, []);
 
   const onReset = () => {
     saveSleeveJson(fixture);
@@ -79,7 +112,10 @@ export default function App() {
       top={
         <TopBar 
           onCompile={onCompile} 
+          onCompileWithOps={onCompileWithOps}
           onReset={onReset} 
+          sleeveJson={sleeveJson}
+          onImportSleeve={onImportSleeve}
           selectedBlockId={selectedBlockId}
           isDirty={isDirty}
           blockFoundInSleeve={blockFoundInSleeve}
@@ -87,6 +123,9 @@ export default function App() {
           onToggleSelectMode={toggleSelectMode}
           multiSelectCount={selectedBlockIds.length}
           onClearMultiSelect={clearMultiSelect}
+          hasOps={sleeveHasOps}
+          compileMode={compileMode}
+          opsReport={opsReport}
         />
       }
       left={
