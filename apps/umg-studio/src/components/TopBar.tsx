@@ -195,14 +195,32 @@ export default function TopBar({
 
       <span style={{ flex: 1 }} />
 
-      {isMobile && onOpenRightDrawer && (
-        <button
-          className="btn"
-          onClick={onOpenRightDrawer}
-          data-testid="button-open-output-drawer"
-          style={{ fontSize: 11, padding: "4px 10px" }}
+      <button className="btn" onClick={onCompile} data-testid="button-compile-raw" style={{ position: "relative" }}>
+        Compile
+        {isDirty && (
+          <span style={{
+            position: "absolute",
+            top: -2,
+            right: -2,
+            width: 8,
+            height: 8,
+            background: "#eab308",
+            borderRadius: "50%"
+          }} />
+        )}
+      </button>
+      {hasOps && onCompileWithOps && (
+        <button 
+          className="btn" 
+          onClick={onCompileWithOps}
+          data-testid="button-compile-with-ops"
+          style={{ 
+            background: "rgba(168, 85, 247, 0.2)",
+            borderColor: "#a855f7",
+            color: "#a855f7"
+          }}
         >
-          Output
+          Compile+Ops
         </button>
       )}
 
@@ -315,35 +333,18 @@ export default function TopBar({
         )}
       </div>
       )}
-      
-      <button className="btn" onClick={onCompile} data-testid="button-compile-raw" style={{ position: "relative" }}>
-        Compile
-        {isDirty && (
-          <span style={{
-            position: "absolute",
-            top: -2,
-            right: -2,
-            width: 8,
-            height: 8,
-            background: "#eab308",
-            borderRadius: "50%"
-          }} />
-        )}
-      </button>
-      {hasOps && onCompileWithOps && (
-        <button 
-          className="btn" 
-          onClick={onCompileWithOps}
-          data-testid="button-compile-with-ops"
-          style={{ 
-            background: "rgba(168, 85, 247, 0.2)",
-            borderColor: "#a855f7",
-            color: "#a855f7"
-          }}
+
+      {isMobile && onOpenRightDrawer && (
+        <button
+          className="btn"
+          onClick={onOpenRightDrawer}
+          data-testid="button-open-output-drawer"
+          style={{ fontSize: 11, padding: "4px 10px" }}
         >
-          Compile+Ops
+          Output
         </button>
       )}
+      
       <button className="btn" onClick={() => setShowResetConfirm(true)} data-testid="button-reset">Reset</button>
 
       {showResetConfirm && (
