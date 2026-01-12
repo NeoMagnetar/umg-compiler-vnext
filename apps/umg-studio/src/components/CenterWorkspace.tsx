@@ -109,6 +109,7 @@ export default function CenterWorkspace({
             onSelectNode={handleSelectNode}
             compressedGroups={compressedGroups}
             positions={layout.molt}
+            onChangeSleeveJson={onChangeSleeveJson}
           />
         );
       case "neo":

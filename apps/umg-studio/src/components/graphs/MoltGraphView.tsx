@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { GraphNode } from "@/lib/graphTypes";
-import { parseSleeve } from "@/lib/sleeveEdit";
+import { parseSleeve, addBlockToStack } from "@/lib/sleeveEdit";
 import { buildMoltGraph, CompressedGroup } from "@/lib/moltCompression";
 import { Pos } from "@/lib/layoutStore";
 
@@ -30,6 +30,7 @@ interface MoltGraphViewProps {
   onSelectNode?: (node: GraphNode | null) => void;
   compressedGroups?: CompressedGroup[];
   positions?: Record<string, Pos>;
+  onChangeSleeveJson?: (nextJson: string) => void;
 }
 
 export default function MoltGraphView({
@@ -37,7 +38,8 @@ export default function MoltGraphView({
   selectedNodeId,
   onSelectNode,
   compressedGroups = [],
-  positions = {}
+  positions = {},
+  onChangeSleeveJson
 }: MoltGraphViewProps) {
   const { graphData, blocksById, sortedStacks, blockIdToGroup } = useMemo(() => {
     const { sleeve, error } = parseSleeve(sleeveJson);
@@ -81,6 +83,38 @@ export default function MoltGraphView({
   const handleNodeClick = (node: GraphNode) => {
     if (onSelectNode) {
       onSelectNode(selectedNodeId === node.id ? null : node);
+    }
+  };
+
+  const handleCreateBlock = (stackId: string, moltType: string) => {
+    if (!onChangeSleeveJson) return;
+    
+    const result = addBlockToStack(sleeveJson, stackId, {
+      moltType,
+      title: `New ${moltType}`,
+      content: "",
+      tags: []
+    });
+    
+    if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      
+      // Find the newly created block and select it
+      const { sleeve } = parseSleeve(result.nextJson);
+      if (sleeve && Array.isArray(sleeve.blocks)) {
+        const newBlock = sleeve.blocks[sleeve.blocks.length - 1];
+        if (newBlock && onSelectNode) {
+          const node: GraphNode = {
+            id: newBlock.id,
+            kind: "block",
+            label: newBlock.title ?? newBlock.id,
+            moltType: newBlock.moltType,
+            tags: newBlock.tags ?? [],
+            payload: newBlock
+          };
+          onSelectNode(node);
+        }
+      }
     }
   };
 
@@ -234,14 +268,53 @@ export default function MoltGraphView({
                       }}
                     >
                       <div style={{
-                        fontSize: 10,
-                        textTransform: "uppercase",
-                        opacity: 0.6,
-                        marginBottom: blocksInLane.length > 0 ? 6 : 0,
-                        letterSpacing: "0.5px",
-                        pointerEvents: "none"
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: blocksInLane.length > 0 ? 6 : 0
                       }}>
-                        {molt}
+                        <div style={{
+                          fontSize: 10,
+                          textTransform: "uppercase",
+                          opacity: 0.6,
+                          letterSpacing: "0.5px",
+                          pointerEvents: "none"
+                        }}>
+                          {molt}
+                        </div>
+                        {onChangeSleeveJson && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCreateBlock(stack.id, molt);
+                            }}
+                            data-testid={`button-add-block-${stack.id}-${molt}`}
+                            style={{
+                              width: 20,
+                              height: 20,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "rgba(255,255,255,0.1)",
+                              border: "1px solid rgba(255,255,255,0.2)",
+                              borderRadius: 4,
+                              color: "rgba(255,255,255,0.6)",
+                              fontSize: 14,
+                              cursor: "pointer",
+                              transition: "all 0.15s"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = "rgba(255,255,255,0.2)";
+                              e.currentTarget.style.color = "#fff";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                              e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+                            }}
+                          >
+                            +
+                          </button>
+                        )}
                       </div>
 
                       {blocksInLane.length === 0 ? (
