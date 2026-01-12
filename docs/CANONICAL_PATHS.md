@@ -5,4 +5,4 @@
 - **Entry index:** `compiler-v0/src/index.ts`
 - **UMG Studio alias:** `@compiler-v0` → `../../compiler-v0/src/index.ts`
 
-**No `packages/compiler-v0` or `UMG/packages/compiler-v0` exists in this repo.**
+**The compiler lives at `compiler-v0/src` (not in any packages/ subfolder).**
