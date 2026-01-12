@@ -1,0 +1,282 @@
+import React, { useState, useRef, useEffect } from "react";
+import { GraphNode } from "@/lib/graphTypes";
+
+interface BottomPanelProps {
+  selectedNode: GraphNode | null;
+  isOpen: boolean;
+  onToggle: () => void;
+  height: number;
+  onHeightChange: (height: number) => void;
+}
+
+type DetailTab = "details" | "json" | "trace";
+
+export default function BottomPanel({ 
+  selectedNode, 
+  isOpen, 
+  onToggle,
+  height,
+  onHeightChange
+}: BottomPanelProps) {
+  const [activeTab, setActiveTab] = useState<DetailTab>("details");
+  const panelRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ startY: number; startHeight: number } | null>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    dragRef.current = { startY: e.clientY, startHeight: height };
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!dragRef.current) return;
+    const delta = dragRef.current.startY - e.clientY;
+    const newHeight = Math.max(100, Math.min(500, dragRef.current.startHeight + delta));
+    onHeightChange(newHeight);
+  };
+
+  const handleMouseUp = () => {
+    dragRef.current = null;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  };
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+  const renderTabButton = (tab: DetailTab, label: string) => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      data-testid={`bottom-panel-tab-${tab}`}
+      style={{
+        padding: "4px 12px",
+        background: activeTab === tab ? "rgba(255,255,255,0.1)" : "transparent",
+        border: "none",
+        borderRadius: 4,
+        color: activeTab === tab ? "#fff" : "rgba(255,255,255,0.6)",
+        fontSize: 11,
+        cursor: "pointer",
+        transition: "all 0.15s"
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  const renderContent = () => {
+    if (!selectedNode) {
+      return (
+        <div style={{ 
+          height: "100%", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          opacity: 0.5 
+        }}>
+          Select a node to inspect
+        </div>
+      );
+    }
+
+    if (activeTab === "details") {
+      return (
+        <div style={{ padding: 12 }}>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 10, opacity: 0.5, textTransform: "uppercase", marginBottom: 4 }}>
+              {selectedNode.kind}
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>{selectedNode.label}</div>
+            <div className="mono small" style={{ opacity: 0.5, marginTop: 2 }}>{selectedNode.id}</div>
+          </div>
+
+          {selectedNode.moltType && (
+            <div style={{ marginBottom: 8 }}>
+              <span style={{ fontSize: 11, opacity: 0.5 }}>MOLT: </span>
+              <span style={{ 
+                fontSize: 11, 
+                padding: "2px 6px", 
+                background: "rgba(168, 85, 247, 0.2)",
+                borderRadius: 4,
+                color: "#a855f7"
+              }}>
+                {selectedNode.moltType}
+              </span>
+            </div>
+          )}
+
+          {selectedNode.tags && selectedNode.tags.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, opacity: 0.5, marginBottom: 4 }}>Tags</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {selectedNode.tags.map((tag: string) => (
+                  <span 
+                    key={tag}
+                    style={{ 
+                      fontSize: 10, 
+                      padding: "2px 6px", 
+                      background: "rgba(255,105,180,0.15)",
+                      borderRadius: 4,
+                      color: "#ff69b4"
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {selectedNode.payload?.description && (
+            <div style={{ marginTop: 12 }}>
+              <div style={{ fontSize: 10, opacity: 0.5, marginBottom: 4 }}>Description</div>
+              <div style={{ fontSize: 12, lineHeight: 1.5, opacity: 0.8 }}>
+                {selectedNode.payload.description}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (activeTab === "json") {
+      return (
+        <div style={{ padding: 12, height: "100%", overflow: "auto" }}>
+          <pre className="mono" style={{ 
+            fontSize: 10, 
+            margin: 0,
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word"
+          }}>
+            {JSON.stringify(selectedNode.payload, null, 2)}
+          </pre>
+        </div>
+      );
+    }
+
+    if (activeTab === "trace") {
+      const traceEvents = selectedNode.payload?.trace ?? selectedNode.payload?.traceEvents ?? [];
+      if (traceEvents.length === 0) {
+        return (
+          <div style={{ 
+            height: "100%", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            opacity: 0.5 
+          }}>
+            No trace events available
+          </div>
+        );
+      }
+      return (
+        <div style={{ padding: 12, height: "100%", overflow: "auto" }}>
+          {traceEvents.map((event: any, i: number) => (
+            <div 
+              key={i}
+              style={{ 
+                padding: 8, 
+                marginBottom: 6, 
+                background: "rgba(0,0,0,0.2)",
+                borderRadius: 4,
+                fontSize: 11
+              }}
+            >
+              <span style={{ opacity: 0.5 }}>{event.kind ?? event.type}: </span>
+              <span>{event.message ?? JSON.stringify(event)}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  if (!isOpen) {
+    return (
+      <div 
+        style={{ 
+          height: 32,
+          borderTop: "1px solid rgba(255,255,255,0.1)",
+          background: "rgba(0,0,0,0.3)",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 12px",
+          cursor: "pointer",
+          flexShrink: 0
+        }}
+        onClick={onToggle}
+        data-testid="bottom-panel-collapsed"
+      >
+        <span style={{ fontSize: 11, opacity: 0.6 }}>
+          {selectedNode ? `Inspecting: ${selectedNode.label}` : "Inspector"}
+        </span>
+        <span style={{ marginLeft: "auto", opacity: 0.4 }}>▲</span>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      ref={panelRef}
+      style={{ 
+        height,
+        borderTop: "1px solid rgba(255,255,255,0.1)",
+        background: "rgba(0,0,0,0.4)",
+        display: "flex",
+        flexDirection: "column",
+        flexShrink: 0
+      }}
+      data-testid="bottom-panel-expanded"
+    >
+      <div 
+        onMouseDown={handleMouseDown}
+        style={{
+          height: 4,
+          background: "transparent",
+          cursor: "ns-resize",
+          flexShrink: 0
+        }}
+      />
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        padding: "4px 12px",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        gap: 8,
+        flexShrink: 0
+      }}>
+        <span style={{ fontSize: 11, fontWeight: 600, opacity: 0.7 }}>Inspector</span>
+        <div style={{ display: "flex", gap: 4 }}>
+          {renderTabButton("details", "Details")}
+          {renderTabButton("json", "JSON")}
+          {renderTabButton("trace", "Trace")}
+        </div>
+        <button
+          onClick={onToggle}
+          data-testid="bottom-panel-close"
+          style={{
+            marginLeft: "auto",
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.5)",
+            cursor: "pointer",
+            fontSize: 14,
+            padding: "2px 6px"
+          }}
+        >
+          ▼
+        </button>
+      </div>
+      <div style={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+        {renderContent()}
+      </div>
+    </div>
+  );
+}

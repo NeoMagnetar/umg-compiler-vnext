@@ -1,0 +1,149 @@
+# Replit Agent — STEP 2
+## Goal: Center Tabs (MOLT / NEO / SLEEVE) + Bottom “Block Back” Panel
+### Also: Mobile drawers for Left/Right panels (VS Code vibe)
+
+---
+
+## STEP 2 — What we’re building
+
+### Center Area (always visible)
+A Tab strip above the graph:
+- Tab 1: MOLT (stack graph)
+- Tab 2: NEO (neoblock / neostack graph)
+- Tab 3: SLEEVE (full sleeve graph)
+
+Each tab shows a graph view (can be basic boxes + lines for now).
+
+### Bottom Panel (like VS Code terminal)
+A resizable/collapsible bottom panel that shows:
+- Selected node details (“back of the card”)
+- Description, tags, raw json, compile trace snippet
+- Starts at ~25% height, can collapse to a small bar
+
+### Mobile behavior
+- Center graph stays full screen (Step 1 preserved)
+- Left and Right panels become slide-in drawers:
+  - Open with buttons in TopBar: “Library” and “Output”
+  - Close with X or tap backdrop
+
+---
+
+## STEP 2 — Hard Rules
+- Do NOT implement drag-and-drop
+- Do NOT change compiler logic
+- Graph visuals can be simple (no fancy physics needed)
+- Must support “select a node → bottom panel updates”
+
+---
+
+## STEP 2 — Files to create / edit
+
+### A) Create Tab Controller + Center Workspace
+Create: `apps/umg-studio/src/components/CenterWorkspace.tsx`
+Responsibilities:
+- Render tab strip: [MOLT | NEO | SLEEVE]
+- Render the correct graph for selected tab
+- Manage selection state:
+  - selectedNodeId
+  - selectedNodePayload (block/neoblock/sleeve node)
+
+### B) Add Bottom Panel
+Create: `apps/umg-studio/src/components/BottomPanel.tsx`
+Must:
+- Dock to bottom of CenterWorkspace
+- Collapsible (open/closed)
+- Resizable (simple drag handle is fine; can be basic)
+- Show “Selected Node Details” when a node is selected
+- When nothing selected: show placeholder (“Select a node to inspect”)
+
+### C) Adapt GraphCanvas into “Graph Views”
+Keep GraphCanvas, but wrap it with a view layer:
+Create:
+- `apps/umg-studio/src/components/graphs/MoltGraphView.tsx`
+- `apps/umg-studio/src/components/graphs/NeoGraphView.tsx`
+- `apps/umg-studio/src/components/graphs/SleeveGraphView.tsx`
+
+Each view:
+- Builds nodes/edges for that layer (can be minimal)
+- Renders using GraphCanvas (or simple HTML list if needed first)
+- Emits `onSelectNode(node)` up to CenterWorkspace
+
+### D) Mobile Drawers for Left/Right Panels
+Create:
+- `apps/umg-studio/src/components/MobileDrawer.tsx`
+- Or use an existing UI primitive already in the repo (if present)
+
+Update:
+- `TopBar.tsx` add buttons when mobile:
+  - “Library” opens LeftPanel drawer
+  - “Output” opens RightPanel drawer
+
+Update:
+- `Layout.tsx`
+  - Desktop: unchanged (LeftPanel + Center + RightPanel)
+  - Mobile: Center only, BUT allow drawers to mount over it
+
+---
+
+## STEP 2 — Data Plumbing (minimal but correct)
+
+### 1) Define a node shape (shared)
+Create: `apps/umg-studio/src/lib/graphTypes.ts`
+Example:
+- GraphNode: { id, label, kind, payload }
+- GraphEdge: { from, to, label? }
+
+### 2) MOLT Graph nodes
+From current “Main Stack” blocks:
+- Nodes = blocks in stack order
+- Edges = linear (block1 -> block2 -> block3)
+- “Compressed block” is NOT implemented yet (Step 3)
+But:
+- Add placeholder support in node.kind for future “compressed”
+
+### 3) NEO Graph nodes
+From compile output (existing runtime spec / trace):
+- Node = resulting NeoBlock(s)
+- Edge minimal (can be none for now)
+If compile output doesn’t include structure yet:
+- Show a stub graph with “No Neo graph yet—compile to generate”
+
+### 4) SLEEVE Graph nodes
+- Node = stacks + governance + triggers (whatever exists now)
+- Keep it simple:
+  - Sleeve root node
+  - children nodes for stacks
+  - optional edges
+
+### 5) Selection behavior
+Click/tap a node:
+- `CenterWorkspace` stores selectedNode
+- `BottomPanel` renders details from selectedNode.payload
+BottomPanel tabs (simple):
+- “Details” (title/tags/summary)
+- “JSON” (pretty printed)
+- “Trace” (if available)
+
+---
+
+## STEP 2 — Acceptance Criteria
+Desktop:
+- Tab strip above graph
+- Switch tabs updates center content
+- Clicking a node updates bottom panel
+- Bottom panel toggles open/closed, resizes without breaking layout
+
+Mobile:
+- Graph visible by default (still true)
+- TopBar buttons open drawers for LeftPanel and RightPanel
+- Selecting nodes still opens bottom panel (or bottom panel opens automatically on select)
+
+---
+
+## STOP POINT
+When STEP 2 passes:
+- Do NOT add compression visuals yet
+- Do NOT add “place node on graph” yet
+Those are STEP 3.
+
+END STEP 2
