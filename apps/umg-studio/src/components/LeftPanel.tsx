@@ -92,21 +92,16 @@ export default function LeftPanel({
       </div>
 
       <CollapsibleSection 
-        title="Template" 
-        isOpen={sections.template}
-        onToggle={() => handleToggle("template")}
+        title="Structure" 
+        isOpen={sections.structure}
+        onToggle={() => handleToggle("structure")}
       >
-        <div style={{ fontSize: 11, opacity: 0.6 }}>
-          <p style={{ marginBottom: 8 }}>Template settings and presets for quick sleeve creation.</p>
-          <div style={{
-            padding: 8,
-            background: "rgba(255,255,255,0.03)",
-            borderRadius: 4,
-            fontSize: 10
-          }}>
-            No templates loaded. Use the PROMPT tab in the bottom panel to create NeoBlocks and NeoStacks.
-          </div>
-        </div>
+        <StructurePanel 
+          sleeveJson={sleeveJson}
+          onChangeSleeveJson={onChangeSleeveJson}
+          selectedBlockIds={selectedBlockIds}
+          onClearMultiSelect={onClearMultiSelect}
+        />
       </CollapsibleSection>
 
       <CollapsibleSection 
@@ -162,16 +157,21 @@ export default function LeftPanel({
       </CollapsibleSection>
 
       <CollapsibleSection 
-        title="Structure" 
-        isOpen={sections.structure}
-        onToggle={() => handleToggle("structure")}
+        title="Template" 
+        isOpen={sections.template}
+        onToggle={() => handleToggle("template")}
       >
-        <StructurePanel 
-          sleeveJson={sleeveJson}
-          onChangeSleeveJson={onChangeSleeveJson}
-          selectedBlockIds={selectedBlockIds}
-          onClearMultiSelect={onClearMultiSelect}
-        />
+        <div style={{ fontSize: 11, opacity: 0.6 }}>
+          <p style={{ marginBottom: 8 }}>Template settings and presets for quick sleeve creation.</p>
+          <div style={{
+            padding: 8,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 4,
+            fontSize: 10
+          }}>
+            No templates loaded. Use the PROMPT tab in the bottom panel to create NeoBlocks and NeoStacks.
+          </div>
+        </div>
       </CollapsibleSection>
     </div>
   );
