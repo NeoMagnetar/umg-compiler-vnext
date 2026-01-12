@@ -114,17 +114,6 @@ export default function TopBar({
         </span>
       )}
 
-      {isMobile && onOpenRightDrawer && (
-        <button
-          className="btn"
-          onClick={onOpenRightDrawer}
-          data-testid="button-open-output-drawer"
-          style={{ fontSize: 11, padding: "4px 10px" }}
-        >
-          Output
-        </button>
-      )}
-
       <button className="btn" onClick={onReset} data-testid="button-reset">Reset</button>
 
       {selectedBlockId && (
@@ -204,6 +193,17 @@ export default function TopBar({
       )}
 
       <span style={{ flex: 1 }} />
+
+      {isMobile && onOpenRightDrawer && (
+        <button
+          className="btn"
+          onClick={onOpenRightDrawer}
+          data-testid="button-open-output-drawer"
+          style={{ fontSize: 11, padding: "4px 10px" }}
+        >
+          Output
+        </button>
+      )}
 
       {!isMobile && (
         <button

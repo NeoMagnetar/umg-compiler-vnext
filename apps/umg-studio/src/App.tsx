@@ -222,9 +222,6 @@ export default function App() {
           compressedGroups={compressedGroups}
           isMobile={isMobile}
           onGenerate={handleGenerate}
-          onCompile={onCompile}
-          selectMode={selectMode}
-          onToggleSelectMode={toggleSelectMode}
         />
       }
       right={

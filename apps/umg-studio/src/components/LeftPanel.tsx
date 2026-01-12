@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import TagExplorer from "./TagExplorer";
 import LibraryPanel from "./LibraryPanel";
 import StructurePanel from "./StructurePanel";
+import TemplatePanel from "./TemplatePanel";
 import { loadSidebarState, saveSidebarState, SidebarState } from "@/lib/sidebarState";
 
 interface SectionProps {
@@ -161,17 +162,10 @@ export default function LeftPanel({
         isOpen={sections.template}
         onToggle={() => handleToggle("template")}
       >
-        <div style={{ fontSize: 11, opacity: 0.6 }}>
-          <p style={{ marginBottom: 8 }}>Template settings and presets for quick sleeve creation.</p>
-          <div style={{
-            padding: 8,
-            background: "rgba(255,255,255,0.03)",
-            borderRadius: 4,
-            fontSize: 10
-          }}>
-            No templates loaded. Use the PROMPT tab in the bottom panel to create NeoBlocks and NeoStacks.
-          </div>
-        </div>
+        <TemplatePanel 
+          sleeveJson={sleeveJson}
+          onChangeSleeveJson={onChangeSleeveJson}
+        />
       </CollapsibleSection>
     </div>
   );
