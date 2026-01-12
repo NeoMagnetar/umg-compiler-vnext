@@ -216,21 +216,24 @@ export default function TopBar({
         </div>
       )}
       
-      <button
-        className="btn"
-        onClick={onToggleSelectMode}
-        data-testid="button-toggle-select-mode"
-        style={{
-          fontSize: 11,
-          padding: "4px 10px",
-          background: selectMode ? "rgba(168, 85, 247, 0.2)" : "transparent",
-          borderColor: selectMode ? "#a855f7" : "rgba(255,255,255,0.2)",
-          color: selectMode ? "#a855f7" : "inherit"
-        }}
-      >
-        Select: {selectMode ? "ON" : "OFF"}
-      </button>
+      {!isMobile && (
+        <button
+          className="btn"
+          onClick={onToggleSelectMode}
+          data-testid="button-toggle-select-mode"
+          style={{
+            fontSize: 11,
+            padding: "4px 10px",
+            background: selectMode ? "rgba(168, 85, 247, 0.2)" : "transparent",
+            borderColor: selectMode ? "#a855f7" : "rgba(255,255,255,0.2)",
+            color: selectMode ? "#a855f7" : "inherit"
+          }}
+        >
+          Select: {selectMode ? "ON" : "OFF"}
+        </button>
+      )}
 
+      {!isMobile && (
       <div style={{ position: "relative" }}>
         <button 
           className="btn" 
@@ -321,6 +324,7 @@ export default function TopBar({
           </div>
         )}
       </div>
+      )}
       
       <button className="btn" onClick={onCompile} data-testid="button-compile-raw" style={{ position: "relative" }}>
         Compile
