@@ -610,7 +610,7 @@ export default function MoltGraphView({
         }}>
           <button
             onClick={() => handleBeginMerge(stack.id)}
-            disabled={!hasEnoughSelected || (selectionState.operationType && !isMergeOp)}
+            disabled={!hasEnoughSelected || (selectionState.operationType !== null && !isMergeOp)}
             data-testid={`button-begin-merge-${stack.id}`}
             style={{
               padding: "8px 12px",
@@ -636,7 +636,7 @@ export default function MoltGraphView({
 
           <button
             onClick={() => handleOrganizeBundle(stack.id)}
-            disabled={!hasEnoughSelected || (selectionState.operationType && !isBundleOp)}
+            disabled={!hasEnoughSelected || (selectionState.operationType !== null && !isBundleOp)}
             data-testid={`button-organize-bundle-${stack.id}`}
             style={{
               padding: "8px 12px",
