@@ -140,7 +140,7 @@ export default function StructurePanel({
 
       <div>
         <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-          Ops (Bundle/Merge)
+          Block Base
         </div>
         
         {selectedBlockIds.length >= 2 && (
