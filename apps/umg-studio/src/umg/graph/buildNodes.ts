@@ -1,6 +1,6 @@
 import type { Node, Edge } from "reactflow";
 import type { Block, NeoBlock, NeoStack, Sleeve } from "../types";
-import { MOLT_ORDER, moltIndex } from "../molt";
+import { MOLT_ORDER, moltIndex, getSpineBlocks } from "../molt";
 
 export function buildGraph(
   blocks: Block[],
@@ -24,41 +24,60 @@ export function buildGraph(
   const nbGap = compact ? 100 : 120;
   const rightY0 = compact ? 1200 : 80;
 
-  for (const role of MOLT_ORDER) {
+  if (!blocks || blocks.length === 0) {
+    nodes.push({
+      id: "start",
+      type: "start",
+      position: { x: roleX + 40, y: roleY0 + 100 },
+      data: {
+        title: "Ignition",
+        subtitle: "Create your first block to begin the MOLT spine.",
+        cta: "Create Block",
+      },
+    });
+    return { nodes, edges };
+  }
+
+  const spine = getSpineBlocks(blocks);
+  const maxIndex = Math.max(-1, ...spine.map(b => MOLT_ORDER.indexOf(b.role)));
+  const rolesToRender = MOLT_ORDER.slice(0, Math.min(MOLT_ORDER.length, maxIndex + 2));
+
+  const roleLabels: Record<string, string> = {
+    TRIGGER: "activates",
+    DIRECTIVE: "constrains",
+    INSTRUCTION: "executes",
+    SUBJECT: "grounds",
+    PRIMARY: "core",
+    PHILOSOPHY: "governs",
+    BLUEPRINT: "defines",
+  };
+
+  for (const role of rolesToRender) {
     const block = blocks.find(b => b.role === role);
     const y = roleY0 + moltIndex(role) * roleGap;
-
-    const roleLabels: Record<string, string> = {
-      TRIGGER: "activates",
-      DIRECTIVE: "constrains",
-      INSTRUCTION: "executes",
-      SUBJECT: "grounds",
-      PRIMARY: "core",
-      PHILOSOPHY: "governs",
-      BLUEPRINT: "defines",
-    };
+    const isGhost = !block;
 
     nodes.push({
       id: `role-${role}`,
-      type: "basic",
+      type: isGhost ? "ghost" : "basic",
       position: { x: roleX, y },
       data: {
         title: role,
-        subtitle: block ? block.title : "empty",
+        subtitle: block ? block.title : "next",
         badges: block
           ? ["governed", roleLabels[role] || "active"]
-          : ["missing"],
+          : ["pending"],
       },
     });
 
     const idx = moltIndex(role);
-    if (idx > 0) {
+    if (idx > 0 && rolesToRender.includes(MOLT_ORDER[idx - 1])) {
       edges.push({
         id: `e-role-${MOLT_ORDER[idx - 1]}-${role}`,
         source: `role-${MOLT_ORDER[idx - 1]}`,
         target: `role-${role}`,
         type: "smoothstep",
-        style: { stroke: "rgba(255,255,255,0.3)" },
+        style: { stroke: isGhost ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)" },
       });
     }
   }

@@ -50,7 +50,96 @@ export function BasicNode({ id, data }: any) {
   );
 }
 
+export function StartNode({ data }: any) {
+  const createBlock = useUmgStore(s => s.createBlock);
+
+  return (
+    <div
+      data-testid="node-start"
+      style={{
+        padding: 24,
+        border: "2px dashed rgba(96, 165, 250, 0.4)",
+        borderRadius: 16,
+        background: "rgba(20, 20, 28, 0.95)",
+        minWidth: 240,
+        textAlign: "center",
+        color: "#e0e0e0",
+      }}
+    >
+      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>{data.title}</div>
+      <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 16, lineHeight: 1.4 }}>
+        {data.subtitle}
+      </div>
+      <button
+        onClick={() => createBlock()}
+        data-testid="button-start-create"
+        style={{
+          padding: "10px 20px",
+          fontSize: 14,
+          fontWeight: 600,
+          background: "#2563eb",
+          border: "none",
+          borderRadius: 8,
+          color: "#fff",
+          cursor: "pointer",
+        }}
+      >
+        {data.cta}
+      </button>
+    </div>
+  );
+}
+
+export function GhostNode({ id, data }: any) {
+  const createBlock = useUmgStore(s => s.createBlock);
+
+  return (
+    <div
+      onClick={() => createBlock()}
+      data-testid={`node-${id}`}
+      style={{
+        padding: 10,
+        border: "1px dashed rgba(255,255,255,0.15)",
+        borderRadius: 12,
+        background: "rgba(20, 20, 28, 0.6)",
+        minWidth: 200,
+        cursor: "pointer",
+        color: "#9ca3af",
+        position: "relative",
+        opacity: 0.7,
+      }}
+    >
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
+      <div style={{ fontWeight: 700 }}>{data.title}</div>
+      <div style={{ fontSize: 12, opacity: 0.6, marginTop: 2 }}>{data.subtitle}</div>
+      {data.badges?.length ? (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+          {data.badges.map((b: string) => (
+            <span
+              key={b}
+              style={{
+                fontSize: 10,
+                padding: "2px 8px",
+                borderRadius: 999,
+                border: "1px dashed rgba(255,255,255,0.1)",
+                background: "transparent",
+                color: "#9ca3af",
+                opacity: 0.7,
+              }}
+            >
+              {b}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export const nodeTypes = {
   basic: BasicNode,
   neoblock: NeoBlockNode,
+  start: StartNode,
+  ghost: GhostNode,
 };
