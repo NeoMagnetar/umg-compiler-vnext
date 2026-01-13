@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { GraphNode } from "@/lib/graphTypes";
-import { parseSleeve, addBlockToStack } from "@/lib/sleeveEdit";
+import { parseSleeve, addBlockToStack, addBundleOp, addMergeOp } from "@/lib/sleeveEdit";
 import { buildMoltGraph, CompressedGroup } from "@/lib/moltCompression";
 import { Pos } from "@/lib/layoutStore";
 
@@ -33,6 +33,17 @@ interface MoltGraphViewProps {
   onChangeSleeveJson?: (nextJson: string) => void;
 }
 
+type SelectionMode = "idle" | "selecting";
+type OperationType = null | "bundle" | "merge";
+
+interface StackSelectionState {
+  mode: SelectionMode;
+  operationType: OperationType;
+  selectedBlockIds: string[];
+  lockedMoltType: string | null;
+  lockedStackId: string | null;
+}
+
 export default function MoltGraphView({
   sleeveJson,
   selectedNodeId,
@@ -41,6 +52,14 @@ export default function MoltGraphView({
   positions = {},
   onChangeSleeveJson
 }: MoltGraphViewProps) {
+  const [selectionState, setSelectionState] = useState<StackSelectionState>({
+    mode: "idle",
+    operationType: null,
+    selectedBlockIds: [],
+    lockedMoltType: null,
+    lockedStackId: null
+  });
+
   const { graphData, blocksById, sortedStacks, blockIdToGroup } = useMemo(() => {
     const { sleeve, error } = parseSleeve(sleeveJson);
     if (error || !sleeve) {
@@ -81,6 +100,7 @@ export default function MoltGraphView({
   }, [sleeveJson, compressedGroups, positions]);
 
   const handleNodeClick = (node: GraphNode) => {
+    if (selectionState.mode === "selecting") return;
     if (onSelectNode) {
       onSelectNode(selectedNodeId === node.id ? null : node);
     }
@@ -99,7 +119,6 @@ export default function MoltGraphView({
     if (result.nextJson) {
       onChangeSleeveJson(result.nextJson);
       
-      // Find the newly created block and select it
       const { sleeve } = parseSleeve(result.nextJson);
       if (sleeve && Array.isArray(sleeve.blocks)) {
         const newBlock = sleeve.blocks[sleeve.blocks.length - 1];
@@ -118,6 +137,92 @@ export default function MoltGraphView({
     }
   };
 
+  const handleToggleSelector = useCallback((stackId: string) => {
+    if (selectionState.mode === "idle") {
+      setSelectionState({
+        mode: "selecting",
+        operationType: null,
+        selectedBlockIds: [],
+        lockedMoltType: null,
+        lockedStackId: stackId
+      });
+    } else if (selectionState.lockedStackId === stackId) {
+      setSelectionState({
+        mode: "idle",
+        operationType: null,
+        selectedBlockIds: [],
+        lockedMoltType: null,
+        lockedStackId: null
+      });
+    }
+  }, [selectionState]);
+
+  const handleBlockOperation = useCallback((blockId: string, opType: "bundle" | "merge", moltType: string, stackId: string) => {
+    if (selectionState.mode !== "selecting") return;
+    if (selectionState.lockedStackId && selectionState.lockedStackId !== stackId) return;
+
+    const isSelected = selectionState.selectedBlockIds.includes(blockId);
+
+    if (isSelected) {
+      const newSelected = selectionState.selectedBlockIds.filter(id => id !== blockId);
+      setSelectionState(prev => ({
+        ...prev,
+        selectedBlockIds: newSelected,
+        operationType: newSelected.length === 0 ? null : prev.operationType,
+        lockedMoltType: newSelected.length === 0 ? null : prev.lockedMoltType
+      }));
+      return;
+    }
+
+    if (selectionState.operationType && selectionState.operationType !== opType) {
+      return;
+    }
+
+    if (selectionState.lockedMoltType && selectionState.lockedMoltType !== moltType) {
+      return;
+    }
+
+    setSelectionState(prev => ({
+      ...prev,
+      operationType: opType,
+      lockedMoltType: moltType,
+      lockedStackId: stackId,
+      selectedBlockIds: [...prev.selectedBlockIds, blockId]
+    }));
+  }, [selectionState]);
+
+  const handleActivate = useCallback(() => {
+    if (!onChangeSleeveJson) return;
+    if (selectionState.selectedBlockIds.length < 2) return;
+    if (!selectionState.operationType) return;
+    if (!selectionState.lockedStackId || !selectionState.lockedMoltType) return;
+
+    const options = {
+      stackId: selectionState.lockedStackId,
+      lane: selectionState.lockedMoltType,
+      blockIds: selectionState.selectedBlockIds
+    };
+
+    let result;
+    if (selectionState.operationType === "bundle") {
+      result = addBundleOp(sleeveJson, options);
+    } else {
+      result = addMergeOp(sleeveJson, options);
+    }
+
+    if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+    }
+
+    setSelectionState({
+      mode: "idle",
+      operationType: null,
+      selectedBlockIds: [],
+      lockedMoltType: null,
+      lockedStackId: null
+    });
+  }, [sleeveJson, selectionState, onChangeSleeveJson]);
+
   if (sortedStacks.length === 0) {
     return (
       <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -126,37 +231,120 @@ export default function MoltGraphView({
     );
   }
 
-  const renderBlockCard = (block: any, isSelected: boolean) => {
+  const renderBlockCard = (block: any, isSelected: boolean, stackId: string) => {
     const node = graphData.nodes.find(n => n.id === block.id);
+    const isInSelectionMode = selectionState.mode === "selecting" && selectionState.lockedStackId === stackId;
+    const isBlockSelected = selectionState.selectedBlockIds.includes(block.id);
+    const moltType = block.moltType;
+    
+    const canSelectBundle = isInSelectionMode && 
+      (!selectionState.operationType || selectionState.operationType === "bundle") &&
+      (!selectionState.lockedMoltType || selectionState.lockedMoltType === moltType);
+    
+    const canSelectMerge = isInSelectionMode && 
+      (!selectionState.operationType || selectionState.operationType === "merge") &&
+      (!selectionState.lockedMoltType || selectionState.lockedMoltType === moltType);
+
+    const glowColor = selectionState.operationType === "bundle" ? "#22c55e" : 
+                      selectionState.operationType === "merge" ? "#a855f7" : 
+                      "rgba(255,255,255,0.65)";
+
     return (
       <div
         key={block.id}
         role="button"
         tabIndex={0}
-        onClick={() => node && handleNodeClick(node)}
-        onKeyDown={(e) => e.key === "Enter" && node && handleNodeClick(node)}
+        onClick={() => !isInSelectionMode && node && handleNodeClick(node)}
+        onKeyDown={(e) => e.key === "Enter" && !isInSelectionMode && node && handleNodeClick(node)}
         data-testid={`graph-node-${block.id}`}
         style={{
           padding: 10,
           marginTop: 8,
-          background: "rgba(0,0,0,0.25)",
+          background: isBlockSelected ? `${glowColor}22` : "rgba(0,0,0,0.25)",
           borderRadius: 10,
-          cursor: "pointer",
-          border: isSelected
+          cursor: isInSelectionMode ? "default" : "pointer",
+          border: isBlockSelected
+            ? `2px solid ${glowColor}`
+            : isSelected
             ? "2px solid rgba(255,255,255,0.65)"
             : "1px solid rgba(255,255,255,0.12)",
-          boxShadow: isSelected
+          boxShadow: isBlockSelected
+            ? `0 0 12px ${glowColor}66, 0 0 4px ${glowColor}44`
+            : isSelected
             ? "0 0 0 3px rgba(255,255,255,0.12)"
             : "none",
-          transition: "border 0.15s, box-shadow 0.15s"
+          transition: "border 0.15s, box-shadow 0.15s, background 0.15s"
         }}
       >
         <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 2 }}>
           {block.title ?? block.id}
         </div>
-        <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>
+        <div className="mono" style={{ fontSize: 10, opacity: 0.5, marginBottom: isInSelectionMode ? 8 : 0 }}>
           {block.id}
         </div>
+        
+        {isInSelectionMode && (
+          <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBlockOperation(block.id, "bundle", moltType, stackId);
+              }}
+              disabled={!canSelectBundle}
+              data-testid={`button-block-bundle-${block.id}`}
+              style={{
+                flex: 1,
+                padding: "4px 8px",
+                fontSize: 10,
+                fontWeight: 600,
+                background: isBlockSelected && selectionState.operationType === "bundle" 
+                  ? "rgba(34, 197, 94, 0.4)" 
+                  : canSelectBundle 
+                  ? "rgba(34, 197, 94, 0.2)" 
+                  : "rgba(34, 197, 94, 0.05)",
+                border: isBlockSelected && selectionState.operationType === "bundle"
+                  ? "1px solid #22c55e"
+                  : "1px solid rgba(34, 197, 94, 0.4)",
+                borderRadius: 4,
+                color: canSelectBundle ? "#22c55e" : "rgba(34, 197, 94, 0.3)",
+                cursor: canSelectBundle ? "pointer" : "not-allowed",
+                transition: "all 0.15s",
+                textTransform: "uppercase"
+              }}
+            >
+              Bundle
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBlockOperation(block.id, "merge", moltType, stackId);
+              }}
+              disabled={!canSelectMerge}
+              data-testid={`button-block-merge-${block.id}`}
+              style={{
+                flex: 1,
+                padding: "4px 8px",
+                fontSize: 10,
+                fontWeight: 600,
+                background: isBlockSelected && selectionState.operationType === "merge" 
+                  ? "rgba(168, 85, 247, 0.4)" 
+                  : canSelectMerge 
+                  ? "rgba(168, 85, 247, 0.2)" 
+                  : "rgba(168, 85, 247, 0.05)",
+                border: isBlockSelected && selectionState.operationType === "merge"
+                  ? "1px solid #a855f7"
+                  : "1px solid rgba(168, 85, 247, 0.4)",
+                borderRadius: 4,
+                color: canSelectMerge ? "#a855f7" : "rgba(168, 85, 247, 0.3)",
+                cursor: canSelectMerge ? "pointer" : "not-allowed",
+                transition: "all 0.15s",
+                textTransform: "uppercase"
+              }}
+            >
+              Merge
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -217,6 +405,134 @@ export default function MoltGraphView({
     );
   };
 
+  const renderStackHeader = (stack: any) => {
+    const isThisStackSelecting = selectionState.mode === "selecting" && selectionState.lockedStackId === stack.id;
+    const hasSelections = selectionState.selectedBlockIds.length > 0;
+    const canActivate = hasSelections && selectionState.selectedBlockIds.length >= 2;
+    
+    const buttonLabel = isThisStackSelecting && hasSelections ? "Activate" : "Selector";
+    const buttonGlowing = isThisStackSelecting && hasSelections;
+    
+    const glowColor = selectionState.operationType === "bundle" ? "#22c55e" : 
+                      selectionState.operationType === "merge" ? "#a855f7" : 
+                      "#00ff00";
+
+    return (
+      <div style={{
+        padding: "10px 12px",
+        borderBottom: "1px solid rgba(255,255,255,0.1)",
+        background: "rgba(255,255,255,0.02)"
+      }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between",
+          gap: 8
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 600, fontSize: 13 }}>{stack.name ?? stack.id}</div>
+            <div className="mono small" style={{ opacity: 0.5, marginTop: 2 }}>{stack.id}</div>
+          </div>
+          
+          {onChangeSleeveJson && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isThisStackSelecting && canActivate) {
+                  handleActivate();
+                } else if (isThisStackSelecting && !hasSelections) {
+                  handleToggleSelector(stack.id);
+                } else {
+                  handleToggleSelector(stack.id);
+                }
+              }}
+              data-testid={`button-selector-${stack.id}`}
+              style={{
+                padding: "5px 12px",
+                fontSize: 11,
+                fontWeight: 600,
+                background: buttonGlowing 
+                  ? `${glowColor}33`
+                  : isThisStackSelecting 
+                  ? "rgba(255,255,255,0.15)" 
+                  : "rgba(255,255,255,0.08)",
+                border: buttonGlowing
+                  ? `1px solid ${glowColor}`
+                  : isThisStackSelecting
+                  ? "1px solid rgba(255,255,255,0.3)"
+                  : "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 6,
+                color: buttonGlowing ? glowColor : isThisStackSelecting ? "#fff" : "rgba(255,255,255,0.7)",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                boxShadow: buttonGlowing 
+                  ? `0 0 12px ${glowColor}66, 0 0 4px ${glowColor}44`
+                  : "none",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px"
+              }}
+            >
+              {buttonLabel}
+            </button>
+          )}
+        </div>
+        
+        {isThisStackSelecting && (
+          <div style={{
+            marginTop: 8,
+            padding: "6px 10px",
+            background: "rgba(0,0,0,0.3)",
+            borderRadius: 6,
+            fontSize: 11,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}>
+            <span style={{ opacity: 0.7 }}>
+              {selectionState.selectedBlockIds.length === 0 
+                ? "Click Bundle or Merge on blocks to select"
+                : `${selectionState.selectedBlockIds.length} block${selectionState.selectedBlockIds.length !== 1 ? 's' : ''} selected`}
+              {selectionState.operationType && (
+                <span style={{ 
+                  marginLeft: 6,
+                  color: selectionState.operationType === "bundle" ? "#22c55e" : "#a855f7",
+                  fontWeight: 600
+                }}>
+                  ({selectionState.operationType})
+                </span>
+              )}
+            </span>
+            {hasSelections && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectionState(prev => ({
+                    ...prev,
+                    selectedBlockIds: [],
+                    operationType: null,
+                    lockedMoltType: null
+                  }));
+                }}
+                data-testid={`button-clear-selection-${stack.id}`}
+                style={{
+                  padding: "2px 8px",
+                  fontSize: 10,
+                  background: "rgba(239, 68, 68, 0.2)",
+                  border: "1px solid rgba(239, 68, 68, 0.4)",
+                  borderRadius: 4,
+                  color: "#ef4444",
+                  cursor: "pointer"
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div style={{
       height: "100%",
@@ -236,17 +552,12 @@ export default function MoltGraphView({
                 minWidth: 220,
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: 8,
-                border: "1px solid rgba(255,255,255,0.1)"
+                border: selectionState.lockedStackId === stack.id && selectionState.mode === "selecting"
+                  ? "1px solid rgba(255,255,255,0.25)"
+                  : "1px solid rgba(255,255,255,0.1)"
               }}
             >
-              <div style={{
-                padding: "10px 12px",
-                borderBottom: "1px solid rgba(255,255,255,0.1)",
-                background: "rgba(255,255,255,0.02)"
-              }}>
-                <div style={{ fontWeight: 600, fontSize: 13 }}>{stack.name ?? stack.id}</div>
-                <div className="mono small" style={{ opacity: 0.5, marginTop: 2 }}>{stack.id}</div>
-              </div>
+              {renderStackHeader(stack)}
 
               <div style={{ padding: 8 }}>
                 {MOLT_ORDER.map((molt) => {
@@ -282,7 +593,7 @@ export default function MoltGraphView({
                         }}>
                           {molt}
                         </div>
-                        {onChangeSleeveJson && (
+                        {onChangeSleeveJson && selectionState.mode === "idle" && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -339,7 +650,7 @@ export default function MoltGraphView({
                           }
 
                           const isSelected = block.id === selectedNodeId;
-                          return renderBlockCard(block, isSelected);
+                          return renderBlockCard(block, isSelected, stack.id);
                         })
                       )}
                     </div>
