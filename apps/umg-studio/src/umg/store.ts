@@ -2,11 +2,11 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { nanoid } from "nanoid";
 import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode, MoltSnapshot } from "./types";
-import { isMoltComplete, nextAllowedRole } from "./molt";
+import { isMoltComplete, nextAllowedRole, MOLT_ORDER } from "./molt";
 import type { TutorialStep } from "./tutorial";
 
 const STORAGE_KEY = "umg.v0.creator";
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 2;
 
 type State = {
   tutorialStep: TutorialStep;
@@ -29,6 +29,7 @@ type State = {
   trace: any | null;
 
   createBlock: (title?: string) => void;
+  addExtraBlock: (role: MoltRole) => void;
   selectBlock: (id: string | null) => void;
   selectNode: (nodeId: string | null) => void;
   updateBlockContent: (role: MoltRole, content: string) => void;
@@ -73,7 +74,7 @@ export const useUmgStore = create<State>()(
 
       createBlock: (title) => {
         const { blocks, tutorialStep } = get();
-        const role: MoltRole = blocks.length < 4 ? nextAllowedRole(blocks) : "INSTRUCTION";
+        const role: MoltRole = blocks.length < 7 ? nextAllowedRole(blocks) : "BLUEPRINT";
         const b: Block = {
           id: nanoid(),
           role,
@@ -87,6 +88,25 @@ export const useUmgStore = create<State>()(
         let nextStep: TutorialStep = tutorialStep;
         if (nextBlocks.length === 1) nextStep = "MOLT_BUILDING";
         if (isMoltComplete(nextBlocks)) nextStep = "READY_TO_COMPRESS";
+
+        set({ blocks: nextBlocks, selectedBlockId: b.id, tutorialStep: nextStep });
+      },
+
+      addExtraBlock: (role: MoltRole) => {
+        const { blocks, neoBlocks, tutorialStep } = get();
+        if (neoBlocks.length === 0) return;
+
+        const b: Block = {
+          id: nanoid(),
+          role,
+          title: `${role} Block (Extra)`,
+          content: "",
+          createdAt: Date.now(),
+        };
+
+        const nextBlocks = [...blocks, b];
+        let nextStep: TutorialStep = tutorialStep;
+        if (tutorialStep === "NEOBLOCK_CREATED") nextStep = "EXTRA_BLOCKS_UNLOCKED";
 
         set({ blocks: nextBlocks, selectedBlockId: b.id, tutorialStep: nextStep });
       },
@@ -128,6 +148,9 @@ export const useUmgStore = create<State>()(
           DIRECTIVE: { title: getBlock("DIRECTIVE").title, content: getBlock("DIRECTIVE").content },
           INSTRUCTION: { title: getBlock("INSTRUCTION").title, content: getBlock("INSTRUCTION").content },
           SUBJECT: { title: getBlock("SUBJECT").title, content: getBlock("SUBJECT").content },
+          PRIMARY: { title: getBlock("PRIMARY").title, content: getBlock("PRIMARY").content },
+          PHILOSOPHY: { title: getBlock("PHILOSOPHY").title, content: getBlock("PHILOSOPHY").content },
+          BLUEPRINT: { title: getBlock("BLUEPRINT").title, content: getBlock("BLUEPRINT").content },
         };
 
         const nb: NeoBlock = {
@@ -159,10 +182,15 @@ export const useUmgStore = create<State>()(
         };
 
         const next = [...neoBlocks, dup];
+        let nextStep: TutorialStep = tutorialStep;
+        if (tutorialStep === "NEOBLOCK_CREATED" || tutorialStep === "EXTRA_BLOCKS_UNLOCKED") {
+          nextStep = "DUPLICATED";
+        }
+
         set({
           neoBlocks: next,
           selectedNeoBlockIds: [src.id, dup.id],
-          tutorialStep: tutorialStep === "NEOBLOCK_CREATED" ? "DUPLICATED" : tutorialStep,
+          tutorialStep: nextStep,
         });
       },
 
@@ -281,7 +309,7 @@ export const useUmgStore = create<State>()(
           })),
           sleeve: { id: sleeve.id, name: sleeve.name },
           neoStack: { id: ns.id, name: ns.name },
-          notes: ["v0 structural compile", "no LLM synthesis"],
+          notes: ["v0 structural compile", "no LLM synthesis", "7-role MOLT stack"],
         };
 
         set({ runtimeSpec, trace, tutorialStep: "COMPILED" });
@@ -328,10 +356,13 @@ export const useUmgStore = create<State>()(
       }),
 
       migrate: (persisted: any, version) => {
-        if (version === 0) {
+        if (version < 2) {
           return {
             ...persisted,
             expandedNeoBlockIds: persisted.expandedNeoBlockIds ?? {},
+            blocks: [],
+            neoBlocks: [],
+            tutorialStep: "EMPTY",
           };
         }
         return persisted;

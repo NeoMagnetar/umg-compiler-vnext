@@ -1,8 +1,6 @@
 import { Handle, Position } from "reactflow";
 import { useUmgStore } from "../store";
-import type { MoltRole } from "../types";
-
-const ORDER: MoltRole[] = ["TRIGGER", "DIRECTIVE", "INSTRUCTION", "SUBJECT"];
+import { MOLT_ORDER } from "../molt";
 
 export function NeoBlockNode({ data }: any) {
   const {
@@ -86,29 +84,29 @@ export function NeoBlockNode({ data }: any) {
             Internal MOLT Snapshot (read-only)
           </div>
 
-          <div style={{ display: "grid", gap: 6 }}>
-            {ORDER.map((r) => (
+          <div style={{ display: "grid", gap: 4 }}>
+            {MOLT_ORDER.map((r) => (
               <div
                 key={r}
                 style={{
                   display: "flex",
-                  gap: 10,
+                  gap: 8,
                   alignItems: "center",
-                  padding: "6px 8px",
+                  padding: "4px 6px",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 8,
+                  borderRadius: 6,
                   background: "rgba(0,0,0,0.3)",
                 }}
               >
-                <div style={{ width: 90, fontWeight: 800, fontSize: 10, color: "#60a5fa" }}>{r}</div>
-                <div style={{ fontSize: 11, opacity: 0.9, flex: 1 }}>
+                <div style={{ width: 80, fontWeight: 800, fontSize: 9, color: "#60a5fa" }}>{r}</div>
+                <div style={{ fontSize: 10, opacity: 0.9, flex: 1 }}>
                   {data.roleTitles?.[r] ?? "—"}
                 </div>
               </div>
             ))}
           </div>
 
-          <div style={{ marginTop: 10, fontSize: 10, opacity: 0.6, fontStyle: "italic" }}>
+          <div style={{ marginTop: 8, fontSize: 9, opacity: 0.6, fontStyle: "italic" }}>
             NeoBlocks are artifacts. Edit live blocks on the MOLT ladder, then compress to create a new NeoBlock.
           </div>
         </div>

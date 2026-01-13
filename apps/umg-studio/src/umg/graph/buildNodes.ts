@@ -19,15 +19,24 @@ export function buildGraph(
   const rightX = compact ? 20 : 740;
 
   const roleY0 = 30;
-  const nbY0 = compact ? 520 : 60;
-  const rightY0 = compact ? 980 : 80;
-
-  const roleGap = 110;
-  const nbGap = 120;
+  const roleGap = compact ? 80 : 90;
+  const nbY0 = compact ? 700 : 60;
+  const nbGap = compact ? 100 : 120;
+  const rightY0 = compact ? 1200 : 80;
 
   for (const role of MOLT_ORDER) {
     const block = blocks.find(b => b.role === role);
     const y = roleY0 + moltIndex(role) * roleGap;
+
+    const roleLabels: Record<string, string> = {
+      TRIGGER: "activates",
+      DIRECTIVE: "constrains",
+      INSTRUCTION: "executes",
+      SUBJECT: "grounds",
+      PRIMARY: "core",
+      PHILOSOPHY: "governs",
+      BLUEPRINT: "defines",
+    };
 
     nodes.push({
       id: `role-${role}`,
@@ -37,7 +46,7 @@ export function buildGraph(
         title: role,
         subtitle: block ? block.title : "empty",
         badges: block
-          ? ["governed", role === "TRIGGER" ? "activates" : role === "DIRECTIVE" ? "constrains" : role === "INSTRUCTION" ? "executes" : "grounds"]
+          ? ["governed", roleLabels[role] || "active"]
           : ["missing"],
       },
     });
@@ -68,6 +77,9 @@ export function buildGraph(
           DIRECTIVE: nb.snapshot.DIRECTIVE.title,
           INSTRUCTION: nb.snapshot.INSTRUCTION.title,
           SUBJECT: nb.snapshot.SUBJECT.title,
+          PRIMARY: nb.snapshot.PRIMARY.title,
+          PHILOSOPHY: nb.snapshot.PHILOSOPHY.title,
+          BLUEPRINT: nb.snapshot.BLUEPRINT.title,
         },
       },
     });

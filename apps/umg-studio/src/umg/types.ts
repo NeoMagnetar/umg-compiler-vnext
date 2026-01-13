@@ -1,4 +1,11 @@
-export type MoltRole = "TRIGGER" | "DIRECTIVE" | "INSTRUCTION" | "SUBJECT";
+export type MoltRole =
+  | "TRIGGER"
+  | "DIRECTIVE"
+  | "INSTRUCTION"
+  | "SUBJECT"
+  | "PRIMARY"
+  | "PHILOSOPHY"
+  | "BLUEPRINT";
 
 export type MoltSnapshot = Record<MoltRole, { title: string; content: string }>;
 

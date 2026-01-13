@@ -1,15 +1,18 @@
 import { useMemo, useState } from "react";
 import { useUmgStore } from "../store";
 import { stepLabel } from "../tutorial";
-import { isMoltComplete } from "../molt";
+import { isMoltComplete, MOLT_ORDER } from "../molt";
 import { SlidersPanel } from "./SlidersPanel";
+import type { MoltRole } from "../types";
 
 export function CreatorSidebar() {
   const s = useUmgStore();
   const [domainName, setDomainName] = useState("Decision Control");
   const [sleeveName, setSleeveName] = useState("sleeve_v0");
+  const [extraRole, setExtraRole] = useState<MoltRole>("INSTRUCTION");
 
   const canCompress = useMemo(() => isMoltComplete(s.blocks), [s.blocks]);
+  const canAddExtra = s.neoBlocks.length >= 1;
   const canDuplicate = s.neoBlocks.length >= 1;
   const canCompose = s.selectedNeoBlockIds.length === 2;
   const canNameStack = s.selectedNeoBlockIds.length >= 1;
@@ -21,28 +24,57 @@ export function CreatorSidebar() {
       width: 340, 
       padding: 12, 
       borderRight: "1px solid rgba(255,255,255,0.1)", 
-      height: "100vh", 
+      height: "100%", 
       overflow: "auto",
       background: "rgba(15,15,20,0.95)",
       color: "#e0e0e0"
     }}>
-      <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 4 }}>Creator Mode (v0)</div>
+      <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 4 }}>Block Tutorial (v0)</div>
       <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 10, color: "#60a5fa" }}>
         Step: {stepLabel(s.tutorialStep)}
       </div>
 
-      <Section title="Create Block">
+      <Section title="Build 7-Role MOLT Stack">
         <button onClick={() => s.createBlock()} style={btn} data-testid="button-add-molt-block">
           + Add Next MOLT Block
         </button>
-        <div style={hint}>v0 order: Trigger → Directive → Instruction → Subject</div>
+        <div style={hint}>
+          Order: Trigger → Directive → Instruction → Subject → Primary → Philosophy → Blueprint
+        </div>
+        <div style={{ fontSize: 11, marginTop: 6, opacity: 0.7 }}>
+          Blocks: {s.blocks.length}/7 {isMoltComplete(s.blocks) ? "(Complete)" : ""}
+        </div>
       </Section>
 
-      <Section title="Compress → NeoBlock" locked={!canCompress} lockMsg="Create one of each MOLT role first.">
+      <Section title="Compress → NeoBlock" locked={!canCompress} lockMsg="Create all 7 MOLT roles first.">
         <button onClick={s.compressToNeoBlock} style={btn} disabled={!canCompress} data-testid="button-compress-molt">
           Compress MOLT Stack
         </button>
-        <div style={hint}>Creates a NeoBlock artifact from your 4-role MOLT set.</div>
+        <div style={hint}>Creates a NeoBlock artifact from your 7-role MOLT set.</div>
+      </Section>
+
+      <Section title="Extra Blocks" locked={!canAddExtra} lockMsg="Create first NeoBlock to unlock extras.">
+        <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+          <select
+            value={extraRole}
+            onChange={e => setExtraRole(e.target.value as MoltRole)}
+            style={select}
+            data-testid="select-extra-role"
+          >
+            {MOLT_ORDER.map(r => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => s.addExtraBlock(extraRole)}
+            style={{ ...btn, flex: 1 }}
+            disabled={!canAddExtra}
+            data-testid="button-add-extra-block"
+          >
+            + Add Extra
+          </button>
+        </div>
+        <div style={hint}>Add duplicate roles after mastering the hierarchy.</div>
       </Section>
 
       <Section title="Duplicate" locked={!canDuplicate} lockMsg="Create at least 1 NeoBlock first.">
@@ -192,6 +224,16 @@ const input: React.CSSProperties = {
   background: "rgba(0,0,0,0.3)",
   color: "#e0e0e0",
   fontSize: 12
+};
+
+const select: React.CSSProperties = {
+  padding: "8px 10px",
+  borderRadius: 10,
+  border: "1px solid rgba(255,255,255,0.15)",
+  background: "rgba(0,0,0,0.3)",
+  color: "#e0e0e0",
+  fontSize: 12,
+  flex: 1
 };
 
 const hint: React.CSSProperties = {

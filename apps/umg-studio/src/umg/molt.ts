@@ -1,6 +1,14 @@
 import type { MoltRole, Block } from "./types";
 
-export const MOLT_ORDER: MoltRole[] = ["TRIGGER", "DIRECTIVE", "INSTRUCTION", "SUBJECT"];
+export const MOLT_ORDER: MoltRole[] = [
+  "TRIGGER",
+  "DIRECTIVE",
+  "INSTRUCTION",
+  "SUBJECT",
+  "PRIMARY",
+  "PHILOSOPHY",
+  "BLUEPRINT",
+];
 
 export function moltIndex(role: MoltRole): number {
   return MOLT_ORDER.indexOf(role);
@@ -18,5 +26,5 @@ export function nextAllowedRole(blocks: Block[]): MoltRole {
   for (const role of MOLT_ORDER) {
     if (!hasRole(blocks, role)) return role;
   }
-  return "SUBJECT";
+  return "BLUEPRINT";
 }

@@ -1,11 +1,16 @@
 import { useUmgStore } from "../store";
+import { MOLT_ORDER } from "../molt";
 
 export function TutorialOutputPanel() {
   const { tutorialStep, blocks, neoBlocks, neoStacks, sleeve, lastComposeMode, preview } = useUmgStore();
 
-  const moltSummary = blocks
-    .sort((a, b) => a.role.localeCompare(b.role))
-    .map(b => `• ${b.role}: ${b.title || "(untitled)"} (${b.content.length} chars)`)
+  const moltSummary = MOLT_ORDER
+    .map(role => {
+      const block = blocks.find(b => b.role === role);
+      return block
+        ? `• ${role}: ${block.title || "(untitled)"} (${block.content.length} chars)`
+        : `• ${role}: (missing)`;
+    })
     .join("\n");
 
   const latestNeo = neoBlocks[neoBlocks.length - 1];
@@ -18,8 +23,8 @@ export function TutorialOutputPanel() {
       <pre style={pre}>
 {`Step: ${tutorialStep}
 
-MOLT status:
-${moltSummary || "• No blocks yet"}
+7-Role MOLT Status:
+${moltSummary}
 
 NeoBlocks:
 • count: ${neoBlocks.length}${latestNeo ? `\n• latest: ${latestNeo.label} (lineage ${latestNeo.sourceBlockIds.length})` : ""}
@@ -34,8 +39,10 @@ Sleeve:
 ${sleeve ? `• ${sleeve.name} (bound: ${String(!!sleeve.neoStackId)})` : "• none yet"}
 
 What this means:
-• You're building authority top-down (Trigger → Directive → Instruction → Subject).
+• Build authority top-down through 7 roles:
+  Trigger → Directive → Instruction → Subject → Primary → Philosophy → Blueprint
 • Compression produces an immutable NeoBlock artifact.
+• Extra blocks unlock after first compress (add depth per role).
 • Merge/Bundle creates a new artifact with lineage.
 • Naming a NeoStack turns artifacts into a domain unit.
 • A Sleeve is the execution boundary. Compile is verification + trace.`
