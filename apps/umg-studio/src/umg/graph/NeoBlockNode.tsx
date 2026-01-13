@@ -30,8 +30,8 @@ export function NeoBlockNode({ data }: any) {
         position: "relative"
       }}
     >
-      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
       <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
         <div>
           <div style={{ fontWeight: 900 }}>{data.label}</div>

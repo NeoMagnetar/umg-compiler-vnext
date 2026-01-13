@@ -22,8 +22,8 @@ export function BasicNode({ id, data }: any) {
         position: "relative"
       }}
     >
-      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
       <div style={{ fontWeight: 800 }}>{data.title}</div>
       <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>{data.subtitle}</div>
       {data.badges?.length ? (

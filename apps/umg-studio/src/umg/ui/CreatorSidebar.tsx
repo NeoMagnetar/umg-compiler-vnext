@@ -127,11 +127,11 @@ export function CreatorSidebar() {
 
       <div style={{ marginTop: 20, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
         <button 
-          onClick={s.resetState} 
+          onClick={s.resetAll} 
           style={{ ...btn, background: "rgba(239, 68, 68, 0.15)", borderColor: "rgba(239, 68, 68, 0.3)" }}
           data-testid="button-reset-state"
         >
-          Reset All
+          Reset v0 State
         </button>
         <div style={{ fontSize: 10, opacity: 0.5, marginTop: 6, textAlign: "center" }}>
           State auto-saves to localStorage
