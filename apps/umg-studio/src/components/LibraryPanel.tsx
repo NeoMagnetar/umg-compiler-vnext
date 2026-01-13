@@ -490,6 +490,65 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
         }}>
           Block Bank
         </div>
+        
+        <div style={{ marginBottom: 8 }}>
+          <div className="small" style={{ opacity: 0.5, marginBottom: 6, fontSize: 10 }}>
+            Active Stacks
+          </div>
+          {stacks.map(s => {
+            const meta = getStackMetadata(s.id);
+            return (
+              <div 
+                key={s.id}
+                style={{
+                  padding: "6px 8px",
+                  marginBottom: 4,
+                  background: "rgba(255,255,255,0.03)",
+                  borderRadius: 4,
+                  fontSize: 10,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div style={{ fontWeight: 500, fontSize: 11 }}>{s.name}</div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span title="Blocks" style={{ 
+                    padding: "2px 5px", 
+                    background: "rgba(0, 255, 0, 0.15)", 
+                    borderRadius: 3,
+                    color: "#00ff00",
+                    fontSize: 9
+                  }}>
+                    {meta.blockCount}
+                  </span>
+                  {(meta.bundleCount > 0 || meta.mergeCount > 0) && (
+                    <span title="Bundles/Merges" style={{ 
+                      padding: "2px 5px", 
+                      background: "rgba(168, 85, 247, 0.15)", 
+                      borderRadius: 3,
+                      color: "#a855f7",
+                      fontSize: 9
+                    }}>
+                      {meta.bundleCount}B/{meta.mergeCount}M
+                    </span>
+                  )}
+                  {meta.tagCount > 0 && (
+                    <span title="Tags" style={{ 
+                      padding: "2px 5px", 
+                      background: "rgba(59, 130, 246, 0.15)", 
+                      borderRadius: 3,
+                      color: "#3b82f6",
+                      fontSize: 9
+                    }}>
+                      {meta.tagCount}T
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div>
