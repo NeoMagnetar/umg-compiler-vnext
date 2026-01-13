@@ -46,7 +46,7 @@ export default function CreatorMode() {
         <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
           {mobileTab === "build" && <CreatorSidebar />}
           {mobileTab === "graph" && (
-            <div style={{ height: "100%", position: "relative" }}>
+            <div style={{ height: "100%", width: "100%", position: "relative" }}>
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
