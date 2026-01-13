@@ -1,5 +1,7 @@
 export type MoltRole = "TRIGGER" | "DIRECTIVE" | "INSTRUCTION" | "SUBJECT";
 
+export type MoltSnapshot = Record<MoltRole, { title: string; content: string }>;
+
 export type Block = {
   id: string;
   role: MoltRole;
@@ -13,6 +15,7 @@ export type NeoBlock = {
   sourceBlockIds: string[];
   createdAt: number;
   label: string;
+  snapshot: MoltSnapshot;
 };
 
 export type NeoStack = {

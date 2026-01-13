@@ -46,17 +46,23 @@ export function buildGraph(
 
   const nbX = 380;
   const nbY0 = 60;
-  const nbGap = 90;
+  const nbGap = 120;
 
   neoBlocks.forEach((nb, i) => {
     nodes.push({
       id: `nb-${nb.id}`,
-      type: "basic",
+      type: "neoblock",
       position: { x: nbX, y: nbY0 + i * nbGap },
-      data: { 
-        title: nb.label, 
-        subtitle: `lineage: ${nb.sourceBlockIds.length} blocks`,
-        badges: ["compressed", "immutable"]
+      data: {
+        neoBlockId: nb.id,
+        label: nb.label,
+        lineageCount: nb.sourceBlockIds.length,
+        roleTitles: {
+          TRIGGER: nb.snapshot.TRIGGER.title,
+          DIRECTIVE: nb.snapshot.DIRECTIVE.title,
+          INSTRUCTION: nb.snapshot.INSTRUCTION.title,
+          SUBJECT: nb.snapshot.SUBJECT.title,
+        },
       },
     });
   });

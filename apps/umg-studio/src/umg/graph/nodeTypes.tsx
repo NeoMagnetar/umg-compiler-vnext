@@ -1,4 +1,5 @@
 import { useUmgStore } from "../store";
+import { NeoBlockNode } from "./NeoBlockNode";
 
 export function BasicNode({ id, data }: any) {
   const { selectedNodeId, selectNode } = useUmgStore();
@@ -45,4 +46,7 @@ export function BasicNode({ id, data }: any) {
   );
 }
 
-export const nodeTypes = { basic: BasicNode };
+export const nodeTypes = {
+  basic: BasicNode,
+  neoblock: NeoBlockNode,
+};

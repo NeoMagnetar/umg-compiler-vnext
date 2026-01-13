@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { nanoid } from "nanoid";
-import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode } from "./types";
+import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode, MoltSnapshot } from "./types";
 import { isMoltComplete, nextAllowedRole } from "./molt";
 import type { TutorialStep } from "./tutorial";
 
@@ -13,6 +13,7 @@ type State = {
 
   neoBlocks: NeoBlock[];
   selectedNeoBlockIds: string[];
+  expandedNeoBlockIds: Record<string, boolean>;
 
   preview: ComposePreview;
   lastComposeMode: MergeMode | null;
@@ -32,6 +33,7 @@ type State = {
   compressToNeoBlock: () => void;
   duplicateNeoBlock: (neoBlockId: string) => void;
   toggleSelectNeoBlock: (neoBlockId: string) => void;
+  toggleNeoBlockExpanded: (neoBlockId: string) => void;
 
   setPreview: (p: Partial<ComposePreview>) => void;
   commitCompose: (mode: MergeMode) => void;
@@ -51,6 +53,7 @@ export const useUmgStore = create<State>((set, get) => ({
 
   neoBlocks: [],
   selectedNeoBlockIds: [],
+  expandedNeoBlockIds: {},
 
   preview: { semanticOverlap: 0.5, governancePriority: 0.5 },
   lastComposeMode: null,
@@ -107,11 +110,25 @@ export const useUmgStore = create<State>((set, get) => ({
     const { blocks, neoBlocks, tutorialStep } = get();
     if (!isMoltComplete(blocks)) return;
 
+    const getBlock = (role: MoltRole) => {
+      const b = blocks.find(x => x.role === role);
+      if (!b) throw new Error(`Missing role during compress: ${role}`);
+      return b;
+    };
+
+    const snapshot: MoltSnapshot = {
+      TRIGGER: { title: getBlock("TRIGGER").title, content: getBlock("TRIGGER").content },
+      DIRECTIVE: { title: getBlock("DIRECTIVE").title, content: getBlock("DIRECTIVE").content },
+      INSTRUCTION: { title: getBlock("INSTRUCTION").title, content: getBlock("INSTRUCTION").content },
+      SUBJECT: { title: getBlock("SUBJECT").title, content: getBlock("SUBJECT").content },
+    };
+
     const nb: NeoBlock = {
       id: nanoid(),
       sourceBlockIds: blocks.map(b => b.id),
       createdAt: Date.now(),
       label: "NeoBlock",
+      snapshot,
     };
 
     set({
@@ -131,6 +148,7 @@ export const useUmgStore = create<State>((set, get) => ({
       sourceBlockIds: [...src.sourceBlockIds],
       createdAt: Date.now(),
       label: "NeoBlock (Copy)",
+      snapshot: src.snapshot,
     };
 
     const next = [...neoBlocks, dup];
@@ -152,6 +170,16 @@ export const useUmgStore = create<State>((set, get) => ({
     set({ selectedNeoBlockIds: next });
   },
 
+  toggleNeoBlockExpanded: (neoBlockId) => {
+    const cur = get().expandedNeoBlockIds[neoBlockId] ?? false;
+    set({
+      expandedNeoBlockIds: {
+        ...get().expandedNeoBlockIds,
+        [neoBlockId]: !cur,
+      },
+    });
+  },
+
   setPreview: (p) => set({ preview: { ...get().preview, ...p } }),
 
   commitCompose: (mode) => {
@@ -163,12 +191,14 @@ export const useUmgStore = create<State>((set, get) => ({
     const B = neoBlocks.find(n => n.id === bId);
     if (!A || !B) return;
 
+    const dominant = preview.governancePriority >= 0.5 ? A : B;
     const mergedLabel = mode === "MERGE" ? "NeoBlock (Merged)" : "NeoBlock Group";
     const newNeo: NeoBlock = {
       id: nanoid(),
       sourceBlockIds: [...new Set([...A.sourceBlockIds, ...B.sourceBlockIds])],
       createdAt: Date.now(),
       label: `${mergedLabel} • ov=${preview.semanticOverlap.toFixed(2)} gp=${preview.governancePriority.toFixed(2)}`,
+      snapshot: dominant.snapshot,
     };
 
     set({
@@ -229,6 +259,7 @@ export const useUmgStore = create<State>((set, get) => ({
         id: n.id,
         label: n.label,
         lineage: n.sourceBlockIds,
+        snapshot: n.snapshot,
       })),
     };
 
