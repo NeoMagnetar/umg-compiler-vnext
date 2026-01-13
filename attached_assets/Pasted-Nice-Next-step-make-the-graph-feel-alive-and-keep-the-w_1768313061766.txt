@@ -1,0 +1,359 @@
+Nice. Next step: make the graph feel “alive” and keep the workflow deterministic.
+Here are two upgrades you can implement now (small, pasteable chunks):
+Clickable nodes → edit block content + governance panel
+Compile → produces RuntimeSpec + Trace JSON panel (v0 structural)
+I’m going to give you both, in order, with minimal disruption.
+A) Clickable Graph Nodes + Block Editor Panel
+1) Update src/umg/graph/nodeTypes.tsx
+Make nodes clickable and visually show “selected”.
+Copy code
+Tsx
+// src/umg/graph/nodeTypes.tsx
+import React from "react";
+import { useUmgStore } from "../store";
+
+export function BasicNode({ id, data }: any) {
+  const { selectedNodeId, selectNode } = useUmgStore();
+  const selected = selectedNodeId === id;
+
+  return (
+    <div
+      onClick={() => selectNode(id)}
+      style={{
+        padding: 10,
+        border: selected ? "2px solid #000" : "1px solid #333",
+        borderRadius: 12,
+        background: "white",
+        minWidth: 200,
+        cursor: "pointer",
+        boxShadow: selected ? "0 4px 18px rgba(0,0,0,0.12)" : "none",
+      }}
+    >
+      <div style={{ fontWeight: 800 }}>{data.title}</div>
+      <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>{data.subtitle}</div>
+      {data.badges?.length ? (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+          {data.badges.map((b: string) => (
+            <span
+              key={b}
+              style={{
+                fontSize: 11,
+                padding: "2px 8px",
+                borderRadius: 999,
+                border: "1px solid #ddd",
+                opacity: 0.85,
+              }}
+            >
+              {b}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export const nodeTypes = { basic: BasicNode };
+2) Add selection + editing actions to src/umg/store.ts
+Add these fields + functions to the store:
+a) Add to State
+Copy code
+Ts
+selectedNodeId: string | null;
+updateBlockContent: (role: "TRIGGER" | "DIRECTIVE" | "INSTRUCTION" | "SUBJECT", content: string) => void;
+updateBlockTitle: (role: "TRIGGER" | "DIRECTIVE" | "INSTRUCTION" | "SUBJECT", title: string) => void;
+selectNode: (nodeId: string | null) => void;
+b) Add initial values near top
+Copy code
+Ts
+selectedNodeId: null,
+c) Add implementations
+Copy code
+Ts
+selectNode: (nodeId) => set({ selectedNodeId: nodeId }),
+
+updateBlockContent: (role, content) => {
+  const { blocks } = get();
+  const idx = blocks.findIndex(b => b.role === role);
+  if (idx === -1) return;
+  const next = blocks.slice();
+  next[idx] = { ...next[idx], content };
+  set({ blocks: next });
+},
+
+updateBlockTitle: (role, title) => {
+  const { blocks } = get();
+  const idx = blocks.findIndex(b => b.role === role);
+  if (idx === -1) return;
+  const next = blocks.slice();
+  next[idx] = { ...next[idx], title };
+  set({ blocks: next });
+},
+3) Enhance node data to include badges in src/umg/graph/buildNodes.ts
+Update the role ladder nodes so they show governance hints and click targets:
+Copy code
+Ts
+// inside buildGraph role loop, replace data block with:
+data: {
+  title: role,
+  subtitle: block ? block.title : "empty",
+  badges: block
+    ? ["governed", role === "TRIGGER" ? "activates" : role === "DIRECTIVE" ? "constrains" : role === "INSTRUCTION" ? "executes" : "grounds"]
+    : ["missing"],
+},
+4) Create an Editor panel: src/umg/ui/BlockEditorPanel.tsx
+Copy code
+Tsx
+// src/umg/ui/BlockEditorPanel.tsx
+import React, { useMemo } from "react";
+import { useUmgStore } from "../store";
+import type { MoltRole } from "../types";
+
+function roleFromNodeId(nodeId: string | null): MoltRole | null {
+  if (!nodeId) return null;
+  if (nodeId.startsWith("role-")) return nodeId.replace("role-", "") as MoltRole;
+  return null;
+}
+
+export function BlockEditorPanel() {
+  const s = useUmgStore();
+  const role = useMemo(() => roleFromNodeId(s.selectedNodeId), [s.selectedNodeId]);
+
+  const block = role ? s.blocks.find(b => b.role === role) : null;
+
+  if (!role) {
+    return (
+      <div style={panel}>
+        <div style={{ fontWeight: 800 }}>Inspector</div>
+        <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8 }}>
+          Click a MOLT role node on the graph to inspect/edit.
+        </div>
+      </div>
+    );
+  }
+
+  if (!block) {
+    return (
+      <div style={panel}>
+        <div style={{ fontWeight: 800 }}>Inspector: {role}</div>
+        <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8 }}>
+          No block exists for this role yet.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={panel}>
+      <div style={{ fontWeight: 900, fontSize: 14 }}>Inspector: {role}</div>
+
+      <div style={{ fontSize: 12, opacity: 0.75, marginTop: 6 }}>
+        Block ID: {block.id}
+      </div>
+
+      <div style={{ marginTop: 10, fontSize: 12, fontWeight: 700 }}>Title</div>
+      <input
+        value={block.title}
+        onChange={(e) => s.updateBlockTitle(role, e.target.value)}
+        style={input}
+      />
+
+      <div style={{ marginTop: 10, fontSize: 12, fontWeight: 700 }}>Content</div>
+      <textarea
+        value={block.content}
+        onChange={(e) => s.updateBlockContent(role, e.target.value)}
+        style={textarea}
+        placeholder={`Write ${role.toLowerCase()} content…`}
+      />
+
+      <div style={{ marginTop: 12, fontSize: 12, fontWeight: 700 }}>Governance</div>
+      <ul style={{ margin: "6px 0 0 18px", fontSize: 12, opacity: 0.85 }}>
+        <li>Edits are live on the graph</li>
+        <li>Library items are snapshots</li>
+        <li>Compression requires all 4 MOLT roles</li>
+      </ul>
+    </div>
+  );
+}
+
+const panel: React.CSSProperties = {
+  width: 360,
+  padding: 12,
+  borderLeft: "1px solid #ddd",
+  height: "100vh",
+  overflow: "auto",
+};
+
+const input: React.CSSProperties = {
+  width: "100%",
+  padding: "8px 10px",
+  borderRadius: 10,
+  border: "1px solid #ddd",
+  marginTop: 6,
+};
+
+const textarea: React.CSSProperties = {
+  width: "100%",
+  height: 140,
+  padding: "8px 10px",
+  borderRadius: 10,
+  border: "1px solid #ddd",
+  marginTop: 6,
+  resize: "vertical",
+};
+5) Wire it into src/App.tsx (sidebar + graph + inspector)
+Replace your layout with this:
+Copy code
+Tsx
+// src/App.tsx
+import React, { useMemo } from "react";
+import ReactFlow, { Background, Controls } from "reactflow";
+import "reactflow/dist/style.css";
+
+import { CreatorSidebar } from "./umg/ui/CreatorSidebar";
+import { BlockEditorPanel } from "./umg/ui/BlockEditorPanel";
+import { nodeTypes } from "./umg/graph/nodeTypes";
+import { buildGraph } from "./umg/graph/buildNodes";
+import { useUmgStore } from "./umg/store";
+
+export default function App() {
+  const s = useUmgStore();
+
+  const { nodes, edges } = useMemo(
+    () => buildGraph(s.blocks, s.neoBlocks, s.neoStacks, s.sleeve),
+    [s.blocks, s.neoBlocks, s.neoStacks, s.sleeve]
+  );
+
+  return (
+    <div style={{ display: "flex", height: "100vh" }}>
+      <CreatorSidebar />
+      <div style={{ flex: 1 }}>
+        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView>
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </div>
+      <BlockEditorPanel />
+    </div>
+  );
+}
+Now: clicking a role node lets you edit the block content/title live.
+B) Compile Output Panel (RuntimeSpec + Trace JSON)
+1) Add compile outputs to src/umg/store.ts
+Add to State:
+Copy code
+Ts
+runtimeSpec: any | null;
+trace: any | null;
+Add initial values:
+Copy code
+Ts
+runtimeSpec: null,
+trace: null,
+Replace compile() implementation with structural output:
+Copy code
+Ts
+compile: () => {
+  const { sleeve, neoStacks, neoBlocks, blocks } = get();
+  if (!sleeve?.neoStackId) return;
+
+  const ns = neoStacks.find(s => s.id === sleeve.neoStackId);
+  if (!ns) return;
+
+  const nsNeoBlocks = ns.neoBlockIds
+    .map(id => neoBlocks.find(n => n.id === id))
+    .filter(Boolean);
+
+  const runtimeSpec = {
+    sleeve: { id: sleeve.id, name: sleeve.name, neoStackId: sleeve.neoStackId },
+    neoStack: { id: ns.id, name: ns.name, neoBlockIds: ns.neoBlockIds },
+    neoBlocks: nsNeoBlocks.map((n: any) => ({
+      id: n.id,
+      label: n.label,
+      lineage: n.sourceBlockIds,
+    })),
+  };
+
+  const trace = {
+    compiledAt: new Date().toISOString(),
+    moltBlocks: blocks.map(b => ({
+      id: b.id,
+      role: b.role,
+      title: b.title,
+      contentLen: b.content.length,
+      createdAt: b.createdAt,
+    })),
+    sleeve: { id: sleeve.id, name: sleeve.name },
+    neoStack: { id: ns.id, name: ns.name },
+    notes: ["v0 structural compile", "no LLM synthesis"],
+  };
+
+  set({ runtimeSpec, trace, tutorialStep: "COMPILED" });
+},
+2) Add src/umg/ui/CompileOutputPanel.tsx
+Copy code
+Tsx
+// src/umg/ui/CompileOutputPanel.tsx
+import React, { useState } from "react";
+import { useUmgStore } from "../store";
+
+export function CompileOutputPanel() {
+  const { runtimeSpec, trace } = useUmgStore();
+  const [tab, setTab] = useState<"runtime" | "trace">("runtime");
+
+  return (
+    <div style={{ padding: 10, borderTop: "1px solid #eee" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+        <button style={tabBtn(tab === "runtime")} onClick={() => setTab("runtime")}>RuntimeSpec</button>
+        <button style={tabBtn(tab === "trace")} onClick={() => setTab("trace")}>Trace</button>
+      </div>
+
+      <pre style={pre}>
+        {JSON.stringify(tab === "runtime" ? runtimeSpec : trace, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
+const tabBtn = (active: boolean): React.CSSProperties => ({
+  padding: "6px 10px",
+  borderRadius: 10,
+  border: active ? "2px solid #000" : "1px solid #ccc",
+  background: "white",
+  cursor: "pointer",
+});
+
+const pre: React.CSSProperties = {
+  maxHeight: 220,
+  overflow: "auto",
+  background: "#fafafa",
+  border: "1px solid #eee",
+  borderRadius: 12,
+  padding: 10,
+  fontSize: 12,
+};
+3) Mount the output panel under the graph in App.tsx
+Wrap the graph column into a vertical flex:
+Copy code
+Tsx
+// inside App.tsx, replace the graph div with:
+<div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+  <div style={{ flex: 1 }}>
+    <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView>
+      <Background />
+      <Controls />
+    </ReactFlow>
+  </div>
+  <CompileOutputPanel />
+</div>
+…and add the import:
+Copy code
+Tsx
+import { CompileOutputPanel } from "./umg/ui/CompileOutputPanel";
+Now compile produces visible RuntimeSpec + Trace.
+What this “Next” gives you
+Graph nodes feel interactive (major UX leap)
+Live editing stays on graph/inspector (library remains inert)
+Compile becomes auditable instantly
+Next after this (when you’re ready) is the “killer” one: NeoBlock container node that expands/collapses its internal MOLT blocks visually — but still stays immutable.
+If you want that, I’ll drop the next chunk: NeoBlock composite node + expand/collapse + lineage view.

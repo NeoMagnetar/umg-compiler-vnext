@@ -26,6 +26,9 @@ export function buildGraph(
       data: {
         title: role,
         subtitle: block ? block.title : "empty",
+        badges: block
+          ? ["governed", role === "TRIGGER" ? "activates" : role === "DIRECTIVE" ? "constrains" : role === "INSTRUCTION" ? "executes" : "grounds"]
+          : ["missing"],
       },
     });
 
@@ -35,6 +38,7 @@ export function buildGraph(
         id: `e-role-${MOLT_ORDER[idx - 1]}-${role}`,
         source: `role-${MOLT_ORDER[idx - 1]}`,
         target: `role-${role}`,
+        style: { stroke: "rgba(255,255,255,0.3)" },
       });
     }
   }
@@ -48,7 +52,11 @@ export function buildGraph(
       id: `nb-${nb.id}`,
       type: "basic",
       position: { x: nbX, y: nbY0 + i * nbGap },
-      data: { title: nb.label, subtitle: `lineage: ${nb.sourceBlockIds.length} blocks` },
+      data: { 
+        title: nb.label, 
+        subtitle: `lineage: ${nb.sourceBlockIds.length} blocks`,
+        badges: ["compressed", "immutable"]
+      },
     });
   });
 
@@ -61,7 +69,11 @@ export function buildGraph(
       id: `ns-${lastStack.id}`,
       type: "basic",
       position: { x: rightX, y: rightY0 },
-      data: { title: `NEOSTACK: ${lastStack.name}`, subtitle: `${lastStack.neoBlockIds.length} neoblocks` },
+      data: { 
+        title: `NEOSTACK: ${lastStack.name}`, 
+        subtitle: `${lastStack.neoBlockIds.length} neoblocks`,
+        badges: ["domain"]
+      },
     });
   }
 
@@ -70,13 +82,18 @@ export function buildGraph(
       id: `sl-${sleeve.id}`,
       type: "basic",
       position: { x: rightX, y: rightY0 + 140 },
-      data: { title: `SLEEVE: ${sleeve.name}`, subtitle: sleeve.neoStackId ? "ready" : "empty" },
+      data: { 
+        title: `SLEEVE: ${sleeve.name}`, 
+        subtitle: sleeve.neoStackId ? "ready" : "empty",
+        badges: sleeve.neoStackId ? ["compilable"] : ["incomplete"]
+      },
     });
     if (lastStack) {
       edges.push({
         id: `e-ns-sl`,
         source: `ns-${lastStack.id}`,
         target: `sl-${sleeve.id}`,
+        style: { stroke: "rgba(34, 197, 94, 0.5)" },
       });
     }
   }
