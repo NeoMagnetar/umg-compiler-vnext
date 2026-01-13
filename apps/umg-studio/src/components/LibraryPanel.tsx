@@ -22,7 +22,7 @@ const MOLT_TYPES = [
   "blueprint"
 ] as const;
 
-type SectionType = "vault" | "neobase" | "station" | "facility" | "tools" | null;
+type TabType = "blocks" | "neoblocks" | "neostacks" | "sleeves";
 
 interface LibraryPanelProps {
   sleeveJson: string;
@@ -33,7 +33,7 @@ interface LibraryPanelProps {
 }
 
 export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBlockIds = [], onChangeSleeveJson, onClearMultiSelect }: LibraryPanelProps) {
-  const [openSection, setOpenSection] = useState<SectionType>(null);
+  const [tab, setTab] = useState<TabType>("blocks");
   const [libraryBlocks, setLibraryBlocks] = useState<LibraryBlock[]>([]);
   const [neoBlocks, setNeoBlocks] = useState<NeoBlock[]>([]);
   const [neoStacks, setNeoStacks] = useState<NeoStack[]>([]);
@@ -392,58 +392,15 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
     return d.toLocaleDateString();
   };
 
-  const toggleSection = (section: SectionType) => {
-    setOpenSection(prev => prev === section ? null : section);
-  };
-
-  const getStackMetadata = (stackId: string) => {
-    const stack = stacks.find(s => s.id === stackId);
-    if (!stack) return { blockCount: 0, bundleCount: 0, mergeCount: 0, tagCount: 0 };
-    
-    const stackBlocks = (stack as any).blockIds ?? [];
-    const bundleCount = ops.bundles.filter((b: any) => b.stackId === stackId).length;
-    const mergeCount = ops.merges.filter((m: any) => m.stackId === stackId).length;
-    
-    let tagCount = 0;
-    for (const blockId of stackBlocks) {
-      const block = blocksById[blockId];
-      if (block?.tags) tagCount += block.tags.length;
-    }
-    
-    return { 
-      blockCount: stackBlocks.length, 
-      bundleCount, 
-      mergeCount, 
-      tagCount 
-    };
-  };
-
-  const goldGlowStyle = (isOpen: boolean) => ({
-    boxShadow: isOpen ? "0 0 12px rgba(255, 215, 0, 0.4), inset 0 0 8px rgba(255, 215, 0, 0.1)" : "none",
-    border: isOpen ? "1px solid rgba(255, 215, 0, 0.5)" : "1px solid rgba(255,255,255,0.1)",
-    transition: "all 0.3s ease"
-  });
-
-  const sectionHeaderStyle = (isOpen: boolean) => ({
-    width: "100%",
-    padding: "10px 12px",
-    background: isOpen ? "rgba(255, 215, 0, 0.08)" : "rgba(255,255,255,0.03)",
-    borderRadius: 6,
-    color: isOpen ? "#ffd700" : "inherit",
-    fontSize: 11,
-    fontWeight: 600,
-    cursor: "pointer",
-    textAlign: "left" as const,
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.5px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    ...goldGlowStyle(isOpen)
-  });
+  const tabs: { key: TabType; label: string }[] = [
+    { key: "blocks", label: "Blocks" },
+    { key: "neoblocks", label: "NeoBlocks" },
+    { key: "neostacks", label: "NeoStacks" },
+    { key: "sleeves", label: "Sleeves" }
+  ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <button
         className="btn"
         onClick={handleAddStack}
@@ -461,6 +418,216 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
         + New MOLT Stack
       </button>
 
+      <div>
+        <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Stacks ({stacks.length})
+        </div>
+        {stacks.map(s => (
+          <div 
+            key={s.id}
+            style={{
+              padding: 6,
+              marginBottom: 4,
+              background: "rgba(255,255,255,0.03)",
+              borderRadius: 4,
+              fontSize: 11
+            }}
+          >
+            <div style={{ fontWeight: 500 }}>{s.name}</div>
+            <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{s.id}</div>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Ops (Bundle/Merge)
+        </div>
+        
+        {selectedBlockIds.length >= 2 && (
+          <div style={{ marginBottom: 8 }}>
+            {multiSelectValidation.valid ? (
+              <div style={{ display: "flex", gap: 6 }}>
+                <button
+                  onClick={handleBundle}
+                  style={{
+                    flex: 1,
+                    padding: "6px 8px",
+                    background: "rgba(59, 130, 246, 0.2)",
+                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                    borderRadius: 4,
+                    color: "#3b82f6",
+                    fontSize: 11,
+                    cursor: "pointer"
+                  }}
+                >
+                  Bundle ({selectedBlockIds.length})
+                </button>
+                <button
+                  onClick={handleMerge}
+                  style={{
+                    flex: 1,
+                    padding: "6px 8px",
+                    background: "rgba(34, 197, 94, 0.2)",
+                    border: "1px solid rgba(34, 197, 94, 0.3)",
+                    borderRadius: 4,
+                    color: "#22c55e",
+                    fontSize: 11,
+                    cursor: "pointer"
+                  }}
+                >
+                  Merge ({selectedBlockIds.length})
+                </button>
+              </div>
+            ) : (
+              <div style={{
+                padding: 8,
+                background: "rgba(234, 179, 8, 0.1)",
+                borderRadius: 4,
+                fontSize: 11,
+                color: "#eab308"
+              }}>
+                {multiSelectValidation.error}
+              </div>
+            )}
+          </div>
+        )}
+
+        {selectedBlockIds.length > 0 && selectedBlockIds.length < 2 && (
+          <div style={{
+            padding: 8,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 4,
+            fontSize: 11,
+            opacity: 0.5
+          }}>
+            Select 2+ blocks (Shift+Click) to Bundle/Merge
+          </div>
+        )}
+
+        {selectedBlockIds.length === 0 && (
+          <div style={{
+            padding: 8,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 4,
+            fontSize: 11,
+            opacity: 0.5
+          }}>
+            Use Shift+Click or Select Mode to multi-select blocks
+          </div>
+        )}
+
+        {(ops.bundles.length > 0 || ops.merges.length > 0) && (
+          <div style={{ marginTop: 8 }}>
+            {ops.bundles.map((op: any) => (
+              <div 
+                key={op.id}
+                style={{
+                  padding: 8,
+                  marginBottom: 4,
+                  background: "rgba(59, 130, 246, 0.1)",
+                  borderRadius: 4,
+                  fontSize: 11,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div>
+                  <span style={{ color: "#3b82f6", fontWeight: 500 }}>Bundle</span>
+                  <span style={{ opacity: 0.6, marginLeft: 6 }}>
+                    {getStackNameById(op.stackId)} / {op.lane} ({op.blockIds.length})
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteOp(op.id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    padding: 2,
+                    opacity: 0.6
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {ops.merges.map((op: any) => (
+              <div 
+                key={op.id}
+                style={{
+                  padding: 8,
+                  marginBottom: 4,
+                  background: "rgba(34, 197, 94, 0.1)",
+                  borderRadius: 4,
+                  fontSize: 11,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div>
+                  <span style={{ color: "#22c55e", fontWeight: 500 }}>Merge</span>
+                  <span style={{ opacity: 0.6, marginLeft: 6 }}>
+                    {getStackNameById(op.stackId)} / {op.lane} ({op.blockIds.length})
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteOp(op.id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    padding: 2,
+                    opacity: 0.6
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ 
+        display: "flex", 
+        gap: 4, 
+        flexWrap: "wrap",
+        position: "sticky",
+        top: 0,
+        background: "var(--bg, #0a0a0a)",
+        paddingBottom: 8,
+        zIndex: 10
+      }}>
+        {tabs.map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            data-testid={`tab-${t.key}`}
+            style={{
+              flex: 1,
+              minWidth: 70,
+              padding: "8px 10px",
+              background: tab === t.key ? "rgba(0, 255, 0, 0.15)" : "rgba(255,255,255,0.05)",
+              border: tab === t.key ? "1px solid rgba(0, 255, 0, 0.3)" : "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 6,
+              color: tab === t.key ? "#00ff00" : "inherit",
+              fontSize: 11,
+              fontWeight: tab === t.key ? 600 : 400,
+              cursor: "pointer"
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
       {message && (
         <div style={{
           padding: 8,
@@ -475,92 +642,7 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
         </div>
       )}
 
-      <div style={{ 
-        padding: "8px 0", 
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
-        marginBottom: 4
-      }}>
-        <div style={{ 
-          fontSize: 13, 
-          fontWeight: 700, 
-          color: "#ffd700",
-          textTransform: "uppercase",
-          letterSpacing: "1px",
-          marginBottom: 8
-        }}>
-          Block Bank
-        </div>
-        
-        <div style={{ marginBottom: 8 }}>
-          <div className="small" style={{ opacity: 0.5, marginBottom: 6, fontSize: 10 }}>
-            Active Stacks
-          </div>
-          {stacks.map(s => {
-            const meta = getStackMetadata(s.id);
-            return (
-              <div 
-                key={s.id}
-                style={{
-                  padding: "6px 8px",
-                  marginBottom: 4,
-                  background: "rgba(255,255,255,0.03)",
-                  borderRadius: 4,
-                  fontSize: 10,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center"
-                }}
-              >
-                <div style={{ fontWeight: 500, fontSize: 11 }}>{s.name}</div>
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span title="Blocks" style={{ 
-                    padding: "2px 5px", 
-                    background: "rgba(0, 255, 0, 0.15)", 
-                    borderRadius: 3,
-                    color: "#00ff00",
-                    fontSize: 9
-                  }}>
-                    {meta.blockCount}
-                  </span>
-                  {(meta.bundleCount > 0 || meta.mergeCount > 0) && (
-                    <span title="Bundles/Merges" style={{ 
-                      padding: "2px 5px", 
-                      background: "rgba(168, 85, 247, 0.15)", 
-                      borderRadius: 3,
-                      color: "#a855f7",
-                      fontSize: 9
-                    }}>
-                      {meta.bundleCount}B/{meta.mergeCount}M
-                    </span>
-                  )}
-                  {meta.tagCount > 0 && (
-                    <span title="Tags" style={{ 
-                      padding: "2px 5px", 
-                      background: "rgba(59, 130, 246, 0.15)", 
-                      borderRadius: 3,
-                      color: "#3b82f6",
-                      fontSize: 9
-                    }}>
-                      {meta.tagCount}T
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div>
-        <button
-          onClick={() => toggleSection("vault")}
-          data-testid="section-block-vault"
-          style={sectionHeaderStyle(openSection === "vault")}
-        >
-          <span>Block Vault</span>
-          <span style={{ fontSize: 10, opacity: 0.6 }}>({libraryBlocks.length})</span>
-        </button>
-        {openSection === "vault" && (
+      {tab === "blocks" && (
         <>
           {selectedBlock && (
             <div style={{ 
@@ -649,20 +731,13 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
           </div>
 
           </>
-        )}
-      </div>
+      )}
 
-      <div>
-        <button
-          onClick={() => toggleSection("neobase")}
-          data-testid="section-neoblock-base"
-          style={sectionHeaderStyle(openSection === "neobase")}
-        >
-          <span>NeoBlock Base</span>
-          <span style={{ fontSize: 10, opacity: 0.6 }}>({neoBlocks.length})</span>
-        </button>
-        {openSection === "neobase" && (
-          <div style={{ padding: "10px 0" }}>
+      {tab === "neoblocks" && (
+        <div>
+          <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            NeoBlocks ({neoBlocks.length})
+          </div>
           {neoBlocks.length === 0 ? (
             <div className="small" style={{ opacity: 0.4, fontStyle: "italic" }}>
               No NeoBlocks saved. Use Compress in Structure panel to create one.
@@ -759,21 +834,11 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
               ))}
             </div>
           )}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <div>
-        <button
-          onClick={() => toggleSection("station")}
-          data-testid="section-neostack-station"
-          style={sectionHeaderStyle(openSection === "station")}
-        >
-          <span>NeoStack Station</span>
-          <span style={{ fontSize: 10, opacity: 0.6 }}>({neoStacks.length})</span>
-        </button>
-        {openSection === "station" && (
-          <div style={{ padding: "10px 0" }}>
+      {tab === "neostacks" && (
+        <div>
           <button
             onClick={() => setShowNewStackForm(!showNewStackForm)}
             data-testid="button-create-neostack"
@@ -979,21 +1044,11 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
               ))}
             </div>
           )}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <div>
-        <button
-          onClick={() => toggleSection("facility")}
-          data-testid="section-resleeving-facility"
-          style={sectionHeaderStyle(openSection === "facility")}
-        >
-          <span>Resleeving Facility</span>
-          <span style={{ fontSize: 10, opacity: 0.6 }}>({sleeves.length})</span>
-        </button>
-        {openSection === "facility" && (
-          <div style={{ padding: "10px 0" }}>
+      {tab === "sleeves" && (
+        <div>
           <button
             onClick={() => setShowSaveSleeveForm(!showSaveSleeveForm)}
             data-testid="button-save-sleeve"
@@ -1164,192 +1219,8 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBloc
               ))}
             </div>
           )}
-          </div>
-        )}
-      </div>
-
-      <div style={{ 
-        padding: "8px 0", 
-        borderTop: "1px solid rgba(255,255,255,0.08)",
-        marginTop: 8
-      }}>
-        <div style={{ 
-          fontSize: 13, 
-          fontWeight: 700, 
-          color: "#ffd700",
-          textTransform: "uppercase",
-          letterSpacing: "1px",
-          marginBottom: 8
-        }}>
-          Universal Tools
         </div>
-      </div>
-
-      <div>
-        <button
-          onClick={() => toggleSection("tools")}
-          data-testid="section-universal-tools"
-          style={sectionHeaderStyle(openSection === "tools")}
-        >
-          <span>Ops (Bundle/Merge)</span>
-          <span style={{ fontSize: 10, opacity: 0.6 }}>
-            ({ops.bundles.length + ops.merges.length})
-          </span>
-        </button>
-        {openSection === "tools" && (
-          <div style={{ padding: "10px 0" }}>
-            {selectedBlockIds.length >= 2 && (
-              <div style={{ marginBottom: 8 }}>
-                {multiSelectValidation.valid ? (
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button
-                      onClick={handleBundle}
-                      style={{
-                        flex: 1,
-                        padding: "6px 8px",
-                        background: "rgba(59, 130, 246, 0.2)",
-                        border: "1px solid rgba(59, 130, 246, 0.3)",
-                        borderRadius: 4,
-                        color: "#3b82f6",
-                        fontSize: 11,
-                        cursor: "pointer"
-                      }}
-                    >
-                      Bundle ({selectedBlockIds.length})
-                    </button>
-                    <button
-                      onClick={handleMerge}
-                      style={{
-                        flex: 1,
-                        padding: "6px 8px",
-                        background: "rgba(34, 197, 94, 0.2)",
-                        border: "1px solid rgba(34, 197, 94, 0.3)",
-                        borderRadius: 4,
-                        color: "#22c55e",
-                        fontSize: 11,
-                        cursor: "pointer"
-                      }}
-                    >
-                      Merge ({selectedBlockIds.length})
-                    </button>
-                  </div>
-                ) : (
-                  <div style={{
-                    padding: 8,
-                    background: "rgba(234, 179, 8, 0.1)",
-                    borderRadius: 4,
-                    fontSize: 11,
-                    color: "#eab308"
-                  }}>
-                    {multiSelectValidation.error}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {selectedBlockIds.length > 0 && selectedBlockIds.length < 2 && (
-              <div style={{
-                padding: 8,
-                background: "rgba(255,255,255,0.03)",
-                borderRadius: 4,
-                fontSize: 11,
-                opacity: 0.5
-              }}>
-                Select 2+ blocks (Shift+Click) to Bundle/Merge
-              </div>
-            )}
-
-            {selectedBlockIds.length === 0 && (
-              <div style={{
-                padding: 8,
-                background: "rgba(255,255,255,0.03)",
-                borderRadius: 4,
-                fontSize: 11,
-                opacity: 0.5
-              }}>
-                Use Shift+Click or Select Mode to multi-select blocks
-              </div>
-            )}
-
-            {(ops.bundles.length > 0 || ops.merges.length > 0) && (
-              <div style={{ marginTop: 8 }}>
-                {ops.bundles.map((op: any) => (
-                  <div 
-                    key={op.id}
-                    style={{
-                      padding: 8,
-                      marginBottom: 4,
-                      background: "rgba(59, 130, 246, 0.1)",
-                      borderRadius: 4,
-                      fontSize: 11,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center"
-                    }}
-                  >
-                    <div>
-                      <span style={{ color: "#3b82f6", fontWeight: 500 }}>Bundle</span>
-                      <span style={{ opacity: 0.6, marginLeft: 6 }}>
-                        {getStackNameById(op.stackId)} / {op.lane} ({op.blockIds.length})
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteOp(op.id)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        color: "#ef4444",
-                        cursor: "pointer",
-                        fontSize: 14,
-                        padding: 2,
-                        opacity: 0.6
-                      }}
-                    >
-                      x
-                    </button>
-                  </div>
-                ))}
-                {ops.merges.map((op: any) => (
-                  <div 
-                    key={op.id}
-                    style={{
-                      padding: 8,
-                      marginBottom: 4,
-                      background: "rgba(34, 197, 94, 0.1)",
-                      borderRadius: 4,
-                      fontSize: 11,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center"
-                    }}
-                  >
-                    <div>
-                      <span style={{ color: "#22c55e", fontWeight: 500 }}>Merge</span>
-                      <span style={{ opacity: 0.6, marginLeft: 6 }}>
-                        {getStackNameById(op.stackId)} / {op.lane} ({op.blockIds.length})
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteOp(op.id)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        color: "#ef4444",
-                        cursor: "pointer",
-                        fontSize: 14,
-                        padding: 2,
-                        opacity: 0.6
-                      }}
-                    >
-                      x
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
