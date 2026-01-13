@@ -21,6 +21,45 @@ export function CreatorSidebar() {
   const canSleeve = s.neoStacks.length >= 1;
   const canCompile = !!s.sleeve?.neoStackId;
 
+  const isIgnition = s.blocks.length === 0;
+
+  if (isIgnition) {
+    return (
+      <div style={{ 
+        width: 340, 
+        padding: 12, 
+        borderRight: "1px solid rgba(255,255,255,0.1)", 
+        height: "100%", 
+        overflow: "auto",
+        background: "rgba(15,15,20,0.95)",
+        color: "#e0e0e0",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+      }}>
+        <div style={{ fontSize: 28, marginBottom: 12 }}>Ignition</div>
+        <p style={{ fontSize: 13, opacity: 0.7, marginBottom: 20, maxWidth: 260, lineHeight: 1.5 }}>
+          Create your first MOLT block to begin the spine. The structure unfolds as you build.
+        </p>
+        <button 
+          onClick={() => s.createBlock()} 
+          style={{ 
+            ...btn, 
+            padding: "14px 28px", 
+            fontSize: 14, 
+            background: "rgba(96,165,250,0.2)", 
+            borderColor: "rgba(96,165,250,0.4)" 
+          }}
+          data-testid="button-ignition-create"
+        >
+          Create Block
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ 
       width: 340, 
