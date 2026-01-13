@@ -11,7 +11,7 @@ localPort = 5173
 externalPort = 80
 
 [env]
-PORT = "5000"
+PORT = "5173"
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -37,7 +37,7 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
-waitForPort = 5000
+waitForPort = 5173
 
 [[workflows.workflow]]
 name = "Umg run"
