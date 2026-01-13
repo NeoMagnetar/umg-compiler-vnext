@@ -113,7 +113,9 @@ export default function LeftPanel({
         <LibraryPanel 
           sleeveJson={sleeveJson} 
           selectedBlockId={selectedBlockId ?? null}
+          selectedBlockIds={selectedBlockIds}
           onChangeSleeveJson={onChangeSleeveJson}
+          onClearMultiSelect={onClearMultiSelect}
         />
       </CollapsibleSection>
 

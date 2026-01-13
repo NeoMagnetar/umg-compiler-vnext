@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt, getBlocksById, addStack, parseSleeve, addBlockToStack } from "@/lib/sleeveEdit";
+import { getStacks, findBlockInSleeve, insertBlockIntoStackByMolt, getBlocksById, addStack, parseSleeve, addBlockToStack, addBundleOp, addMergeOp, deleteOp, getOps, validateMultiSelectForOp } from "@/lib/sleeveEdit";
 import { 
   listLibraryBlocks, 
   saveBlockTemplate, 
@@ -27,10 +27,12 @@ type TabType = "blocks" | "neoblocks" | "neostacks" | "sleeves";
 interface LibraryPanelProps {
   sleeveJson: string;
   selectedBlockId: string | null;
+  selectedBlockIds?: string[];
   onChangeSleeveJson: (next: string) => void;
+  onClearMultiSelect?: () => void;
 }
 
-export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSleeveJson }: LibraryPanelProps) {
+export default function LibraryPanel({ sleeveJson, selectedBlockId, selectedBlockIds = [], onChangeSleeveJson, onClearMultiSelect }: LibraryPanelProps) {
   const [tab, setTab] = useState<TabType>("blocks");
   const [libraryBlocks, setLibraryBlocks] = useState<LibraryBlock[]>([]);
   const [neoBlocks, setNeoBlocks] = useState<NeoBlock[]>([]);
@@ -70,6 +72,65 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
   const showMessage = (msg: string) => {
     setMessage(msg);
     setTimeout(() => setMessage(null), 2000);
+  };
+
+  const ops = getOps(sleeveJson);
+  const multiSelectValidation = validateMultiSelectForOp(sleeveJson, selectedBlockIds);
+
+  const getStackNameById = (stackId: string): string => {
+    const stack = stacks.find(s => s.id === stackId);
+    return stack?.name ?? stackId;
+  };
+
+  const handleBundle = () => {
+    if (!multiSelectValidation.valid || !multiSelectValidation.stackId || !multiSelectValidation.lane) {
+      showMessage(multiSelectValidation.error ?? "Invalid selection");
+      return;
+    }
+
+    const result = addBundleOp(sleeveJson, {
+      stackId: multiSelectValidation.stackId,
+      lane: multiSelectValidation.lane,
+      blockIds: selectedBlockIds
+    });
+
+    if (result.error) {
+      showMessage(result.error);
+    } else if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      onClearMultiSelect?.();
+      showMessage("Bundle created!");
+    }
+  };
+
+  const handleMerge = () => {
+    if (!multiSelectValidation.valid || !multiSelectValidation.stackId || !multiSelectValidation.lane) {
+      showMessage(multiSelectValidation.error ?? "Invalid selection");
+      return;
+    }
+
+    const result = addMergeOp(sleeveJson, {
+      stackId: multiSelectValidation.stackId,
+      lane: multiSelectValidation.lane,
+      blockIds: selectedBlockIds
+    });
+
+    if (result.error) {
+      showMessage(result.error);
+    } else if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+      onClearMultiSelect?.();
+      showMessage("Merge created!");
+    }
+  };
+
+  const handleDeleteOp = (opId: string) => {
+    const result = deleteOp(sleeveJson, opId);
+    if (result.error) {
+      showMessage(result.error);
+    } else if (result.nextJson) {
+      onChangeSleeveJson(result.nextJson);
+    }
   };
 
   const handleSaveToLibrary = () => {
@@ -376,6 +437,162 @@ export default function LibraryPanel({ sleeveJson, selectedBlockId, onChangeSlee
             <div className="mono" style={{ fontSize: 10, opacity: 0.5 }}>{s.id}</div>
           </div>
         ))}
+      </div>
+
+      <div>
+        <div className="small" style={{ opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Ops (Bundle/Merge)
+        </div>
+        
+        {selectedBlockIds.length >= 2 && (
+          <div style={{ marginBottom: 8 }}>
+            {multiSelectValidation.valid ? (
+              <div style={{ display: "flex", gap: 6 }}>
+                <button
+                  onClick={handleBundle}
+                  style={{
+                    flex: 1,
+                    padding: "6px 8px",
+                    background: "rgba(59, 130, 246, 0.2)",
+                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                    borderRadius: 4,
+                    color: "#3b82f6",
+                    fontSize: 11,
+                    cursor: "pointer"
+                  }}
+                >
+                  Bundle ({selectedBlockIds.length})
+                </button>
+                <button
+                  onClick={handleMerge}
+                  style={{
+                    flex: 1,
+                    padding: "6px 8px",
+                    background: "rgba(34, 197, 94, 0.2)",
+                    border: "1px solid rgba(34, 197, 94, 0.3)",
+                    borderRadius: 4,
+                    color: "#22c55e",
+                    fontSize: 11,
+                    cursor: "pointer"
+                  }}
+                >
+                  Merge ({selectedBlockIds.length})
+                </button>
+              </div>
+            ) : (
+              <div style={{
+                padding: 8,
+                background: "rgba(234, 179, 8, 0.1)",
+                borderRadius: 4,
+                fontSize: 11,
+                color: "#eab308"
+              }}>
+                {multiSelectValidation.error}
+              </div>
+            )}
+          </div>
+        )}
+
+        {selectedBlockIds.length > 0 && selectedBlockIds.length < 2 && (
+          <div style={{
+            padding: 8,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 4,
+            fontSize: 11,
+            opacity: 0.5
+          }}>
+            Select 2+ blocks (Shift+Click) to Bundle/Merge
+          </div>
+        )}
+
+        {selectedBlockIds.length === 0 && (
+          <div style={{
+            padding: 8,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 4,
+            fontSize: 11,
+            opacity: 0.5
+          }}>
+            Use Shift+Click or Select Mode to multi-select blocks
+          </div>
+        )}
+
+        {(ops.bundles.length > 0 || ops.merges.length > 0) && (
+          <div style={{ marginTop: 8 }}>
+            {ops.bundles.map((op: any) => (
+              <div 
+                key={op.id}
+                style={{
+                  padding: 8,
+                  marginBottom: 4,
+                  background: "rgba(59, 130, 246, 0.1)",
+                  borderRadius: 4,
+                  fontSize: 11,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div>
+                  <span style={{ color: "#3b82f6", fontWeight: 500 }}>Bundle</span>
+                  <span style={{ opacity: 0.6, marginLeft: 6 }}>
+                    {getStackNameById(op.stackId)} / {op.lane} ({op.blockIds.length})
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteOp(op.id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    padding: 2,
+                    opacity: 0.6
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {ops.merges.map((op: any) => (
+              <div 
+                key={op.id}
+                style={{
+                  padding: 8,
+                  marginBottom: 4,
+                  background: "rgba(34, 197, 94, 0.1)",
+                  borderRadius: 4,
+                  fontSize: 11,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <div>
+                  <span style={{ color: "#22c55e", fontWeight: 500 }}>Merge</span>
+                  <span style={{ opacity: 0.6, marginLeft: 6 }}>
+                    {getStackNameById(op.stackId)} / {op.lane} ({op.blockIds.length})
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteOp(op.id)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#ef4444",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    padding: 2,
+                    opacity: 0.6
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={{ 
