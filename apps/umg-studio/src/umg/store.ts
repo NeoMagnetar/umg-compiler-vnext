@@ -39,6 +39,7 @@ type State = {
   selectNode: (nodeId: string | null) => void;
   updateBlockContent: (role: MoltRole, content: string) => void;
   updateBlockTitle: (role: MoltRole, title: string) => void;
+  updateBlockTags: (blockId: string, tags: string[]) => void;
 
   compressToNeoBlock: () => void;
   duplicateNeoBlock: (neoBlockId: string) => void;
@@ -102,6 +103,7 @@ export const useUmgStore = create<State>()(
           role,
           title: title ?? `${role} Block`,
           content: "",
+          tags: [],
           createdAt: Date.now(),
         };
 
@@ -118,6 +120,7 @@ export const useUmgStore = create<State>()(
           role,
           title: `${role} Block (Extra)`,
           content: "",
+          tags: [],
           createdAt: Date.now(),
         };
 
@@ -144,6 +147,15 @@ export const useUmgStore = create<State>()(
         if (idx === -1) return;
         const next = blocks.slice();
         next[idx] = { ...next[idx], title };
+        set({ blocks: next });
+      },
+
+      updateBlockTags: (blockId, tags) => {
+        const { blocks } = get();
+        const idx = blocks.findIndex(b => b.id === blockId);
+        if (idx === -1) return;
+        const next = blocks.slice();
+        next[idx] = { ...next[idx], tags };
         set({ blocks: next });
       },
 

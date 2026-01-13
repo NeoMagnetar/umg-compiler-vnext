@@ -39,7 +39,7 @@ export function CreatorSidebar() {
         alignItems: "center",
         textAlign: "center",
       }}>
-        <div style={{ fontSize: 28, marginBottom: 12 }}>Ignition</div>
+        <div style={{ fontSize: 28, marginBottom: 12 }}>Start</div>
         <p style={{ fontSize: 13, opacity: 0.7, marginBottom: 20, maxWidth: 260, lineHeight: 1.5 }}>
           Create your first MOLT block to begin the spine. The structure unfolds as you build.
         </p>

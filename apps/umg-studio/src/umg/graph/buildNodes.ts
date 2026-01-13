@@ -30,7 +30,7 @@ export function buildGraph(
       type: "start",
       position: { x: roleX + 40, y: roleY0 + 100 },
       data: {
-        title: "Ignition",
+        title: "Start",
         subtitle: "Create your first block to begin the MOLT spine.",
         cta: "Create Block",
       },
@@ -38,47 +38,51 @@ export function buildGraph(
     return { nodes, edges };
   }
 
-  const spine = getSpineBlocks(blocks);
-  const maxIndex = Math.max(-1, ...spine.map(b => MOLT_ORDER.indexOf(b.role)));
-  const rolesToRender = MOLT_ORDER.slice(0, Math.min(MOLT_ORDER.length, maxIndex + 2));
+  const hasNeoBlocks = neoBlocks.length > 0;
 
-  const roleLabels: Record<string, string> = {
-    TRIGGER: "activates",
-    DIRECTIVE: "constrains",
-    INSTRUCTION: "executes",
-    SUBJECT: "grounds",
-    PRIMARY: "core",
-    PHILOSOPHY: "governs",
-    BLUEPRINT: "defines",
-  };
+  if (!hasNeoBlocks) {
+    const spine = getSpineBlocks(blocks);
+    const maxIndex = Math.max(-1, ...spine.map(b => MOLT_ORDER.indexOf(b.role)));
+    const rolesToRender = MOLT_ORDER.slice(0, Math.min(MOLT_ORDER.length, maxIndex + 2));
 
-  for (const role of rolesToRender) {
-    const block = blocks.find(b => b.role === role);
-    const y = roleY0 + moltIndex(role) * roleGap;
-    const isGhost = !block;
+    const roleLabels: Record<string, string> = {
+      TRIGGER: "activates",
+      DIRECTIVE: "constrains",
+      INSTRUCTION: "executes",
+      SUBJECT: "grounds",
+      PRIMARY: "core",
+      PHILOSOPHY: "governs",
+      BLUEPRINT: "defines",
+    };
 
-    nodes.push({
-      id: `role-${role}`,
-      type: isGhost ? "ghost" : "basic",
-      position: { x: roleX, y },
-      data: {
-        title: role,
-        subtitle: block ? block.title : "next",
-        badges: block
-          ? ["governed", roleLabels[role] || "active"]
-          : ["pending"],
-      },
-    });
+    for (const role of rolesToRender) {
+      const block = blocks.find(b => b.role === role);
+      const y = roleY0 + moltIndex(role) * roleGap;
+      const isGhost = !block;
 
-    const idx = moltIndex(role);
-    if (idx > 0 && rolesToRender.includes(MOLT_ORDER[idx - 1])) {
-      edges.push({
-        id: `e-role-${MOLT_ORDER[idx - 1]}-${role}`,
-        source: `role-${MOLT_ORDER[idx - 1]}`,
-        target: `role-${role}`,
-        type: "smoothstep",
-        style: { stroke: isGhost ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)" },
+      nodes.push({
+        id: `role-${role}`,
+        type: isGhost ? "ghost" : "basic",
+        position: { x: roleX, y },
+        data: {
+          title: role,
+          subtitle: block ? block.title : "next",
+          badges: block
+            ? ["governed", roleLabels[role] || "active"]
+            : ["pending"],
+        },
       });
+
+      const idx = moltIndex(role);
+      if (idx > 0 && rolesToRender.includes(MOLT_ORDER[idx - 1])) {
+        edges.push({
+          id: `e-role-${MOLT_ORDER[idx - 1]}-${role}`,
+          source: `role-${MOLT_ORDER[idx - 1]}`,
+          target: `role-${role}`,
+          type: "smoothstep",
+          style: { stroke: isGhost ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)" },
+        });
+      }
     }
   }
 

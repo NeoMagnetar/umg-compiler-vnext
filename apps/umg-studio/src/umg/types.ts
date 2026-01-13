@@ -14,6 +14,7 @@ export type Block = {
   role: MoltRole;
   title: string;
   content: string;
+  tags: string[];
   createdAt: number;
 };
 
