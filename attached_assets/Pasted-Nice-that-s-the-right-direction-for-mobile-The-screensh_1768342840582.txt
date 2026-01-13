@@ -1,0 +1,103 @@
+Nice — that’s the right direction for mobile. The screenshot you sent earlier already shows the UI getting cleaner, and the “tabs” move is basically the only sane way to make a graph app usable on a phone.
+Since I can’t click it myself, here’s how to verify it’s actually stable (and not “looks good until you hit a corner”), plus the next build-session instruction set to get you to “publishable v0”.
+Stability verification (5-minute gauntlet)
+Run this exact flow and watch for any weirdness:
+Build tab
+Tap “Add Next MOLT Block” 7 times
+Confirm the label updates each time (Trigger→…→Blueprint)
+Confirm it disables after 7 and shows “ready to compress”
+Graph tab
+Tap nodes; does selection highlight reliably?
+Hit fit view (in Controls)
+Zoom in/out; no jitter; minimap updates
+Ensure panning doesn’t scroll the page underneath (big mobile pain)
+Inspect tab
+Edit title + content for 2–3 roles
+Go back to Graph and select again: edits persisted
+Confirm text inputs don’t jump focus or get covered by keyboard (Android issue)
+Compress
+Compress → NeoBlock appears
+Expand/collapse works
+Go to Output tab: Tutorial output narrates correctly
+Persistence
+Refresh page
+Confirm: blocks + NeoBlocks still there
+Confirm: current tutorial step restored correctly (no “EMPTY” when data exists)
+If any of these fail, it points to a specific fix below.
+The 4 most likely remaining issues (and how to fix them)
+1) Tutorial step desync after refresh
+Symptom: You have data, but tutorialStep is “EMPTY” or wrong.
+Fix: derive tutorialStep from state on hydrate (or compute on the fly).
+In store.ts after hydration, run:
+If has 7 MOLT roles → at least READY_TO_COMPRESS
+If neoBlocks.length > 0 → NEOBLOCK_CREATED
+If neoBlocks.length >= 2 → DUPLICATED/READY_TO_COMPOSE etc.
+If neoStacks exists → NEOSTACK_NAMED
+If sleeve exists → SLEEVE_CREATED
+If runtimeSpec exists → COMPILED
+This makes persistence feel “real”.
+2) Mobile page scroll fights ReactFlow pan
+Symptom: You pan the graph and the whole page moves.
+Fix: ensure the Graph tab container has:
+height: 100%
+touchAction: "none" on the ReactFlow wrapper
+overflow: hidden
+Example wrapper style:
+Copy code
+Ts
+const graphWrap: React.CSSProperties = {
+  height: "100%",
+  width: "100%",
+  overflow: "hidden",
+  touchAction: "none",
+};
+3) Extra Blocks feature should not corrupt “spine”
+Symptom: Extra blocks cause isMoltComplete to fail or mess up nextAllowedRole.
+Fix rule: The “spine” is always the first block per role. Extras are stored separately or appended but ignored by isMoltComplete().
+Implementation approach:
+getSpineBlocksByRole() picks earliest created for each role
+Extras are any additional blocks with same role
+Compress snapshot uses spine only (or optionally spine + extras in future)
+4) Merge/Bundle semantics still too “single-blocky”
+Even with 7 roles, your merge/bundle is currently NeoBlock ↔ NeoBlock, which is correct.
+But the “dominant snapshot” rule is simplistic (acceptable v0), so the UI must communicate that.
+Fix: In Tutorial Output, explicitly say:
+“v0 composition uses dominant snapshot (governancePriority slider decides which artifact wins).” That prevents user confusion.
+Next build sessions to reach “publishable”
+Session 1: Make tutorial step compute from state (hardens persistence)
+Goal: refresh never breaks the step logic.
+Work items
+Add computeTutorialStep(state) helper
+Call it:
+after any store action that changes relevant data
+after hydration (onRehydrateStorage)
+Add a tiny “Hydrated ✓” indicator in header for debugging
+Files
+src/umg/tutorial.ts (helper)
+src/umg/store.ts (call helper)
+Session 2: Export/Import (Clipboard) for sharing
+Goal: users can share sleeves/blocks/trace without backend.
+Work items
+Export button → copies JSON of persisted state (or sleeve + stacks)
+Import button → paste JSON → validate version → load state
+Add guardrails: reject wrong version, show readable error
+Files
+src/umg/store.ts (exportState/importState actions)
+src/umg/ui/HeaderBar.tsx or tab panels (buttons + modal)
+Session 3: “Publish polish”
+Goal: it feels intentional and safe.
+Work items
+Rename “Creator Mode (v0)” heading to match the mode (“Block Tutorial” / “Creator Mode”)
+Add 1–2 line copy under each step (teach what changed)
+Add “Reset tutorial” vs “Reset everything” (two tiers)
+Add a “Readme” panel in Output tab (quick onboarding)
+Files
+src/umg/ui/CreatorSidebar.tsx
+src/umg/ui/TutorialOutputPanel.tsx
+What I need from you (no extra questions, just paste)
+To verify it’s truly stable, paste either:
+src/umg/molt.ts (MOLT_ORDER, isMoltComplete, nextAllowedRole)
+src/umg/store.ts persist wrapper + reset + compute tutorial step (if you added)
+One screenshot of the Graph tab showing nodes + minimap + controls on mobile
+Then I’ll tell you exactly what’s fragile and what’s good to ship.
+Right now, the highest-impact next move is Session 1 (tutorial step derivation) — because it’s the difference between “demo” and “tool” when persistence is on.

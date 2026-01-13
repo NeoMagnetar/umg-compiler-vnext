@@ -2,14 +2,15 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { nanoid } from "nanoid";
 import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode, MoltSnapshot } from "./types";
-import { isMoltComplete, nextAllowedRole, MOLT_ORDER } from "./molt";
-import type { TutorialStep } from "./tutorial";
+import { isMoltComplete, nextAllowedRole, getSpineBlocks } from "./molt";
+import { computeTutorialStep, type TutorialStep } from "./tutorial";
 
 const STORAGE_KEY = "umg.v0.creator";
 const STORAGE_VERSION = 2;
 
 type State = {
   tutorialStep: TutorialStep;
+  hydrated: boolean;
 
   blocks: Block[];
   selectedBlockId: string | null;
@@ -54,6 +55,7 @@ export const useUmgStore = create<State>()(
   persist(
     (set, get) => ({
       tutorialStep: "EMPTY",
+      hydrated: false,
 
       blocks: [],
       selectedBlockId: null,
@@ -73,7 +75,7 @@ export const useUmgStore = create<State>()(
       trace: null,
 
       createBlock: (title) => {
-        const { blocks, tutorialStep } = get();
+        const { blocks } = get();
         const role: MoltRole = blocks.length < 7 ? nextAllowedRole(blocks) : "BLUEPRINT";
         const b: Block = {
           id: nanoid(),
@@ -84,16 +86,14 @@ export const useUmgStore = create<State>()(
         };
 
         const nextBlocks = [...blocks, b];
-
-        let nextStep: TutorialStep = tutorialStep;
-        if (nextBlocks.length === 1) nextStep = "MOLT_BUILDING";
-        if (isMoltComplete(nextBlocks)) nextStep = "READY_TO_COMPRESS";
+        const { neoBlocks, neoStacks, sleeve, runtimeSpec } = get();
+        const nextStep = computeTutorialStep(nextBlocks, neoBlocks, neoStacks, sleeve, runtimeSpec);
 
         set({ blocks: nextBlocks, selectedBlockId: b.id, tutorialStep: nextStep });
       },
 
       addExtraBlock: (role: MoltRole) => {
-        const { blocks, neoBlocks, tutorialStep } = get();
+        const { blocks, neoBlocks, neoStacks, sleeve, runtimeSpec } = get();
         if (neoBlocks.length === 0) return;
 
         const b: Block = {
@@ -105,8 +105,7 @@ export const useUmgStore = create<State>()(
         };
 
         const nextBlocks = [...blocks, b];
-        let nextStep: TutorialStep = tutorialStep;
-        if (tutorialStep === "NEOBLOCK_CREATED") nextStep = "EXTRA_BLOCKS_UNLOCKED";
+        const nextStep = computeTutorialStep(nextBlocks, neoBlocks, neoStacks, sleeve, runtimeSpec);
 
         set({ blocks: nextBlocks, selectedBlockId: b.id, tutorialStep: nextStep });
       },
@@ -134,11 +133,12 @@ export const useUmgStore = create<State>()(
       },
 
       compressToNeoBlock: () => {
-        const { blocks, neoBlocks, tutorialStep } = get();
-        if (!isMoltComplete(blocks)) return;
+        const { blocks, neoBlocks, neoStacks, sleeve, runtimeSpec } = get();
+        const spine = getSpineBlocks(blocks);
+        if (spine.length < 7) return;
 
         const getBlock = (role: MoltRole) => {
-          const b = blocks.find(x => x.role === role);
+          const b = spine.find(x => x.role === role);
           if (!b) throw new Error(`Missing role during compress: ${role}`);
           return b;
         };
@@ -155,21 +155,24 @@ export const useUmgStore = create<State>()(
 
         const nb: NeoBlock = {
           id: nanoid(),
-          sourceBlockIds: blocks.map(b => b.id),
+          sourceBlockIds: spine.map(b => b.id),
           createdAt: Date.now(),
           label: "NeoBlock",
           snapshot,
         };
 
+        const nextNeoBlocks = [...neoBlocks, nb];
+        const nextStep = computeTutorialStep(blocks, nextNeoBlocks, neoStacks, sleeve, runtimeSpec);
+
         set({
-          neoBlocks: [...neoBlocks, nb],
+          neoBlocks: nextNeoBlocks,
           selectedNeoBlockIds: [nb.id],
-          tutorialStep: tutorialStep === "READY_TO_COMPRESS" ? "NEOBLOCK_CREATED" : tutorialStep,
+          tutorialStep: nextStep,
         });
       },
 
       duplicateNeoBlock: (neoBlockId) => {
-        const { neoBlocks, tutorialStep } = get();
+        const { neoBlocks, blocks, neoStacks, sleeve, runtimeSpec } = get();
         const src = neoBlocks.find(n => n.id === neoBlockId);
         if (!src) return;
 
@@ -181,14 +184,11 @@ export const useUmgStore = create<State>()(
           snapshot: src.snapshot,
         };
 
-        const next = [...neoBlocks, dup];
-        let nextStep: TutorialStep = tutorialStep;
-        if (tutorialStep === "NEOBLOCK_CREATED" || tutorialStep === "EXTRA_BLOCKS_UNLOCKED") {
-          nextStep = "DUPLICATED";
-        }
+        const nextNeoBlocks = [...neoBlocks, dup];
+        const nextStep = computeTutorialStep(blocks, nextNeoBlocks, neoStacks, sleeve, runtimeSpec);
 
         set({
-          neoBlocks: next,
+          neoBlocks: nextNeoBlocks,
           selectedNeoBlockIds: [src.id, dup.id],
           tutorialStep: nextStep,
         });
@@ -218,7 +218,7 @@ export const useUmgStore = create<State>()(
       setPreview: (p) => set({ preview: { ...get().preview, ...p } }),
 
       commitCompose: (mode) => {
-        const { selectedNeoBlockIds, neoBlocks, preview } = get();
+        const { selectedNeoBlockIds, neoBlocks, preview, blocks, neoStacks, sleeve, runtimeSpec } = get();
         if (selectedNeoBlockIds.length !== 2) return;
 
         const [aId, bId] = selectedNeoBlockIds;
@@ -236,16 +236,19 @@ export const useUmgStore = create<State>()(
           snapshot: dominant.snapshot,
         };
 
+        const nextNeoBlocks = [...neoBlocks, newNeo];
+        const nextStep = computeTutorialStep(blocks, nextNeoBlocks, neoStacks, sleeve, runtimeSpec);
+
         set({
-          neoBlocks: [...neoBlocks, newNeo],
+          neoBlocks: nextNeoBlocks,
           selectedNeoBlockIds: [newNeo.id],
           lastComposeMode: mode,
-          tutorialStep: "READY_TO_COMPOSE",
+          tutorialStep: nextStep,
         });
       },
 
       nameNeoStack: (name) => {
-        const { selectedNeoBlockIds, neoStacks } = get();
+        const { selectedNeoBlockIds, neoStacks, blocks, neoBlocks, sleeve, runtimeSpec } = get();
         if (selectedNeoBlockIds.length < 1) return;
 
         const ns: NeoStack = {
@@ -255,25 +258,30 @@ export const useUmgStore = create<State>()(
           createdAt: Date.now(),
         };
 
+        const nextNeoStacks = [...neoStacks, ns];
+        const nextStep = computeTutorialStep(blocks, neoBlocks, nextNeoStacks, sleeve, runtimeSpec);
+
         set({
-          neoStacks: [...neoStacks, ns],
-          tutorialStep: "NEOSTACK_NAMED",
+          neoStacks: nextNeoStacks,
+          tutorialStep: nextStep,
         });
       },
 
       createSleeve: (name) => {
-        const { neoStacks } = get();
+        const { neoStacks, blocks, neoBlocks, runtimeSpec } = get();
         const last = neoStacks[neoStacks.length - 1];
         if (!last) return;
 
-        const sleeve: Sleeve = {
+        const newSleeve: Sleeve = {
           id: nanoid(),
           name,
           neoStackId: last.id,
           createdAt: Date.now(),
         };
 
-        set({ sleeve, tutorialStep: "SLEEVE_CREATED" });
+        const nextStep = computeTutorialStep(blocks, neoBlocks, neoStacks, newSleeve, runtimeSpec);
+
+        set({ sleeve: newSleeve, tutorialStep: nextStep });
       },
 
       compile: () => {
@@ -287,7 +295,7 @@ export const useUmgStore = create<State>()(
           .map(id => neoBlocks.find(n => n.id === id))
           .filter(Boolean);
 
-        const runtimeSpec = {
+        const newRuntimeSpec = {
           sleeve: { id: sleeve.id, name: sleeve.name, neoStackId: sleeve.neoStackId },
           neoStack: { id: ns.id, name: ns.name, neoBlockIds: ns.neoBlockIds },
           neoBlocks: nsNeoBlocks.map((n: any) => ({
@@ -312,7 +320,9 @@ export const useUmgStore = create<State>()(
           notes: ["v0 structural compile", "no LLM synthesis", "7-role MOLT stack"],
         };
 
-        set({ runtimeSpec, trace, tutorialStep: "COMPILED" });
+        const nextStep = computeTutorialStep(blocks, neoBlocks, neoStacks, sleeve, newRuntimeSpec);
+
+        set({ runtimeSpec: newRuntimeSpec, trace, tutorialStep: nextStep });
       },
 
       resetAll: () => {
@@ -320,6 +330,7 @@ export const useUmgStore = create<State>()(
 
         set({
           tutorialStep: "EMPTY",
+          hydrated: true,
           blocks: [],
           selectedBlockId: null,
           selectedNodeId: null,
@@ -341,7 +352,6 @@ export const useUmgStore = create<State>()(
       storage: createJSONStorage(() => localStorage),
 
       partialize: (state) => ({
-        tutorialStep: state.tutorialStep,
         blocks: state.blocks,
         selectedBlockId: state.selectedBlockId,
         neoBlocks: state.neoBlocks,
@@ -362,10 +372,23 @@ export const useUmgStore = create<State>()(
             expandedNeoBlockIds: persisted.expandedNeoBlockIds ?? {},
             blocks: [],
             neoBlocks: [],
-            tutorialStep: "EMPTY",
           };
         }
         return persisted;
+      },
+
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          const step = computeTutorialStep(
+            state.blocks,
+            state.neoBlocks,
+            state.neoStacks,
+            state.sleeve,
+            state.runtimeSpec
+          );
+          state.tutorialStep = step;
+          state.hydrated = true;
+        }
       },
     }
   )

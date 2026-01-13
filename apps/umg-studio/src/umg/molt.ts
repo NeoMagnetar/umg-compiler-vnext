@@ -28,3 +28,19 @@ export function nextAllowedRole(blocks: Block[]): MoltRole {
   }
   return "BLUEPRINT";
 }
+
+export function getSpineBlocks(blocks: Block[]): Block[] {
+  const spine: Block[] = [];
+  for (const role of MOLT_ORDER) {
+    const earliest = blocks
+      .filter(b => b.role === role)
+      .sort((a, b) => a.createdAt - b.createdAt)[0];
+    if (earliest) spine.push(earliest);
+  }
+  return spine;
+}
+
+export function getExtraBlocks(blocks: Block[]): Block[] {
+  const spineIds = new Set(getSpineBlocks(blocks).map(b => b.id));
+  return blocks.filter(b => !spineIds.has(b.id));
+}

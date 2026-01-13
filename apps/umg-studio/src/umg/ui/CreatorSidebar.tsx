@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useUmgStore } from "../store";
 import { stepLabel } from "../tutorial";
-import { isMoltComplete, MOLT_ORDER } from "../molt";
+import { isMoltComplete, MOLT_ORDER, getSpineBlocks } from "../molt";
 import { SlidersPanel } from "./SlidersPanel";
 import type { MoltRole } from "../types";
 
@@ -11,7 +11,8 @@ export function CreatorSidebar() {
   const [sleeveName, setSleeveName] = useState("sleeve_v0");
   const [extraRole, setExtraRole] = useState<MoltRole>("INSTRUCTION");
 
-  const canCompress = useMemo(() => isMoltComplete(s.blocks), [s.blocks]);
+  const spine = useMemo(() => getSpineBlocks(s.blocks), [s.blocks]);
+  const canCompress = spine.length === 7;
   const canAddExtra = s.neoBlocks.length >= 1;
   const canDuplicate = s.neoBlocks.length >= 1;
   const canCompose = s.selectedNeoBlockIds.length === 2;
@@ -42,7 +43,7 @@ export function CreatorSidebar() {
           Order: Trigger → Directive → Instruction → Subject → Primary → Philosophy → Blueprint
         </div>
         <div style={{ fontSize: 11, marginTop: 6, opacity: 0.7 }}>
-          Blocks: {s.blocks.length}/7 {isMoltComplete(s.blocks) ? "(Complete)" : ""}
+          Spine: {spine.length}/7 {canCompress ? "(Ready to compress)" : ""}
         </div>
       </Section>
 
@@ -50,7 +51,7 @@ export function CreatorSidebar() {
         <button onClick={s.compressToNeoBlock} style={btn} disabled={!canCompress} data-testid="button-compress-molt">
           Compress MOLT Stack
         </button>
-        <div style={hint}>Creates a NeoBlock artifact from your 7-role MOLT set.</div>
+        <div style={hint}>Creates an immutable NeoBlock artifact from your 7-role spine.</div>
       </Section>
 
       <Section title="Extra Blocks" locked={!canAddExtra} lockMsg="Create first NeoBlock to unlock extras.">
@@ -74,7 +75,7 @@ export function CreatorSidebar() {
             + Add Extra
           </button>
         </div>
-        <div style={hint}>Add duplicate roles after mastering the hierarchy.</div>
+        <div style={hint}>Extra blocks add depth without replacing the spine.</div>
       </Section>
 
       <Section title="Duplicate" locked={!canDuplicate} lockMsg="Create at least 1 NeoBlock first.">
@@ -102,6 +103,7 @@ export function CreatorSidebar() {
             Bundle
           </button>
         </div>
+        <div style={hint}>Merge = combine snapshots. Bundle = group for runtime selection.</div>
       </Section>
 
       <Section title="Domain (NeoStack)" locked={!canNameStack} lockMsg="Select a NeoBlock to name a domain stack.">
@@ -163,7 +165,7 @@ export function CreatorSidebar() {
           style={{ ...btn, background: "rgba(239, 68, 68, 0.15)", borderColor: "rgba(239, 68, 68, 0.3)" }}
           data-testid="button-reset-state"
         >
-          Reset v0 State
+          Reset Tutorial
         </button>
         <div style={{ fontSize: 10, opacity: 0.5, marginTop: 6, textAlign: "center" }}>
           State auto-saves to localStorage

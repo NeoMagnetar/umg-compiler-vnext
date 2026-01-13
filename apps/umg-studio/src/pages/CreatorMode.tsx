@@ -46,7 +46,7 @@ export default function CreatorMode() {
         <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
           {mobileTab === "build" && <CreatorSidebar />}
           {mobileTab === "graph" && (
-            <div style={{ height: "100%", width: "100%", position: "relative" }}>
+            <div style={graphWrap}>
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -140,4 +140,12 @@ const tabBtn: React.CSSProperties = {
   border: "none",
   cursor: "pointer",
   transition: "all 0.15s",
+};
+
+const graphWrap: React.CSSProperties = {
+  height: "100%",
+  width: "100%",
+  overflow: "hidden",
+  touchAction: "none",
+  position: "relative",
 };

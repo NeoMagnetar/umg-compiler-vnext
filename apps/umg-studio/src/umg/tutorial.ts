@@ -1,3 +1,6 @@
+import type { Block, NeoBlock, NeoStack, Sleeve } from "./types";
+import { isMoltComplete } from "./molt";
+
 export type TutorialStep =
   | "EMPTY"
   | "MOLT_BUILDING"
@@ -23,4 +26,27 @@ export function stepLabel(step: TutorialStep): string {
     case "SLEEVE_CREATED": return "Compile";
     case "COMPILED": return "Done";
   }
+}
+
+export function computeTutorialStep(
+  blocks: Block[],
+  neoBlocks: NeoBlock[],
+  neoStacks: NeoStack[],
+  sleeve: Sleeve | null,
+  runtimeSpec: any | null
+): TutorialStep {
+  if (runtimeSpec) return "COMPILED";
+  if (sleeve) return "SLEEVE_CREATED";
+  if (neoStacks.length > 0) return "NEOSTACK_NAMED";
+
+  if (neoBlocks.length >= 2) return "DUPLICATED";
+  if (neoBlocks.length === 1) {
+    const extraBlocks = blocks.length > 7;
+    return extraBlocks ? "EXTRA_BLOCKS_UNLOCKED" : "NEOBLOCK_CREATED";
+  }
+
+  if (isMoltComplete(blocks)) return "READY_TO_COMPRESS";
+  if (blocks.length > 0) return "MOLT_BUILDING";
+  
+  return "EMPTY";
 }
