@@ -11,9 +11,19 @@ export function buildGraph(
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  const roleX = 50;
-  const roleY0 = 50;
+  const width = typeof window !== "undefined" ? window.innerWidth : 1200;
+  const compact = width < 900;
+
+  const roleX = compact ? 20 : 50;
+  const nbX = compact ? 20 : 380;
+  const rightX = compact ? 20 : 740;
+
+  const roleY0 = 30;
+  const nbY0 = compact ? 520 : 60;
+  const rightY0 = compact ? 980 : 80;
+
   const roleGap = 110;
+  const nbGap = 120;
 
   for (const role of MOLT_ORDER) {
     const block = blocks.find(b => b.role === role);
@@ -44,10 +54,6 @@ export function buildGraph(
     }
   }
 
-  const nbX = 380;
-  const nbY0 = 60;
-  const nbGap = 120;
-
   neoBlocks.forEach((nb, i) => {
     nodes.push({
       id: `nb-${nb.id}`,
@@ -66,9 +72,6 @@ export function buildGraph(
       },
     });
   });
-
-  const rightX = 740;
-  const rightY0 = 80;
 
   const lastStack = neoStacks[neoStacks.length - 1];
   if (lastStack) {

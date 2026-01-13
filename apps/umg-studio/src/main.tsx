@@ -5,21 +5,21 @@ import CreatorMode from "./pages/CreatorMode";
 import "./styles.css";
 
 function Root() {
-  const [mode, setMode] = useState<"studio" | "creator">("studio");
+  const [mode, setMode] = useState<"studio" | "tutorial">("studio");
 
   return (
-    <>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <div style={{
-        position: "fixed",
-        top: 10,
-        right: 10,
-        zIndex: 9999,
+        height: 48,
         display: "flex",
-        gap: 4,
-        background: "rgba(20,20,30,0.95)",
-        padding: "4px 6px",
-        borderRadius: 8,
-        border: "1px solid rgba(255,255,255,0.15)"
+        alignItems: "center",
+        justifyContent: "flex-end",
+        padding: "0 12px",
+        borderBottom: "1px solid rgba(255,255,255,0.1)",
+        gap: 8,
+        flexShrink: 0,
+        background: "#0a0a0f",
+        zIndex: 10,
       }}>
         <button
           onClick={() => setMode("studio")}
@@ -35,27 +35,29 @@ function Root() {
             cursor: "pointer"
           }}
         >
-          STUDIO
+          Creator Mode
         </button>
         <button
-          onClick={() => setMode("creator")}
-          data-testid="button-mode-creator"
+          onClick={() => setMode("tutorial")}
+          data-testid="button-mode-tutorial"
           style={{
             padding: "6px 12px",
             fontSize: 11,
             fontWeight: 600,
-            background: mode === "creator" ? "rgba(34, 197, 94, 0.3)" : "transparent",
-            border: mode === "creator" ? "1px solid rgba(34, 197, 94, 0.5)" : "1px solid transparent",
+            background: mode === "tutorial" ? "rgba(34, 197, 94, 0.3)" : "transparent",
+            border: mode === "tutorial" ? "1px solid rgba(34, 197, 94, 0.5)" : "1px solid transparent",
             borderRadius: 6,
-            color: mode === "creator" ? "#22c55e" : "rgba(255,255,255,0.6)",
+            color: mode === "tutorial" ? "#22c55e" : "rgba(255,255,255,0.6)",
             cursor: "pointer"
           }}
         >
-          v0 CREATOR
+          Block Tutorial
         </button>
       </div>
-      {mode === "studio" ? <App /> : <CreatorMode />}
-    </>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        {mode === "studio" ? <App /> : <CreatorMode />}
+      </div>
+    </div>
   );
 }
 

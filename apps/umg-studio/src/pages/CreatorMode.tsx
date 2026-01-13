@@ -4,10 +4,12 @@ import "reactflow/dist/style.css";
 
 import { CreatorSidebar } from "../umg/ui/CreatorSidebar";
 import { BlockEditorPanel } from "../umg/ui/BlockEditorPanel";
-import { CompileOutputPanel } from "../umg/ui/CompileOutputPanel";
+import { TutorialOutputPanel } from "../umg/ui/TutorialOutputPanel";
 import { nodeTypes } from "../umg/graph/nodeTypes";
 import { buildGraph } from "../umg/graph/buildNodes";
 import { useUmgStore } from "../umg/store";
+
+const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 
 export default function CreatorMode() {
   const s = useUmgStore();
@@ -18,17 +20,23 @@ export default function CreatorMode() {
   );
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "#0a0a0f" }}>
+    <div style={{ display: "flex", height: "100%", background: "#0a0a0f" }}>
       <CreatorSidebar />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ flex: 1, position: "relative" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
           <ReactFlow 
             nodes={nodes} 
             edges={edges} 
             nodeTypes={nodeTypes} 
             fitView
+            fitViewOptions={{ padding: 0.2 }}
             style={{ background: "#0a0a0f" }}
             proOptions={{ hideAttribution: true }}
+            panOnScroll={!isMobile}
+            zoomOnScroll={!isMobile}
+            zoomOnPinch={true}
+            zoomOnDoubleClick={false}
+            nodesDraggable={false}
           >
             <Background color="rgba(255,255,255,0.05)" gap={20} />
             <Controls 
@@ -40,7 +48,7 @@ export default function CreatorMode() {
             />
           </ReactFlow>
         </div>
-        <CompileOutputPanel />
+        <TutorialOutputPanel />
       </div>
       <BlockEditorPanel />
     </div>
