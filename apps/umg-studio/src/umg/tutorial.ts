@@ -1,5 +1,5 @@
 import type { Block, NeoBlock, NeoStack, Sleeve } from "./types";
-import { isMoltComplete } from "./molt";
+import { isMoltComplete, getSpineBlocks } from "./molt";
 
 export type TutorialStep =
   | "EMPTY"
@@ -41,8 +41,9 @@ export function computeTutorialStep(
 
   if (neoBlocks.length >= 2) return "DUPLICATED";
   if (neoBlocks.length === 1) {
-    const extraBlocks = blocks.length > 7;
-    return extraBlocks ? "EXTRA_BLOCKS_UNLOCKED" : "NEOBLOCK_CREATED";
+    const spine = getSpineBlocks(blocks);
+    const extrasCount = blocks.length - spine.length;
+    return extrasCount > 0 ? "EXTRA_BLOCKS_UNLOCKED" : "NEOBLOCK_CREATED";
   }
 
   if (isMoltComplete(blocks)) return "READY_TO_COMPRESS";

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useUmgStore } from "../store";
 import { stepLabel } from "../tutorial";
-import { isMoltComplete, MOLT_ORDER, getSpineBlocks } from "../molt";
+import { MOLT_ORDER, getSpineBlocks, nextAllowedRole } from "../molt";
 import { SlidersPanel } from "./SlidersPanel";
 import type { MoltRole } from "../types";
 
@@ -12,6 +12,7 @@ export function CreatorSidebar() {
   const [extraRole, setExtraRole] = useState<MoltRole>("INSTRUCTION");
 
   const spine = useMemo(() => getSpineBlocks(s.blocks), [s.blocks]);
+  const nextRole = nextAllowedRole(s.blocks);
   const canCompress = spine.length === 7;
   const canAddExtra = s.neoBlocks.length >= 1;
   const canDuplicate = s.neoBlocks.length >= 1;
@@ -36,8 +37,13 @@ export function CreatorSidebar() {
       </div>
 
       <Section title="Build 7-Role MOLT Stack">
-        <button onClick={() => s.createBlock()} style={btn} data-testid="button-add-molt-block">
-          + Add Next MOLT Block
+        <button 
+          onClick={() => s.createBlock()} 
+          style={btn} 
+          disabled={nextRole === null}
+          data-testid="button-add-molt-block"
+        >
+          {nextRole ? `+ Add ${nextRole} Block` : "Spine Complete"}
         </button>
         <div style={hint}>
           Order: Trigger → Directive → Instruction → Subject → Primary → Philosophy → Blueprint

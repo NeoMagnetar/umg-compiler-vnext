@@ -14,21 +14,6 @@ export function moltIndex(role: MoltRole): number {
   return MOLT_ORDER.indexOf(role);
 }
 
-export function hasRole(blocks: Block[], role: MoltRole): boolean {
-  return blocks.some(b => b.role === role);
-}
-
-export function isMoltComplete(blocks: Block[]): boolean {
-  return MOLT_ORDER.every(r => hasRole(blocks, r));
-}
-
-export function nextAllowedRole(blocks: Block[]): MoltRole {
-  for (const role of MOLT_ORDER) {
-    if (!hasRole(blocks, role)) return role;
-  }
-  return "BLUEPRINT";
-}
-
 export function getSpineBlocks(blocks: Block[]): Block[] {
   const spine: Block[] = [];
   for (const role of MOLT_ORDER) {
@@ -43,4 +28,21 @@ export function getSpineBlocks(blocks: Block[]): Block[] {
 export function getExtraBlocks(blocks: Block[]): Block[] {
   const spineIds = new Set(getSpineBlocks(blocks).map(b => b.id));
   return blocks.filter(b => !spineIds.has(b.id));
+}
+
+export function hasRole(blocks: Block[], role: MoltRole): boolean {
+  return blocks.some(b => b.role === role);
+}
+
+export function isMoltComplete(blocks: Block[]): boolean {
+  const spine = getSpineBlocks(blocks);
+  return MOLT_ORDER.every(r => spine.some(b => b.role === r));
+}
+
+export function nextAllowedRole(blocks: Block[]): MoltRole | null {
+  const spine = getSpineBlocks(blocks);
+  for (const role of MOLT_ORDER) {
+    if (!spine.some(b => b.role === role)) return role;
+  }
+  return null;
 }
