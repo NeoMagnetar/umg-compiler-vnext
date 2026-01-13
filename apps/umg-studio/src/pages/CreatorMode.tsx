@@ -5,6 +5,7 @@ import "reactflow/dist/style.css";
 import { CreatorSidebar } from "../umg/ui/CreatorSidebar";
 import { BlockEditorPanel } from "../umg/ui/BlockEditorPanel";
 import { TutorialOutputPanel } from "../umg/ui/TutorialOutputPanel";
+import { ImportExportControls } from "../umg/ui/ImportExportControls";
 import { nodeTypes } from "../umg/graph/nodeTypes";
 import { buildGraph } from "../umg/graph/buildNodes";
 import { useUmgStore } from "../umg/store";
@@ -25,6 +26,10 @@ export default function CreatorMode() {
   if (isMobile) {
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#0a0a0f" }}>
+        <div style={headerBar}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0" }}>UMG Studio</span>
+          <ImportExportControls />
+        </div>
         <div style={tabBar}>
           {(["build", "graph", "inspect", "output"] as MobileTab[]).map(tab => (
             <button
@@ -85,45 +90,61 @@ export default function CreatorMode() {
   }
 
   return (
-    <div style={{ display: "flex", height: "100%", background: "#0a0a0f" }}>
-      <CreatorSidebar />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            fitView
-            fitViewOptions={{ padding: 0.2 }}
-            style={{ background: "#0a0a0f" }}
-            proOptions={{ hideAttribution: true }}
-            panOnScroll={true}
-            zoomOnScroll={true}
-            zoomOnPinch={true}
-            zoomOnDoubleClick={false}
-            nodesDraggable={false}
-          >
-            <Background color="rgba(255,255,255,0.05)" gap={20} />
-            <Controls
-              style={{
-                background: "rgba(30,30,40,0.9)",
-                borderRadius: 8,
-                border: "1px solid rgba(255,255,255,0.1)"
-              }}
-            />
-            <MiniMap
-              style={{ background: "#15151c" }}
-              nodeColor="#60a5fa"
-              maskColor="rgba(0,0,0,0.7)"
-            />
-          </ReactFlow>
-        </div>
-        <TutorialOutputPanel />
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#0a0a0f" }}>
+      <div style={headerBar}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0" }}>UMG Studio</span>
+        <ImportExportControls />
       </div>
-      <BlockEditorPanel />
+      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+        <CreatorSidebar />
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              fitView
+              fitViewOptions={{ padding: 0.2 }}
+              style={{ background: "#0a0a0f" }}
+              proOptions={{ hideAttribution: true }}
+              panOnScroll={true}
+              zoomOnScroll={true}
+              zoomOnPinch={true}
+              zoomOnDoubleClick={false}
+              nodesDraggable={false}
+            >
+              <Background color="rgba(255,255,255,0.05)" gap={20} />
+              <Controls
+                style={{
+                  background: "rgba(30,30,40,0.9)",
+                  borderRadius: 8,
+                  border: "1px solid rgba(255,255,255,0.1)"
+                }}
+              />
+              <MiniMap
+                style={{ background: "#15151c" }}
+                nodeColor="#60a5fa"
+                maskColor="rgba(0,0,0,0.7)"
+              />
+            </ReactFlow>
+          </div>
+          <TutorialOutputPanel />
+        </div>
+        <BlockEditorPanel />
+      </div>
     </div>
   );
 }
+
+const headerBar: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "8px 12px",
+  borderBottom: "1px solid rgba(255,255,255,0.1)",
+  background: "#0d0d12",
+  flexShrink: 0,
+};
 
 const tabBar: React.CSSProperties = {
   display: "flex",

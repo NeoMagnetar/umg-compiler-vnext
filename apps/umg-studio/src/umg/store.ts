@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode, MoltSnapshot } from "./types";
 import { nextAllowedRole, getSpineBlocks, MOLT_ORDER } from "./molt";
 import { computeTutorialStep, type TutorialStep } from "./tutorial";
+import { EXPORT_SCHEMA, EXPORT_VERSION, type UMGExportBundleV1 } from "./exportSchema";
 
 const STORAGE_KEY = "umg.v0.creator";
 const STORAGE_VERSION = 2;
@@ -52,6 +53,9 @@ type State = {
 
   compile: () => void;
   resetAll: () => void;
+
+  exportStateToJson: () => string;
+  importStateFromJson: (json: string) => { ok: true } | { ok: false; error: string };
 };
 
 export const useUmgStore = create<State>()(
@@ -339,6 +343,72 @@ export const useUmgStore = create<State>()(
           runtimeSpec: null,
           trace: null,
         });
+      },
+
+      exportStateToJson: () => {
+        const s = get();
+        const bundle: UMGExportBundleV1 = {
+          schema: EXPORT_SCHEMA,
+          version: EXPORT_VERSION,
+          exportedAt: new Date().toISOString(),
+          data: {
+            blocks: s.blocks,
+            neoBlocks: s.neoBlocks,
+            neoStacks: s.neoStacks,
+            sleeve: s.sleeve,
+            preview: s.preview,
+            lastComposeMode: s.lastComposeMode,
+            selectedBlockId: s.selectedBlockId,
+            selectedNeoBlockIds: s.selectedNeoBlockIds,
+            expandedNeoBlockIds: s.expandedNeoBlockIds ?? {},
+            runtimeSpec: s.runtimeSpec ?? null,
+            trace: s.trace ?? null,
+            tutorialStep: s.tutorialStep,
+          },
+        };
+        return JSON.stringify(bundle, null, 2);
+      },
+
+      importStateFromJson: (json: string) => {
+        let parsed: any;
+        try {
+          parsed = JSON.parse(json);
+        } catch {
+          return { ok: false, error: "Invalid JSON. Paste a valid exported bundle." };
+        }
+
+        if (parsed?.schema !== EXPORT_SCHEMA) {
+          return { ok: false, error: "Not a UMG Studio export bundle (schema mismatch)." };
+        }
+        if (parsed?.version !== EXPORT_VERSION) {
+          return { ok: false, error: `Unsupported export version: ${parsed?.version}. Expected version ${EXPORT_VERSION}.` };
+        }
+        if (!parsed?.data) {
+          return { ok: false, error: "Export bundle missing data field." };
+        }
+
+        const d = parsed.data;
+
+        if (!Array.isArray(d.blocks) || !Array.isArray(d.neoBlocks) || !Array.isArray(d.neoStacks)) {
+          return { ok: false, error: "Export bundle data arrays are malformed." };
+        }
+
+        set({
+          blocks: d.blocks,
+          neoBlocks: d.neoBlocks,
+          neoStacks: d.neoStacks,
+          sleeve: d.sleeve ?? null,
+          preview: d.preview ?? get().preview,
+          lastComposeMode: d.lastComposeMode ?? null,
+          selectedBlockId: d.selectedBlockId ?? null,
+          selectedNeoBlockIds: Array.isArray(d.selectedNeoBlockIds) ? d.selectedNeoBlockIds : [],
+          expandedNeoBlockIds: d.expandedNeoBlockIds ?? {},
+          runtimeSpec: d.runtimeSpec ?? null,
+          trace: d.trace ?? null,
+        });
+
+        get().recomputeTutorialStep();
+        return { ok: true };
       },
     }),
     {
