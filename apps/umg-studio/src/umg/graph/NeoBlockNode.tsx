@@ -1,3 +1,4 @@
+import { Handle, Position } from "reactflow";
 import { useUmgStore } from "../store";
 import type { MoltRole } from "../types";
 
@@ -25,9 +26,12 @@ export function NeoBlockNode({ data }: any) {
         background: selected ? "rgba(30, 35, 50, 0.98)" : "rgba(20, 20, 28, 0.95)",
         minWidth: 280,
         boxShadow: selected ? "0 4px 18px rgba(96, 165, 250, 0.2)" : "none",
-        color: "#e0e0e0"
+        color: "#e0e0e0",
+        position: "relative"
       }}
     >
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
       <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
         <div>
           <div style={{ fontWeight: 900 }}>{data.label}</div>

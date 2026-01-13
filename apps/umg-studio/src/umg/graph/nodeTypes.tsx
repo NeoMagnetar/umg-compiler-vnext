@@ -1,3 +1,4 @@
+import { Handle, Position } from "reactflow";
 import { useUmgStore } from "../store";
 import { NeoBlockNode } from "./NeoBlockNode";
 
@@ -17,9 +18,12 @@ export function BasicNode({ id, data }: any) {
         minWidth: 200,
         cursor: "pointer",
         boxShadow: selected ? "0 4px 18px rgba(96, 165, 250, 0.2)" : "none",
-        color: "#e0e0e0"
+        color: "#e0e0e0",
+        position: "relative"
       }}
     >
+      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
       <div style={{ fontWeight: 800 }}>{data.title}</div>
       <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>{data.subtitle}</div>
       {data.badges?.length ? (
