@@ -13,9 +13,6 @@ externalPort = 80
 [[ports]]
 localPort = 5173
 
-[[ports]]
-localPort = 5174
-
 [env]
 PORT = "5000"
 
@@ -52,4 +49,4 @@ author = 40243054
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd apps/umg-studio && npm run dev -- --host 0.0.0.0 --port 5173"
+args = "cd apps/umg-studio && npm run dev"
