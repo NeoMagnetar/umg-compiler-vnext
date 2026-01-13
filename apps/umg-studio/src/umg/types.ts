@@ -15,6 +15,7 @@ export type Block = {
   title: string;
   content: string;
   tags: string[];
+  priorityOrder: number;
   createdAt: number;
 };
 

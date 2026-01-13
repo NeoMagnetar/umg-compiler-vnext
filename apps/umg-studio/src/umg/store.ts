@@ -7,7 +7,7 @@ import { computeTutorialStep, type TutorialStep } from "./tutorial";
 import { EXPORT_SCHEMA, EXPORT_VERSION, type UMGExportBundleV1 } from "./exportSchema";
 
 const STORAGE_KEY = "umg.v0.creator";
-const STORAGE_VERSION = 2;
+const STORAGE_VERSION = 3;
 
 type State = {
   tutorialStep: TutorialStep;
@@ -40,6 +40,7 @@ type State = {
   updateBlockContent: (role: MoltRole, content: string) => void;
   updateBlockTitle: (role: MoltRole, title: string) => void;
   updateBlockTags: (blockId: string, tags: string[]) => void;
+  updateBlockPriorityOrder: (blockId: string, priorityOrder: number) => void;
 
   compressToNeoBlock: () => void;
   duplicateNeoBlock: (neoBlockId: string) => void;
@@ -104,6 +105,7 @@ export const useUmgStore = create<State>()(
           title: title ?? `${role} Block`,
           content: "",
           tags: [],
+          priorityOrder: 10,
           createdAt: Date.now(),
         };
 
@@ -121,6 +123,7 @@ export const useUmgStore = create<State>()(
           title: `${role} Block (Extra)`,
           content: "",
           tags: [],
+          priorityOrder: 10,
           createdAt: Date.now(),
         };
 
@@ -156,6 +159,15 @@ export const useUmgStore = create<State>()(
         if (idx === -1) return;
         const next = blocks.slice();
         next[idx] = { ...next[idx], tags };
+        set({ blocks: next });
+      },
+
+      updateBlockPriorityOrder: (blockId, priorityOrder) => {
+        const { blocks } = get();
+        const idx = blocks.findIndex(b => b.id === blockId);
+        if (idx === -1) return;
+        const next = blocks.slice();
+        next[idx] = { ...next[idx], priorityOrder };
         set({ blocks: next });
       },
 
@@ -443,15 +455,26 @@ export const useUmgStore = create<State>()(
       }),
 
       migrate: (persisted: any, version) => {
+        let data = { ...persisted };
         if (version < 2) {
-          return {
-            ...persisted,
-            expandedNeoBlockIds: persisted.expandedNeoBlockIds ?? {},
+          data = {
+            ...data,
+            expandedNeoBlockIds: data.expandedNeoBlockIds ?? {},
             blocks: [],
             neoBlocks: [],
           };
         }
-        return persisted;
+        if (version < 3) {
+          data = {
+            ...data,
+            blocks: (data.blocks ?? []).map((b: any) => ({
+              ...b,
+              tags: b.tags ?? [],
+              priorityOrder: b.priorityOrder ?? 10,
+            })),
+          };
+        }
+        return data;
       },
 
       onRehydrateStorage: () => (state) => {

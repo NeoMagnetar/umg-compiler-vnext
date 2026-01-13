@@ -31,8 +31,7 @@ export function buildGraph(
       position: { x: roleX + 40, y: roleY0 + 100 },
       data: {
         title: "Start",
-        subtitle: "Create your first block to begin the MOLT spine.",
-        cta: "Create Block",
+        subtitle: "Use the Build panel to create your first block.",
       },
     });
     return { nodes, edges };

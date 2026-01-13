@@ -52,7 +52,7 @@ export function CreatorSidebar() {
             background: "rgba(96,165,250,0.2)", 
             borderColor: "rgba(96,165,250,0.4)" 
           }}
-          data-testid="button-ignition-create"
+          data-testid="button-start-create"
         >
           Create Block
         </button>
@@ -70,7 +70,7 @@ export function CreatorSidebar() {
       background: "rgba(15,15,20,0.95)",
       color: "#e0e0e0"
     }}>
-      <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 4 }}>Block Tutorial (v0)</div>
+      <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 4 }}>Block Tutorial</div>
       <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 10, color: "#60a5fa" }}>
         Step: {stepLabel(s.tutorialStep)}
       </div>
@@ -82,8 +82,13 @@ export function CreatorSidebar() {
           disabled={nextRole === null}
           data-testid="button-add-molt-block"
         >
-          {nextRole ? `+ Add ${nextRole} Block` : "Spine Complete"}
+          Create Block
         </button>
+        {nextRole && (
+          <div style={{ fontSize: 11, marginTop: 6, opacity: 0.6 }}>
+            Next role: {nextRole}
+          </div>
+        )}
         <div style={hint}>
           Order: Trigger → Directive → Instruction → Subject → Primary → Philosophy → Blueprint
         </div>

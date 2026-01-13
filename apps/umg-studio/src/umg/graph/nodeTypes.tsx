@@ -51,8 +51,6 @@ export function BasicNode({ id, data }: any) {
 }
 
 export function StartNode({ data }: any) {
-  const createBlock = useUmgStore(s => s.createBlock);
-
   return (
     <div
       data-testid="node-start"
@@ -67,35 +65,19 @@ export function StartNode({ data }: any) {
       }}
     >
       <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>{data.title}</div>
-      <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 16, lineHeight: 1.4 }}>
+      <div style={{ fontSize: 13, opacity: 0.7, lineHeight: 1.4 }}>
         {data.subtitle}
       </div>
-      <button
-        onClick={() => createBlock()}
-        data-testid="button-start-create"
-        style={{
-          padding: "10px 20px",
-          fontSize: 14,
-          fontWeight: 600,
-          background: "#2563eb",
-          border: "none",
-          borderRadius: 8,
-          color: "#fff",
-          cursor: "pointer",
-        }}
-      >
-        {data.cta}
-      </button>
     </div>
   );
 }
 
 export function GhostNode({ id, data }: any) {
-  const createBlock = useUmgStore(s => s.createBlock);
+  const selectNode = useUmgStore(s => s.selectNode);
 
   return (
     <div
-      onClick={() => createBlock()}
+      onClick={() => selectNode(id)}
       data-testid={`node-${id}`}
       style={{
         padding: 10,
