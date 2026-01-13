@@ -38,6 +38,7 @@ export function buildGraph(
         id: `e-role-${MOLT_ORDER[idx - 1]}-${role}`,
         source: `role-${MOLT_ORDER[idx - 1]}`,
         target: `role-${role}`,
+        type: "smoothstep",
         style: { stroke: "rgba(255,255,255,0.3)" },
       });
     }
@@ -93,6 +94,7 @@ export function buildGraph(
         id: `e-ns-sl`,
         source: `ns-${lastStack.id}`,
         target: `sl-${sleeve.id}`,
+        type: "smoothstep",
         style: { stroke: "rgba(34, 197, 94, 0.5)" },
       });
     }
