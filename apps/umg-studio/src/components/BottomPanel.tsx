@@ -17,7 +17,7 @@ interface BottomPanelProps {
   onClearSelection?: () => void;
 }
 
-type DetailTab = "details" | "json" | "trace" | "prompt";
+type DetailTab = "details" | "json" | "prompt";
 
 export default function BottomPanel({ 
   selectedNode, 
@@ -196,42 +196,6 @@ export default function BottomPanel({
       );
     }
 
-    if (activeTab === "trace") {
-      const traceEvents = selectedNode.payload?.trace ?? selectedNode.payload?.traceEvents ?? [];
-      if (traceEvents.length === 0) {
-        return (
-          <div style={{ 
-            height: "100%", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            opacity: 0.5 
-          }}>
-            No trace events available
-          </div>
-        );
-      }
-      return (
-        <div style={{ padding: 12, height: "100%", overflow: "auto" }}>
-          {traceEvents.map((event: any, i: number) => (
-            <div 
-              key={i}
-              style={{ 
-                padding: 8, 
-                marginBottom: 6, 
-                background: "rgba(0,0,0,0.2)",
-                borderRadius: 4,
-                fontSize: 11
-              }}
-            >
-              <span style={{ opacity: 0.5 }}>{event.kind ?? event.type}: </span>
-              <span>{event.message ?? JSON.stringify(event)}</span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
     return null;
   };
 
@@ -306,7 +270,6 @@ export default function BottomPanel({
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
           {renderTabButton("details", "Details")}
           {renderTabButton("json", "JSON")}
-          {renderTabButton("trace", "Trace")}
           {renderTabButton("prompt", "PROMPT")}
         </div>
         <button

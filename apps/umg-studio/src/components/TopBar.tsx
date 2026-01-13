@@ -209,20 +209,6 @@ export default function TopBar({
           }} />
         )}
       </button>
-      {hasOps && onCompileWithOps && (
-        <button 
-          className="btn" 
-          onClick={onCompileWithOps}
-          data-testid="button-compile-with-ops"
-          style={{ 
-            background: "rgba(168, 85, 247, 0.2)",
-            borderColor: "#a855f7",
-            color: "#a855f7"
-          }}
-        >
-          Compile+Ops
-        </button>
-      )}
 
       {!isMobile && (
         <button
