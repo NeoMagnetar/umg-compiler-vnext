@@ -19,6 +19,7 @@ export default function BlockDetailsEditor({
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
+  const [priorityOrder, setPriorityOrder] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
@@ -33,10 +34,12 @@ export default function BlockDetailsEditor({
       setTitle(blockData.title ?? "");
       setContent(blockData.content ?? "");
       setTags(Array.isArray(blockData.tags) ? [...blockData.tags] : []);
+      setPriorityOrder(blockData.priorityOrder !== undefined ? String(blockData.priorityOrder) : "");
     } else {
       setTitle("");
       setContent("");
       setTags([]);
+      setPriorityOrder("");
     }
   }, [blockData?.id]);
 
@@ -311,6 +314,44 @@ export default function BlockDetailsEditor({
           >
             Add
           </button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ 
+          fontSize: 10, 
+          opacity: 0.6, 
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
+          display: "block",
+          marginBottom: 4
+        }}>
+          Priority Order
+        </label>
+        <input
+          type="text"
+          value={priorityOrder}
+          onChange={(e) => setPriorityOrder(e.target.value)}
+          onBlur={() => {
+            const numVal = priorityOrder.trim() === "" ? undefined : parseInt(priorityOrder, 10);
+            if (numVal !== blockData?.priorityOrder) {
+              applyUpdate({ priorityOrder: numVal });
+            }
+          }}
+          placeholder="Leave blank or enter number (1, 2, 3...)"
+          data-testid="input-block-priority"
+          style={{
+            width: "100%",
+            padding: "6px 8px",
+            background: "rgba(0,0,0,0.3)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 4,
+            color: "inherit",
+            fontSize: 12
+          }}
+        />
+        <div style={{ fontSize: 10, opacity: 0.4, marginTop: 4, fontStyle: "italic" }}>
+          Used for bundle ordering. Auto-assigned when using Organize Bundle.
         </div>
       </div>
 
