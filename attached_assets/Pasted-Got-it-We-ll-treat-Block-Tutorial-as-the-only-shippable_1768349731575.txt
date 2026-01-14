@@ -1,0 +1,125 @@
+Got it. We’ll treat Block Tutorial as the only shippable product for now, and we’ll do it with the smallest set of changes that give you: Library + Save/Load + Tags + Color rules + “click-to-reposition” + strict graph projection.
+Below is the lean spec + the exact instructions you can paste to the Replit agent so they don’t wander.
+Block Tutorial v0 Publish Scope (minimum, no extras)
+1) Library + Save/Load + “Upload to graph”
+Library tabs: Blocks | NeoBlocks | NeoStacks | Sleeves
+Each item has: Preview + Load (replaces workspace/graph) + Insert (optional; if time/credits low, skip Insert and only do Load).
+Save buttons (one-click):
+Save Block (when a block selected)
+Save NeoBlock (when latest NeoBlock exists)
+Save NeoStack (when NeoStack exists)
+Save Sleeve (when Sleeve exists)
+Persistence: localStorage only, same persist store; library stored under its own key.
+Important rule: In Tutorial mode, “Load” should set workspace state to exactly what that artifact needs, and graph rebuilds from state.
+2) Tags + priorityOrder (Tutorial mode)
+Blocks have tags: string[] and priorityOrder: number
+Editable in Inspector (chips + number input/stepper)
+Library list shows tags under each card (small)
+3) Color rules (hard-coded)
+Block nodes: keep their role color (or single consistent “block” color if you already simplified)
+NeoBlocks: purple
+NeoStacks: green
+Sleeves: gold
+No gradients, no random colors.
+4) Strict graph projection (your “no duplicates” rule)
+Before compress: show the 7-role spine ladder (one node per role).
+After compress: ladder disappears; graph shows ONE NeoBlock node (purple) and nothing else from the spine.
+New blocks (created later) appear in a left column (separate lane), not mixed into the NeoBlock.
+No “extra blocks” concept. Just:
+Spine (until compressed)
+NeoBlock (after compressed)
+New blocks created later are separate nodes (left lane)
+5) Interaction: click-to-highlight + click-to-move (no drag/drop)
+Nodes are not draggable.
+Clicking a node selects it (Inspector opens).
+When selected, graph enters Move Mode:
+User clicks an “empty slot” region (predefined snap points) to move the selected node there.
+Implement snap points, not free placement (cheap + stable).
+Highlighting:
+Selected node glows (green pulse)
+Valid move targets glow green
+Blocked targets glow red
+Merge candidate target glow yellow (only when exactly 2 eligible nodes selected)
+Small reality check: “click a space to move it” needs deterministic “spaces.” So we create a few snap slots (grid positions) and treat them as clickable invisible nodes/overlays.
+What this gives you for publish
+Tutorial mode becomes a real tool: build → compress → save → reload → reuse.
+Visual language is consistent (purple/green/gold).
+Graph doesn’t duplicate things or get confusing.
+Users can actually curate artifacts with tags and load them later.
+Paste-to-agent instructions (copy/paste)
+SESSION: Block Tutorial Publish Pass (library + tags + graph rules)
+Goal: Tutorial mode only. Implement a Library with Save/Load for Blocks/NeoBlocks/NeoStacks/Sleeves, tags + priority, strict graph projection, and click-to-move using snap slots. No extra blocks system.
+A) Data model + persistence
+Ensure Block type includes:
+tags: string[]
+priorityOrder: number Migration: default tags [], priorityOrder 10.
+Add Tutorial Library storage in localStorage key: umg_tutorial_library_v1 Types:
+Copy code
+Ts
+type LibraryItem<T> = { id: string; name: string; createdAt: number; tags: string[]; data: T };
+type TutorialLibrary = {
+  blocks: LibraryItem<Block>[];
+  neoBlocks: LibraryItem<NeoBlock>[];
+  neoStacks: LibraryItem<NeoStack>[];
+  sleeves: LibraryItem<Sleeve>[];
+};
+Store actions (tutorial store):
+saveSelectedBlockToLibrary(name?)
+saveLatestNeoBlockToLibrary(name?)
+saveNeoStackToLibrary(name?)
+saveSleeveToLibrary(name?)
+loadLibraryItem(kind, id)  // replaces workspace state
+deleteLibraryItem(kind, id) (optional)
+B) Inspector updates
+Add tags chip editor + priority stepper to Inspector for Block nodes.
+Keep tag rules simple: trim, dedupe, max 10, max 32 chars.
+C) Graph projection rules (NO duplicates)
+In buildNodes.ts for Tutorial mode:
+If neoBlocks.length === 0: show 7-role spine ladder only (progressive).
+If neoBlocks.length > 0: show ONLY:
+latest NeoBlock node (purple)
+plus any new blocks created after compress in a left column lane
+(no ladder nodes at all)
+Also enforce: NeoBlock compress consumes the spine visually.
+D) Colors
+NeoBlock node style purple
+NeoStack node style green
+Sleeve node style gold
+Blocks keep existing role styling (or consistent block style if already unified)
+E) Click-to-move with snap slots (no dragging)
+nodesDraggable=false
+Add a small set of snap slots (e.g. 6) as invisible target nodes or overlay buttons.
+When a node is selected, show snap targets. Clicking a target sets the selected node’s stored position to that slot.
+Implement highlights:
+selected: green pulse
+valid slots: green outline
+blocked: red
+merge candidate: yellow (only when two eligible nodes selected)
+Store positions in state: nodePositions: Record<string, {x:number;y:number}>
+F) Tutorial Library UI
+Add a “Library” panel in Tutorial mode with tabs:
+Blocks | NeoBlocks | NeoStacks | Sleeves Each row shows name + tags + buttons:
+Load (required)
+Preview (optional)
+Delete (optional)
+Add Save buttons near top:
+Save Block (enabled when a block selected)
+Save NeoBlock (enabled when latest NeoBlock exists)
+Save NeoStack (enabled when exists)
+Save Sleeve (enabled when exists)
+Acceptance tests
+Create 7-role stack → compress → only 1 NeoBlock is on graph.
+Create a new block after compress → it appears in left column.
+Save NeoBlock → refresh → library still has it → Load recreates it on graph.
+Tags editable in Inspector and appear on Library cards.
+Nodes are not draggable; selecting node then clicking slot moves it.
+Return only these files changed:
+src/umg/store.ts
+src/umg/types.ts
+src/umg/graph/buildNodes.ts
+src/umg/graph/nodeTypes.tsx
+src/umg/ui/TutorialLibraryPanel.tsx (new)
+src/umg/ui/InspectorPanel.tsx
+One tight warning (so credits don’t evaporate)
+If the agent proposes “freeform click anywhere to move,” that will turn into fiddly coordinate math + mobile bugs. Snap slots is the cheap, stable way.
+Once this lands, you’ll be in a publishable place: tutorial mode becomes a curation tool with real persistence and consistent visuals.

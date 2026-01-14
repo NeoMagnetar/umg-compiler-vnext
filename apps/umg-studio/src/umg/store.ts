@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { nanoid } from "nanoid";
-import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode, MoltSnapshot } from "./types";
+import type { Block, MoltRole, NeoBlock, NeoStack, Sleeve, ComposePreview, MergeMode, MoltSnapshot, LibraryItem } from "./types";
 import { nextAllowedRole, getSpineBlocks, MOLT_ORDER } from "./molt";
 import { computeTutorialStep, type TutorialStep } from "./tutorial";
 import { EXPORT_SCHEMA, EXPORT_VERSION, type UMGExportBundleV1 } from "./exportSchema";
@@ -58,6 +58,11 @@ type State = {
 
   exportStateToJson: () => string;
   importStateFromJson: (json: string) => { ok: true } | { ok: false; error: string };
+
+  loadBlockFromLibrary: (item: LibraryItem<Block>) => void;
+  loadNeoBlockFromLibrary: (item: LibraryItem<NeoBlock>) => void;
+  loadNeoStackFromLibrary: (item: LibraryItem<NeoStack>, neoBlocks: NeoBlock[]) => void;
+  loadSleeveFromLibrary: (item: LibraryItem<Sleeve>, neoStack: NeoStack, neoBlocks: NeoBlock[]) => void;
 };
 
 export const useUmgStore = create<State>()(
@@ -433,6 +438,104 @@ export const useUmgStore = create<State>()(
 
         get().recomputeTutorialStep();
         return { ok: true };
+      },
+
+      loadBlockFromLibrary: (item) => {
+        const block = item.data;
+        const newBlock: Block = {
+          ...block,
+          id: nanoid(),
+          createdAt: Date.now(),
+        };
+        set({
+          blocks: [newBlock],
+          neoBlocks: [],
+          neoStacks: [],
+          sleeve: null,
+          runtimeSpec: null,
+          trace: null,
+          selectedBlockId: newBlock.id,
+          selectedNeoBlockIds: [],
+        });
+        get().recomputeTutorialStep();
+      },
+
+      loadNeoBlockFromLibrary: (item) => {
+        const neoBlock = item.data;
+        const newNeoBlock: NeoBlock = {
+          ...neoBlock,
+          id: nanoid(),
+          createdAt: Date.now(),
+        };
+        set({
+          blocks: [],
+          neoBlocks: [newNeoBlock],
+          neoStacks: [],
+          sleeve: null,
+          runtimeSpec: null,
+          trace: null,
+          selectedBlockId: null,
+          selectedNeoBlockIds: [newNeoBlock.id],
+        });
+        get().recomputeTutorialStep();
+      },
+
+      loadNeoStackFromLibrary: (item, neoBlocks) => {
+        const neoStack = item.data;
+        const newNeoStack: NeoStack = {
+          ...neoStack,
+          id: nanoid(),
+          createdAt: Date.now(),
+        };
+        const newNeoBlocks = neoBlocks.map(nb => ({
+          ...nb,
+          id: nanoid(),
+          createdAt: Date.now(),
+        }));
+        newNeoStack.neoBlockIds = newNeoBlocks.map(nb => nb.id);
+        set({
+          blocks: [],
+          neoBlocks: newNeoBlocks,
+          neoStacks: [newNeoStack],
+          sleeve: null,
+          runtimeSpec: null,
+          trace: null,
+          selectedBlockId: null,
+          selectedNeoBlockIds: newNeoBlocks.map(nb => nb.id),
+        });
+        get().recomputeTutorialStep();
+      },
+
+      loadSleeveFromLibrary: (item, neoStack, neoBlocks) => {
+        const sleeve = item.data;
+        const newSleeve: Sleeve = {
+          ...sleeve,
+          id: nanoid(),
+          createdAt: Date.now(),
+        };
+        const newNeoBlocks = neoBlocks.map(nb => ({
+          ...nb,
+          id: nanoid(),
+          createdAt: Date.now(),
+        }));
+        const newNeoStack: NeoStack = {
+          ...neoStack,
+          id: nanoid(),
+          createdAt: Date.now(),
+          neoBlockIds: newNeoBlocks.map(nb => nb.id),
+        };
+        newSleeve.neoStackId = newNeoStack.id;
+        set({
+          blocks: [],
+          neoBlocks: newNeoBlocks,
+          neoStacks: [newNeoStack],
+          sleeve: newSleeve,
+          runtimeSpec: null,
+          trace: null,
+          selectedBlockId: null,
+          selectedNeoBlockIds: newNeoBlocks.map(nb => nb.id),
+        });
+        get().recomputeTutorialStep();
       },
     }),
     {

@@ -47,3 +47,19 @@ export type ComposePreview = {
   semanticOverlap: number;
   governancePriority: number;
 };
+
+// Library types for Tutorial mode persistence
+export type LibraryItem<T> = {
+  id: string;
+  name: string;
+  createdAt: number;
+  tags: string[];
+  data: T;
+};
+
+export type TutorialLibrary = {
+  blocks: LibraryItem<Block>[];
+  neoBlocks: LibraryItem<NeoBlock>[];
+  neoStacks: LibraryItem<NeoStack>[];
+  sleeves: LibraryItem<Sleeve>[];
+};
