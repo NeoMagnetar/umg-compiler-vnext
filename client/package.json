@@ -1,9 +1,0 @@
-{
-  "name": "client",
-  "private": true,
-  "scripts": {
-    "dev": "echo CLIENT DISABLED",
-    "build": "echo CLIENT DISABLED",
-    "preview": "echo CLIENT DISABLED"
-  }
-}
