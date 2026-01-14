@@ -1,86 +1,168 @@
+import { useMemo, useState } from "react";
+import { CollapsiblePanel } from "./CollapsiblePanel";
 import { useUmgStore } from "../store";
-import { MOLT_ORDER, getSpineBlocks, getExtraBlocks } from "../molt";
+import { computeTutorialStep } from "../tutorial";
+import { getSpineBlocks } from "../molt";
+import type { Block, NeoBlock, NeoStack, Sleeve } from "../types";
+
+type Tab = "Active" | "Runtime" | "Trace" | "Raw";
+
+function pretty(obj: any) {
+  try {
+    return JSON.stringify(obj, null, 2);
+  } catch {
+    return String(obj);
+  }
+}
+
+function findSelected(
+  selectedNodeId: string | null,
+  blocks: Block[],
+  neoBlocks: NeoBlock[],
+  neoStacks: NeoStack[],
+  sleeve: Sleeve | null
+) {
+  if (!selectedNodeId) return null;
+
+  if (selectedNodeId.startsWith("role-")) {
+    const role = selectedNodeId.replace("role-", "");
+    const b = blocks.find((x) => x.role === role);
+    if (b) return { kind: "BLOCK" as const, data: b };
+    return { kind: "GHOST" as const, data: { role } };
+  }
+
+  if (selectedNodeId.startsWith("nb-")) {
+    const id = selectedNodeId.replace("nb-", "");
+    const nb = neoBlocks.find((x) => x.id === id);
+    if (nb) return { kind: "NEOBLOCK" as const, data: nb };
+  }
+
+  if (selectedNodeId.startsWith("ns-")) {
+    const id = selectedNodeId.replace("ns-", "");
+    const ns = neoStacks.find((x) => x.id === id);
+    if (ns) return { kind: "NEOSTACK" as const, data: ns };
+  }
+
+  if (selectedNodeId.startsWith("sl-")) {
+    if (sleeve) return { kind: "SLEEVE" as const, data: sleeve };
+  }
+
+  const b = blocks.find((x) => x.id === selectedNodeId);
+  if (b) return { kind: "BLOCK" as const, data: b };
+
+  const nb = neoBlocks.find((x) => x.id === selectedNodeId);
+  if (nb) return { kind: "NEOBLOCK" as const, data: nb };
+
+  const ns = neoStacks.find((x) => x.id === selectedNodeId);
+  if (ns) return { kind: "NEOSTACK" as const, data: ns };
+
+  if (sleeve && sleeve.id === selectedNodeId) return { kind: "SLEEVE" as const, data: sleeve };
+
+  return { kind: "UNKNOWN" as const, data: { id: selectedNodeId } };
+}
 
 export function TutorialOutputPanel() {
-  const { tutorialStep, blocks, neoBlocks, neoStacks, sleeve, lastComposeMode, preview, hydrated } = useUmgStore();
+  const {
+    blocks,
+    neoBlocks,
+    neoStacks,
+    sleeve,
+    runtimeSpec,
+    trace,
+    tutorialStep,
+    selectedNodeId,
+  } = useUmgStore();
 
-  const spine = getSpineBlocks(blocks);
-  const extras = getExtraBlocks(blocks);
+  const [tab, setTab] = useState<Tab>("Active");
 
-  const moltSummary = MOLT_ORDER
-    .map(role => {
-      const block = spine.find(b => b.role === role);
-      return block
-        ? `• ${role}: ${block.title || "(untitled)"} (${block.content.length} chars)`
-        : `• ${role}: (missing)`;
-    })
-    .join("\n");
+  const active = useMemo(() => {
+    const sel = findSelected(selectedNodeId, blocks, neoBlocks, neoStacks, sleeve);
+    const derivedStep = computeTutorialStep(blocks, neoBlocks, neoStacks, sleeve, runtimeSpec);
 
-  const latestNeo = neoBlocks[neoBlocks.length - 1];
-  const latestStack = neoStacks[neoStacks.length - 1];
+    const spine = getSpineBlocks(blocks);
+    const spineComplete = spine.length >= 7;
+    const readyToCompress = spineComplete && neoBlocks.length === 0;
+    const composeReady = neoBlocks.length >= 2;
+
+    return {
+      selected: sel,
+      workspace: {
+        tutorialStep,
+        derivedStep,
+        spineComplete,
+        readyToCompress,
+        composeReady,
+      },
+      counts: {
+        blocks: blocks.length,
+        neoBlocks: neoBlocks.length,
+        neoStacks: neoStacks.length,
+        sleeve: !!sleeve,
+      },
+    };
+  }, [blocks, neoBlocks, neoStacks, sleeve, runtimeSpec, tutorialStep, selectedNodeId]);
+
+  const tabs: Tab[] = ["Active", "Runtime", "Trace", "Raw"];
+
+  const body = useMemo(() => {
+    if (tab === "Active") return <JsonBox value={active} />;
+    if (tab === "Runtime") return <JsonBox value={runtimeSpec ?? { note: "No runtimeSpec yet. Create a Sleeve and Compile to generate." }} />;
+    if (tab === "Trace") return <JsonBox value={trace ?? { note: "No trace yet. Compile to generate trace events." }} />;
+    return <JsonBox value={{ blocks, neoBlocks, neoStacks, sleeve }} />;
+  }, [tab, active, runtimeSpec, trace, blocks, neoBlocks, neoStacks, sleeve]);
 
   return (
-    <div style={wrap}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-        <div style={{ fontWeight: 900, color: "#e0e0e0" }}>Tutorial Output</div>
-        {hydrated && (
-          <span style={{ fontSize: 10, color: "#22c55e", opacity: 0.8 }}>Hydrated</span>
-        )}
+    <CollapsiblePanel 
+      title="Output" 
+      defaultOpen={false} 
+      storageKey="umg:tutorial:output:open"
+      style={{ flexShrink: 0 }}
+    >
+      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+        {tabs.map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            style={{
+              padding: "8px 10px",
+              fontSize: 12,
+              fontWeight: 700,
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: tab === t ? "rgba(96,165,250,0.18)" : "rgba(255,255,255,0.04)",
+              color: "rgba(255,255,255,0.9)",
+              cursor: "pointer",
+            }}
+            data-testid={`tab-output-${t.toLowerCase()}`}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
-      <pre style={pre}>
-{`Step: ${tutorialStep}
-
-7-Role MOLT Spine:
-${moltSummary}
-${extras.length > 0 ? `\nExtra Blocks: ${extras.length} (not in spine, for advanced use)` : ""}
-
-NeoBlocks:
-• count: ${neoBlocks.length}${latestNeo ? `\n• latest: ${latestNeo.label} (lineage ${latestNeo.sourceBlockIds.length})` : ""}
-
-Composition:
-${lastComposeMode ? `• mode: ${lastComposeMode}\n• semantic overlap: ${preview.semanticOverlap.toFixed(2)}\n• governance priority: ${preview.governancePriority.toFixed(2)}\n\nNote: v0 composition uses "dominant snapshot" rule.\nThe governancePriority slider decides which artifact's snapshot wins.` : "• none yet"}
-
-NeoStack:
-${latestStack ? `• ${latestStack.name} (${latestStack.neoBlockIds.length} NeoBlocks)` : "• none yet"}
-
-Sleeve:
-${sleeve ? `• ${sleeve.name} (bound: ${String(!!sleeve.neoStackId)})` : "• none yet"}
-
----
-
-Quick Reference:
-• Spine = first block per role (used for compress)
-• Extras = duplicate roles for depth (unlocked after first compress)
-• Authority flows: Trigger → Directive → Instruction → Subject → Primary → Philosophy → Blueprint
-• NeoBlock = immutable snapshot artifact
-• Merge = combine snapshots (dominant wins)
-• Bundle = group without merging (runtime selects)
-• NeoStack = named domain unit
-• Sleeve = execution boundary
-• Compile = validate structure + emit trace`
-}
-      </pre>
-    </div>
+      {body}
+    </CollapsiblePanel>
   );
 }
 
-const wrap: React.CSSProperties = {
-  padding: 12,
-  borderTop: "1px solid rgba(255,255,255,0.1)",
-  background: "#0d0d12",
-};
-
-const pre: React.CSSProperties = {
-  margin: 0,
-  whiteSpace: "pre-wrap",
-  fontSize: 12,
-  lineHeight: 1.4,
-  background: "#15151c",
-  border: "1px solid rgba(255,255,255,0.1)",
-  borderRadius: 8,
-  padding: 10,
-  maxHeight: 300,
-  overflow: "auto",
-  color: "#b0b0b0",
-};
+function JsonBox({ value }: { value: any }) {
+  return (
+    <pre
+      style={{
+        margin: 0,
+        whiteSpace: "pre-wrap",
+        fontSize: 12,
+        lineHeight: 1.35,
+        background: "#0b0b10",
+        border: "1px solid rgba(255,255,255,0.10)",
+        borderRadius: 12,
+        padding: 10,
+        maxHeight: 320,
+        overflow: "auto",
+        color: "rgba(255,255,255,0.88)",
+      }}
+    >
+      {pretty(value)}
+    </pre>
+  );
+}
