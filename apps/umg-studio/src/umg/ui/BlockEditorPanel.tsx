@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useUmgStore } from "../store";
 import type { MoltRole, Block } from "../types";
+import { validateBlock, validateWorkspace, type ValidationIssue } from "../validation";
 
 const MAX_TAG_LENGTH = 32;
 const MAX_TAGS = 10;
@@ -44,6 +45,9 @@ export function BlockEditorPanel() {
 
   const block = useMemo(() => blockFromNodeId(s.selectedNodeId, s.blocks), [s.selectedNodeId, s.blocks]);
   const role = block?.role ?? roleFromNodeId(s.selectedNodeId);
+
+  const blockValidation = useMemo(() => block ? validateBlock(block) : [], [block]);
+  const workspaceValidation = useMemo(() => validateWorkspace(s.blocks, s.neoBlocks), [s.blocks, s.neoBlocks]);
 
   const handleCopyId = () => {
     if (block) {
@@ -201,12 +205,80 @@ export function BlockEditorPanel() {
         </button>
       </div>
 
-      <div style={{ marginTop: 16, padding: 10, borderRadius: 8, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "#e0e0e0", marginBottom: 6 }}>Validation</div>
-        <div style={{ fontSize: 11, color: "#4ade80" }}>
-          Block is valid
-        </div>
+      <ValidationBox
+        blockIssues={blockValidation}
+        workspaceResult={workspaceValidation}
+      />
+    </div>
+  );
+}
+
+function ValidationBox({
+  blockIssues,
+  workspaceResult,
+}: {
+  blockIssues: ValidationIssue[];
+  workspaceResult: { issues: ValidationIssue[]; hasErrors: boolean; hasWarnings: boolean };
+}) {
+  const errors = blockIssues.filter(i => i.severity === "error");
+  const warnings = blockIssues.filter(i => i.severity === "warning");
+  const infos = workspaceResult.issues.filter(i => i.severity === "info");
+
+  const borderColor = errors.length > 0
+    ? "rgba(239, 68, 68, 0.4)"
+    : warnings.length > 0
+    ? "rgba(251, 191, 36, 0.4)"
+    : "rgba(74, 222, 128, 0.3)";
+
+  const statusColor = errors.length > 0
+    ? "#f87171"
+    : warnings.length > 0
+    ? "#fbbf24"
+    : "#4ade80";
+
+  const statusText = errors.length > 0
+    ? `${errors.length} error(s)`
+    : warnings.length > 0
+    ? `${warnings.length} warning(s)`
+    : "Valid";
+
+  return (
+    <div
+      style={{
+        marginTop: 16,
+        padding: 10,
+        borderRadius: 8,
+        background: "rgba(0,0,0,0.3)",
+        border: `1px solid ${borderColor}`,
+      }}
+      data-testid="validation-box"
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#e0e0e0" }}>Validation</div>
+        <div style={{ fontSize: 10, color: statusColor, fontWeight: 600 }}>{statusText}</div>
       </div>
+
+      {errors.map((issue, i) => (
+        <div key={i} style={{ fontSize: 10, color: "#f87171", marginTop: 4 }}>
+          {issue.message}
+        </div>
+      ))}
+
+      {warnings.map((issue, i) => (
+        <div key={i} style={{ fontSize: 10, color: "#fbbf24", marginTop: 4 }}>
+          {issue.message}
+        </div>
+      ))}
+
+      {errors.length === 0 && warnings.length === 0 && infos.length > 0 && (
+        <div style={{ marginTop: 6, borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 6 }}>
+          {infos.slice(0, 2).map((issue, i) => (
+            <div key={i} style={{ fontSize: 10, color: "#9ca3af", marginTop: 2 }}>
+              {issue.message}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
