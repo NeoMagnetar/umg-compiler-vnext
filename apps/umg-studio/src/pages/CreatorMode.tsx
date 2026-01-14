@@ -5,12 +5,13 @@ import "reactflow/dist/style.css";
 import { CreatorSidebar } from "../umg/ui/CreatorSidebar";
 import { BlockEditorPanel } from "../umg/ui/BlockEditorPanel";
 import { TutorialOutputPanel } from "../umg/ui/TutorialOutputPanel";
+import { TutorialLibraryPanel } from "../umg/ui/TutorialLibraryPanel";
 import { ImportExportControls } from "../umg/ui/ImportExportControls";
 import { nodeTypes } from "../umg/graph/nodeTypes";
 import { buildGraph } from "../umg/graph/buildNodes";
 import { useUmgStore } from "../umg/store";
 
-type MobileTab = "build" | "graph" | "inspect" | "output";
+type MobileTab = "build" | "graph" | "inspect" | "output" | "library";
 
 const isMobile = typeof window !== "undefined" && window.innerWidth < 900;
 
@@ -31,7 +32,7 @@ export default function CreatorMode() {
           <ImportExportControls />
         </div>
         <div style={tabBar}>
-          {(["build", "graph", "inspect", "output"] as MobileTab[]).map(tab => (
+          {(["build", "graph", "inspect", "library", "output"] as MobileTab[]).map(tab => (
             <button
               key={tab}
               onClick={() => setMobileTab(tab)}
@@ -83,6 +84,7 @@ export default function CreatorMode() {
             </div>
           )}
           {mobileTab === "inspect" && <BlockEditorPanel />}
+          {mobileTab === "library" && <TutorialLibraryPanel />}
           {mobileTab === "output" && <TutorialOutputPanel />}
         </div>
       </div>
@@ -131,6 +133,7 @@ export default function CreatorMode() {
           <TutorialOutputPanel />
         </div>
         <BlockEditorPanel />
+        <TutorialLibraryPanel />
       </div>
     </div>
   );

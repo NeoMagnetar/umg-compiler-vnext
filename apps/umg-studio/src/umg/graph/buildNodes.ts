@@ -111,7 +111,7 @@ export function buildGraph(
   if (lastStack) {
     nodes.push({
       id: `ns-${lastStack.id}`,
-      type: "basic",
+      type: "neostack",
       position: { x: rightX, y: rightY0 },
       data: { 
         title: `NEOSTACK: ${lastStack.name}`, 
@@ -124,7 +124,7 @@ export function buildGraph(
   if (sleeve) {
     nodes.push({
       id: `sl-${sleeve.id}`,
-      type: "basic",
+      type: "sleeve",
       position: { x: rightX, y: rightY0 + 140 },
       data: { 
         title: `SLEEVE: ${sleeve.name}`, 

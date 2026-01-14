@@ -119,9 +119,107 @@ export function GhostNode({ id, data }: any) {
   );
 }
 
+export function NeoStackNode({ id, data }: any) {
+  const { selectedNodeId, selectNode } = useUmgStore();
+  const selected = selectedNodeId === id;
+
+  return (
+    <div
+      onClick={() => selectNode(id)}
+      data-testid={`node-${id}`}
+      style={{
+        padding: 10,
+        border: selected ? "2px solid #22c55e" : "1px solid rgba(34, 197, 94, 0.4)",
+        borderRadius: 12,
+        background: selected ? "rgba(22, 101, 52, 0.5)" : "rgba(22, 101, 52, 0.3)",
+        minWidth: 200,
+        cursor: "pointer",
+        boxShadow: selected ? "0 4px 18px rgba(34, 197, 94, 0.3)" : "none",
+        color: "#e0e0e0",
+        position: "relative"
+      }}
+    >
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
+      <div style={{ fontWeight: 800, color: "#22c55e" }}>{data.title}</div>
+      <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>{data.subtitle}</div>
+      {data.badges?.length ? (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+          {data.badges.map((b: string) => (
+            <span
+              key={b}
+              style={{
+                fontSize: 10,
+                padding: "2px 8px",
+                borderRadius: 999,
+                border: "1px solid rgba(34, 197, 94, 0.3)",
+                background: "rgba(34, 197, 94, 0.15)",
+                color: "#22c55e",
+                opacity: 0.9,
+              }}
+            >
+              {b}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function SleeveNode({ id, data }: any) {
+  const { selectedNodeId, selectNode } = useUmgStore();
+  const selected = selectedNodeId === id;
+
+  return (
+    <div
+      onClick={() => selectNode(id)}
+      data-testid={`node-${id}`}
+      style={{
+        padding: 10,
+        border: selected ? "2px solid #eab308" : "1px solid rgba(234, 179, 8, 0.4)",
+        borderRadius: 12,
+        background: selected ? "rgba(161, 98, 7, 0.5)" : "rgba(161, 98, 7, 0.3)",
+        minWidth: 200,
+        cursor: "pointer",
+        boxShadow: selected ? "0 4px 18px rgba(234, 179, 8, 0.3)" : "none",
+        color: "#e0e0e0",
+        position: "relative"
+      }}
+    >
+      <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
+      <div style={{ fontWeight: 800, color: "#eab308" }}>{data.title}</div>
+      <div style={{ fontSize: 12, opacity: 0.8, marginTop: 2 }}>{data.subtitle}</div>
+      {data.badges?.length ? (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+          {data.badges.map((b: string) => (
+            <span
+              key={b}
+              style={{
+                fontSize: 10,
+                padding: "2px 8px",
+                borderRadius: 999,
+                border: "1px solid rgba(234, 179, 8, 0.3)",
+                background: "rgba(234, 179, 8, 0.15)",
+                color: "#eab308",
+                opacity: 0.9,
+              }}
+            >
+              {b}
+            </span>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export const nodeTypes = {
   basic: BasicNode,
   neoblock: NeoBlockNode,
+  neostack: NeoStackNode,
+  sleeve: SleeveNode,
   start: StartNode,
   ghost: GhostNode,
 };

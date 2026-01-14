@@ -19,11 +19,11 @@ export function NeoBlockNode({ data }: any) {
       data-testid={`neoblock-node-${neoBlockId}`}
       style={{
         padding: 10,
-        border: selected ? "2px solid #60a5fa" : "1px solid rgba(255,255,255,0.2)",
+        border: selected ? "2px solid #a78bfa" : "1px solid rgba(167, 139, 250, 0.4)",
         borderRadius: 14,
-        background: selected ? "rgba(30, 35, 50, 0.98)" : "rgba(20, 20, 28, 0.95)",
+        background: selected ? "rgba(88, 28, 135, 0.4)" : "rgba(88, 28, 135, 0.25)",
         minWidth: 280,
-        boxShadow: selected ? "0 4px 18px rgba(96, 165, 250, 0.2)" : "none",
+        boxShadow: selected ? "0 4px 18px rgba(167, 139, 250, 0.3)" : "none",
         color: "#e0e0e0",
         position: "relative"
       }}
@@ -45,12 +45,12 @@ export function NeoBlockNode({ data }: any) {
             style={{
               padding: "6px 10px",
               borderRadius: 999,
-              border: selected ? "1px solid #60a5fa" : "1px solid rgba(255,255,255,0.2)",
-              background: selected ? "rgba(96, 165, 250, 0.2)" : "rgba(60,60,80,0.5)",
+              border: selected ? "1px solid #a78bfa" : "1px solid rgba(255,255,255,0.2)",
+              background: selected ? "rgba(167, 139, 250, 0.2)" : "rgba(60,60,80,0.5)",
               cursor: "pointer",
               fontSize: 11,
               fontWeight: 700,
-              color: selected ? "#60a5fa" : "#e0e0e0"
+              color: selected ? "#a78bfa" : "#e0e0e0"
             }}
             title="Select (pick 2 for Merge/Bundle)"
           >
@@ -80,7 +80,7 @@ export function NeoBlockNode({ data }: any) {
 
       {expanded ? (
         <div style={{ marginTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 8 }}>
-          <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 6, color: "#60a5fa" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 6, color: "#a78bfa" }}>
             Internal MOLT Snapshot (read-only)
           </div>
 
@@ -98,7 +98,7 @@ export function NeoBlockNode({ data }: any) {
                   background: "rgba(0,0,0,0.3)",
                 }}
               >
-                <div style={{ width: 80, fontWeight: 800, fontSize: 9, color: "#60a5fa" }}>{r}</div>
+                <div style={{ width: 80, fontWeight: 800, fontSize: 9, color: "#a78bfa" }}>{r}</div>
                 <div style={{ fontSize: 10, opacity: 0.9, flex: 1 }}>
                   {data.roleTitles?.[r] ?? "—"}
                 </div>
