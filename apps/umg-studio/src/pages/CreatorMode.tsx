@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import ReactFlow, { Background, Controls, MiniMap } from "reactflow";
+import { useState, useMemo, useEffect } from "react";
+import ReactFlow, { Background, Controls, MiniMap, useReactFlow, ReactFlowProvider } from "reactflow";
 import "reactflow/dist/style.css";
 
 import { CreatorSidebar } from "../umg/ui/CreatorSidebar";
@@ -14,11 +14,62 @@ import { useUmgStore } from "../umg/store";
 
 type MobileTab = "build" | "graph" | "inspect" | "output" | "library";
 
-const isMobile = typeof window !== "undefined" && window.innerWidth < 900;
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== "undefined" ? window.innerWidth < 900 : false
+  );
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return isMobile;
+}
+
+function MobileGraphPane({ nodes, edges }: { nodes: any[]; edges: any[] }) {
+  const { fitView } = useReactFlow();
+  
+  useEffect(() => {
+    const timer = requestAnimationFrame(() => fitView({ padding: 0.3 }));
+    return () => cancelAnimationFrame(timer);
+  }, [fitView]);
+
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      fitView
+      fitViewOptions={{ padding: 0.3 }}
+      style={{ background: "#0a0a0f", height: "100%", width: "100%" }}
+      proOptions={{ hideAttribution: true }}
+      panOnScroll={false}
+      zoomOnScroll={false}
+      zoomOnPinch={true}
+      zoomOnDoubleClick={false}
+      nodesDraggable={false}
+    >
+      <Background color="rgba(255,255,255,0.05)" gap={20} />
+      <Controls
+        style={{
+          background: "rgba(30,30,40,0.9)",
+          borderRadius: 8,
+          border: "1px solid rgba(255,255,255,0.1)"
+        }}
+      />
+      <MiniMap
+        style={{ background: "#15151c" }}
+        nodeColor="#60a5fa"
+        maskColor="rgba(0,0,0,0.7)"
+      />
+    </ReactFlow>
+  );
+}
 
 export default function CreatorMode() {
   const s = useUmgStore();
   const [mobileTab, setMobileTab] = useState<MobileTab>("build");
+  const isMobile = useIsMobile();
 
   const { nodes, edges } = useMemo(
     () => buildGraph(s.blocks, s.neoBlocks, s.neoStacks, s.sleeve, s.nodePositions),
@@ -50,44 +101,19 @@ export default function CreatorMode() {
           ))}
         </div>
 
-        <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-          {mobileTab === "build" && <CreatorSidebar />}
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+          {mobileTab === "build" && <div style={{ flex: 1, overflow: "auto" }}><CreatorSidebar /></div>}
           {mobileTab === "graph" && (
             <div style={graphWrap}>
               <SnapSlotOverlay />
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                nodeTypes={nodeTypes}
-                fitView
-                fitViewOptions={{ padding: 0.3 }}
-                style={{ background: "#0a0a0f" }}
-                proOptions={{ hideAttribution: true }}
-                panOnScroll={false}
-                zoomOnScroll={false}
-                zoomOnPinch={true}
-                zoomOnDoubleClick={false}
-                nodesDraggable={false}
-              >
-                <Background color="rgba(255,255,255,0.05)" gap={20} />
-                <Controls
-                  style={{
-                    background: "rgba(30,30,40,0.9)",
-                    borderRadius: 8,
-                    border: "1px solid rgba(255,255,255,0.1)"
-                  }}
-                />
-                <MiniMap
-                  style={{ background: "#15151c" }}
-                  nodeColor="#60a5fa"
-                  maskColor="rgba(0,0,0,0.7)"
-                />
-              </ReactFlow>
+              <ReactFlowProvider>
+                <MobileGraphPane nodes={nodes} edges={edges} />
+              </ReactFlowProvider>
             </div>
           )}
-          {mobileTab === "inspect" && <BlockEditorPanel />}
-          {mobileTab === "library" && <TutorialLibraryPanel />}
-          {mobileTab === "output" && <TutorialOutputPanel />}
+          {mobileTab === "inspect" && <div style={{ flex: 1, overflow: "auto" }}><BlockEditorPanel /></div>}
+          {mobileTab === "library" && <div style={{ flex: 1, overflow: "auto" }}><TutorialLibraryPanel /></div>}
+          {mobileTab === "output" && <div style={{ flex: 1, overflow: "auto" }}><TutorialOutputPanel /></div>}
         </div>
       </div>
     );
@@ -170,7 +196,8 @@ const tabBtn: React.CSSProperties = {
 };
 
 const graphWrap: React.CSSProperties = {
-  height: "100%",
+  flex: 1,
+  minHeight: 0,
   width: "100%",
   overflow: "hidden",
   touchAction: "none",

@@ -1,20 +1,29 @@
+import { useState, useEffect } from "react";
 import { useUmgStore } from "../store";
 import { getSnapSlots, type SnapSlot } from "./snapSlots";
 
-const isMobile = typeof window !== "undefined" && window.innerWidth < 900;
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== "undefined" ? window.innerWidth < 900 : false
+  );
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return isMobile;
+}
 
 export function SnapSlotOverlay() {
-  const { movingNodeId, nodes, moveNodeToSlot, cancelMove, nodePositions } = useUmgStore(s => ({
+  const { movingNodeId, moveNodeToSlot, cancelMove, nodePositions } = useUmgStore(s => ({
     movingNodeId: s.movingNodeId,
-    nodes: s.blocks.length > 0 || s.neoBlocks.length > 0,
     moveNodeToSlot: s.moveNodeToSlot,
     cancelMove: s.cancelMove,
     nodePositions: s.nodePositions,
   }));
+  const compact = useIsMobile();
 
   if (!movingNodeId) return null;
-
-  const compact = isMobile;
   const slots = getSnapSlots(compact);
 
   const occupiedSlots = new Set<string>();
