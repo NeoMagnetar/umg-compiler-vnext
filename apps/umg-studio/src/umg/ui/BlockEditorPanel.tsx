@@ -118,6 +118,8 @@ export function BlockEditorPanel() {
         </button>
       </div>
 
+      <MoveNodeButton nodeId={s.selectedNodeId} />
+
       <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>Title</div>
       <input
         value={block.title}
@@ -370,3 +372,38 @@ const addTagBtn: React.CSSProperties = {
   fontWeight: 600,
   cursor: "pointer",
 };
+
+function MoveNodeButton({ nodeId }: { nodeId: string | null }) {
+  const { movingNodeId, beginMove, cancelMove } = useUmgStore();
+
+  if (!nodeId) return null;
+
+  const isMoving = movingNodeId === nodeId;
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <button
+        onClick={() => isMoving ? cancelMove() : beginMove(nodeId)}
+        style={{
+          width: "100%",
+          padding: "10px 12px",
+          borderRadius: 8,
+          border: isMoving ? "1px solid rgba(34, 197, 94, 0.5)" : "1px solid rgba(255,255,255,0.2)",
+          background: isMoving ? "rgba(34, 197, 94, 0.2)" : "rgba(60,60,80,0.5)",
+          color: isMoving ? "#22c55e" : "#e0e0e0",
+          fontSize: 12,
+          fontWeight: 600,
+          cursor: "pointer",
+        }}
+        data-testid="button-move-node"
+      >
+        {isMoving ? "Cancel Move" : "Move Node"}
+      </button>
+      {isMoving && (
+        <div style={{ fontSize: 10, opacity: 0.6, color: "#22c55e", marginTop: 6 }}>
+          Tap a green slot on the graph to move this node
+        </div>
+      )}
+    </div>
+  );
+}

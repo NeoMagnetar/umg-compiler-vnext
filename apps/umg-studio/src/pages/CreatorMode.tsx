@@ -9,6 +9,7 @@ import { TutorialLibraryPanel } from "../umg/ui/TutorialLibraryPanel";
 import { ImportExportControls } from "../umg/ui/ImportExportControls";
 import { nodeTypes } from "../umg/graph/nodeTypes";
 import { buildGraph } from "../umg/graph/buildNodes";
+import { SnapSlotOverlay } from "../umg/graph/SnapSlotOverlay";
 import { useUmgStore } from "../umg/store";
 
 type MobileTab = "build" | "graph" | "inspect" | "output" | "library";
@@ -20,8 +21,8 @@ export default function CreatorMode() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("build");
 
   const { nodes, edges } = useMemo(
-    () => buildGraph(s.blocks, s.neoBlocks, s.neoStacks, s.sleeve),
-    [s.blocks, s.neoBlocks, s.neoStacks, s.sleeve]
+    () => buildGraph(s.blocks, s.neoBlocks, s.neoStacks, s.sleeve, s.nodePositions),
+    [s.blocks, s.neoBlocks, s.neoStacks, s.sleeve, s.nodePositions]
   );
 
   if (isMobile) {
@@ -53,6 +54,7 @@ export default function CreatorMode() {
           {mobileTab === "build" && <CreatorSidebar />}
           {mobileTab === "graph" && (
             <div style={graphWrap}>
+              <SnapSlotOverlay />
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -101,6 +103,7 @@ export default function CreatorMode() {
         <CreatorSidebar />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
           <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
+            <SnapSlotOverlay />
             <ReactFlow
               nodes={nodes}
               edges={edges}

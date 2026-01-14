@@ -30,6 +30,9 @@ type State = {
   runtimeSpec: any | null;
   trace: any | null;
 
+  nodePositions: Record<string, { x: number; y: number }>;
+  movingNodeId: string | null;
+
   setHydrated: (v: boolean) => void;
   recomputeTutorialStep: () => void;
 
@@ -63,6 +66,10 @@ type State = {
   loadNeoBlockFromLibrary: (item: LibraryItem<NeoBlock>) => void;
   loadNeoStackFromLibrary: (item: LibraryItem<NeoStack>, neoBlocks: NeoBlock[]) => void;
   loadSleeveFromLibrary: (item: LibraryItem<Sleeve>, neoStack: NeoStack, neoBlocks: NeoBlock[]) => void;
+
+  beginMove: (nodeId: string) => void;
+  cancelMove: () => void;
+  moveNodeToSlot: (nodeId: string, slotId: string, x: number, y: number) => void;
 };
 
 export const useUmgStore = create<State>()(
@@ -87,6 +94,9 @@ export const useUmgStore = create<State>()(
 
       runtimeSpec: null,
       trace: null,
+
+      nodePositions: {},
+      movingNodeId: null,
 
       setHydrated: (v) => set({ hydrated: v }),
 
@@ -371,6 +381,8 @@ export const useUmgStore = create<State>()(
           sleeve: null,
           runtimeSpec: null,
           trace: null,
+          nodePositions: {},
+          movingNodeId: null,
         });
       },
 
@@ -456,6 +468,9 @@ export const useUmgStore = create<State>()(
           trace: null,
           selectedBlockId: newBlock.id,
           selectedNeoBlockIds: [],
+          selectedNodeId: null,
+          movingNodeId: null,
+          nodePositions: {},
         });
         get().recomputeTutorialStep();
       },
@@ -476,6 +491,9 @@ export const useUmgStore = create<State>()(
           trace: null,
           selectedBlockId: null,
           selectedNeoBlockIds: [newNeoBlock.id],
+          selectedNodeId: null,
+          movingNodeId: null,
+          nodePositions: {},
         });
         get().recomputeTutorialStep();
       },
@@ -502,6 +520,9 @@ export const useUmgStore = create<State>()(
           trace: null,
           selectedBlockId: null,
           selectedNeoBlockIds: newNeoBlocks.map(nb => nb.id),
+          selectedNodeId: null,
+          movingNodeId: null,
+          nodePositions: {},
         });
         get().recomputeTutorialStep();
       },
@@ -534,8 +555,23 @@ export const useUmgStore = create<State>()(
           trace: null,
           selectedBlockId: null,
           selectedNeoBlockIds: newNeoBlocks.map(nb => nb.id),
+          selectedNodeId: null,
+          movingNodeId: null,
+          nodePositions: {},
         });
         get().recomputeTutorialStep();
+      },
+
+      beginMove: (nodeId) => set({ movingNodeId: nodeId }),
+
+      cancelMove: () => set({ movingNodeId: null }),
+
+      moveNodeToSlot: (nodeId, _slotId, x, y) => {
+        const { nodePositions } = get();
+        set({
+          nodePositions: { ...nodePositions, [nodeId]: { x, y } },
+          movingNodeId: null,
+        });
       },
     }),
     {
@@ -555,6 +591,7 @@ export const useUmgStore = create<State>()(
         sleeve: state.sleeve,
         runtimeSpec: state.runtimeSpec,
         trace: state.trace,
+        nodePositions: state.nodePositions,
       }),
 
       migrate: (persisted: any, version) => {

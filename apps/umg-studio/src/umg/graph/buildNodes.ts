@@ -6,7 +6,8 @@ export function buildGraph(
   blocks: Block[],
   neoBlocks: NeoBlock[],
   neoStacks: NeoStack[],
-  sleeve: Sleeve | null
+  sleeve: Sleeve | null,
+  nodePositions: Record<string, { x: number; y: number }> = {}
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -59,10 +60,12 @@ export function buildGraph(
       const y = roleY0 + moltIndex(role) * roleGap;
       const isGhost = !block;
 
+      const nodeId = `role-${role}`;
+      const storedPos = nodePositions[nodeId];
       nodes.push({
-        id: `role-${role}`,
+        id: nodeId,
         type: isGhost ? "ghost" : "basic",
-        position: { x: roleX, y },
+        position: storedPos ?? { x: roleX, y },
         data: {
           title: role,
           subtitle: block ? block.title : "next",
@@ -86,10 +89,12 @@ export function buildGraph(
   }
 
   neoBlocks.forEach((nb, i) => {
+    const nodeId = `nb-${nb.id}`;
+    const storedPos = nodePositions[nodeId];
     nodes.push({
-      id: `nb-${nb.id}`,
+      id: nodeId,
       type: "neoblock",
-      position: { x: nbX, y: nbY0 + i * nbGap },
+      position: storedPos ?? { x: nbX, y: nbY0 + i * nbGap },
       data: {
         neoBlockId: nb.id,
         label: nb.label,
@@ -109,10 +114,12 @@ export function buildGraph(
 
   const lastStack = neoStacks[neoStacks.length - 1];
   if (lastStack) {
+    const nsNodeId = `ns-${lastStack.id}`;
+    const nsStoredPos = nodePositions[nsNodeId];
     nodes.push({
-      id: `ns-${lastStack.id}`,
+      id: nsNodeId,
       type: "neostack",
-      position: { x: rightX, y: rightY0 },
+      position: nsStoredPos ?? { x: rightX, y: rightY0 },
       data: { 
         title: `NEOSTACK: ${lastStack.name}`, 
         subtitle: `${lastStack.neoBlockIds.length} neoblocks`,
@@ -122,10 +129,12 @@ export function buildGraph(
   }
 
   if (sleeve) {
+    const slNodeId = `sl-${sleeve.id}`;
+    const slStoredPos = nodePositions[slNodeId];
     nodes.push({
-      id: `sl-${sleeve.id}`,
+      id: slNodeId,
       type: "sleeve",
-      position: { x: rightX, y: rightY0 + 140 },
+      position: slStoredPos ?? { x: rightX, y: rightY0 + 140 },
       data: { 
         title: `SLEEVE: ${sleeve.name}`, 
         subtitle: sleeve.neoStackId ? "ready" : "empty",
