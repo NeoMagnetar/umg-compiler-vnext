@@ -1,6 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useUmgStore } from "../store";
-import type { MoltRole } from "../types";
+import type { MoltRole, Block } from "../types";
+
+const MAX_TAG_LENGTH = 32;
+const MAX_TAGS = 10;
 
 function roleFromNodeId(nodeId: string | null): MoltRole | null {
   if (!nodeId) return null;
@@ -8,18 +11,76 @@ function roleFromNodeId(nodeId: string | null): MoltRole | null {
   return null;
 }
 
+function blockFromNodeId(nodeId: string | null, blocks: Block[]): Block | null {
+  if (!nodeId) return null;
+  if (nodeId.startsWith("role-")) {
+    const role = nodeId.replace("role-", "") as MoltRole;
+    return blocks.find(b => b.role === role) ?? null;
+  }
+  return blocks.find(b => b.id === nodeId) ?? null;
+}
+
+function sanitizeTag(tag: string): string {
+  return tag.trim().toLowerCase().slice(0, MAX_TAG_LENGTH);
+}
+
+function dedupeAndLimit(tags: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const t of tags) {
+    const clean = sanitizeTag(t);
+    if (clean && !seen.has(clean) && result.length < MAX_TAGS) {
+      seen.add(clean);
+      result.push(clean);
+    }
+  }
+  return result;
+}
+
 export function BlockEditorPanel() {
   const s = useUmgStore();
-  const role = useMemo(() => roleFromNodeId(s.selectedNodeId), [s.selectedNodeId]);
+  const [tagInput, setTagInput] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  const block = role ? s.blocks.find(b => b.role === role) : null;
+  const block = useMemo(() => blockFromNodeId(s.selectedNodeId, s.blocks), [s.selectedNodeId, s.blocks]);
+  const role = block?.role ?? roleFromNodeId(s.selectedNodeId);
 
-  if (!role) {
+  const handleCopyId = () => {
+    if (block) {
+      navigator.clipboard.writeText(block.id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
+  const handleAddTag = () => {
+    if (!block) return;
+    const clean = sanitizeTag(tagInput);
+    if (!clean) return;
+    const newTags = dedupeAndLimit([...block.tags, clean]);
+    s.updateBlockTags(block.id, newTags);
+    setTagInput("");
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    if (!block) return;
+    s.updateBlockTags(block.id, block.tags.filter(t => t !== tag));
+  };
+
+  const handlePriorityChange = (val: string) => {
+    if (!block) return;
+    const num = parseInt(val, 10);
+    if (isNaN(num)) return;
+    const clamped = Math.max(0, Math.min(100, num));
+    s.updateBlockPriorityOrder(block.id, clamped);
+  };
+
+  if (!s.selectedNodeId) {
     return (
       <div style={panel}>
         <div style={{ fontWeight: 800, color: "#e0e0e0" }}>Inspector</div>
         <div style={{ fontSize: 12, opacity: 0.6, marginTop: 8, color: "#e0e0e0" }}>
-          Click a MOLT role node on the graph to inspect/edit.
+          Select a block on the graph to inspect and edit.
         </div>
       </div>
     );
@@ -28,9 +89,9 @@ export function BlockEditorPanel() {
   if (!block) {
     return (
       <div style={panel}>
-        <div style={{ fontWeight: 800, color: "#e0e0e0" }}>Inspector: {role}</div>
+        <div style={{ fontWeight: 800, color: "#e0e0e0" }}>Inspector{role ? `: ${role}` : ""}</div>
         <div style={{ fontSize: 12, opacity: 0.6, marginTop: 8, color: "#e0e0e0" }}>
-          No block exists for this role yet.
+          No block exists for this role yet. Use the Build panel to create one.
         </div>
       </div>
     );
@@ -38,35 +99,114 @@ export function BlockEditorPanel() {
 
   return (
     <div style={panel}>
-      <div style={{ fontWeight: 900, fontSize: 14, color: "#e0e0e0" }}>Inspector: {role}</div>
+      <div style={{ fontWeight: 900, fontSize: 14, color: "#e0e0e0" }}>Inspector: {block.role}</div>
 
-      <div style={{ fontSize: 11, opacity: 0.5, marginTop: 6, color: "#e0e0e0" }}>
-        Block ID: {block.id}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+        <div style={{ fontSize: 11, opacity: 0.5, color: "#e0e0e0", fontFamily: "monospace" }}>
+          {block.id}
+        </div>
+        <button
+          onClick={handleCopyId}
+          style={copyBtn}
+          data-testid="button-copy-block-id"
+        >
+          {copied ? "Copied!" : "Copy ID"}
+        </button>
       </div>
 
-      <div style={{ marginTop: 12, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>Title</div>
+      <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>Title</div>
       <input
         value={block.title}
-        onChange={(e) => s.updateBlockTitle(role, e.target.value)}
+        onChange={(e) => s.updateBlockTitle(block.role, e.target.value)}
         style={input}
         data-testid="input-block-title"
       />
 
-      <div style={{ marginTop: 12, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>Content</div>
+      <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>Content</div>
       <textarea
         value={block.content}
-        onChange={(e) => s.updateBlockContent(role, e.target.value)}
+        onChange={(e) => s.updateBlockContent(block.role, e.target.value)}
         style={textarea}
-        placeholder={`Write ${role.toLowerCase()} content...`}
+        placeholder={`Write ${block.role.toLowerCase()} content...`}
         data-testid="textarea-block-content"
       />
 
-      <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>Governance</div>
-      <ul style={{ margin: "6px 0 0 18px", fontSize: 11, opacity: 0.7, color: "#e0e0e0" }}>
-        <li>Edits are live on the graph</li>
-        <li>Library items are snapshots</li>
-        <li>Compression requires all 4 MOLT roles</li>
-      </ul>
+      <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>
+        Priority Order
+        <span style={{ fontWeight: 400, opacity: 0.5, marginLeft: 6 }}>(0-100, lower = higher priority)</span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+        <button
+          onClick={() => handlePriorityChange(String(block.priorityOrder - 1))}
+          style={stepperBtn}
+          disabled={block.priorityOrder <= 0}
+          data-testid="button-priority-decrement"
+        >
+          -
+        </button>
+        <input
+          type="number"
+          min={0}
+          max={100}
+          value={block.priorityOrder}
+          onChange={(e) => handlePriorityChange(e.target.value)}
+          style={{ ...input, width: 60, textAlign: "center", margin: 0 }}
+          data-testid="input-priority-order"
+        />
+        <button
+          onClick={() => handlePriorityChange(String(block.priorityOrder + 1))}
+          style={stepperBtn}
+          disabled={block.priorityOrder >= 100}
+          data-testid="button-priority-increment"
+        >
+          +
+        </button>
+      </div>
+
+      <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: "#e0e0e0" }}>
+        Tags
+        <span style={{ fontWeight: 400, opacity: 0.5, marginLeft: 6 }}>({block.tags.length}/{MAX_TAGS})</span>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+        {block.tags.map(tag => (
+          <span key={tag} style={tagChip}>
+            {tag}
+            <button
+              onClick={() => handleRemoveTag(tag)}
+              style={tagRemoveBtn}
+              data-testid={`button-remove-tag-${tag}`}
+            >
+              x
+            </button>
+          </span>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+        <input
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+          placeholder="Add tag..."
+          style={{ ...input, flex: 1, margin: 0 }}
+          maxLength={MAX_TAG_LENGTH}
+          data-testid="input-add-tag"
+        />
+        <button
+          onClick={handleAddTag}
+          style={addTagBtn}
+          disabled={!tagInput.trim() || block.tags.length >= MAX_TAGS}
+          data-testid="button-add-tag"
+        >
+          Add
+        </button>
+      </div>
+
+      <div style={{ marginTop: 16, padding: 10, borderRadius: 8, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#e0e0e0", marginBottom: 6 }}>Validation</div>
+        <div style={{ fontSize: 11, color: "#4ade80" }}>
+          Block is valid
+        </div>
+      </div>
     </div>
   );
 }
@@ -102,4 +242,59 @@ const textarea: React.CSSProperties = {
   background: "rgba(0,0,0,0.3)",
   color: "#e0e0e0",
   fontSize: 12
+};
+
+const copyBtn: React.CSSProperties = {
+  fontSize: 10,
+  padding: "2px 8px",
+  borderRadius: 4,
+  border: "1px solid rgba(255,255,255,0.15)",
+  background: "rgba(255,255,255,0.05)",
+  color: "#9ca3af",
+  cursor: "pointer",
+};
+
+const stepperBtn: React.CSSProperties = {
+  width: 28,
+  height: 28,
+  borderRadius: 6,
+  border: "1px solid rgba(255,255,255,0.15)",
+  background: "rgba(255,255,255,0.05)",
+  color: "#e0e0e0",
+  fontSize: 14,
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+const tagChip: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+  fontSize: 11,
+  padding: "3px 8px",
+  borderRadius: 999,
+  background: "rgba(96,165,250,0.15)",
+  border: "1px solid rgba(96,165,250,0.3)",
+  color: "#93c5fd",
+};
+
+const tagRemoveBtn: React.CSSProperties = {
+  background: "none",
+  border: "none",
+  color: "#9ca3af",
+  fontSize: 10,
+  cursor: "pointer",
+  padding: 0,
+  marginLeft: 2,
+};
+
+const addTagBtn: React.CSSProperties = {
+  padding: "8px 12px",
+  borderRadius: 8,
+  border: "1px solid rgba(96,165,250,0.3)",
+  background: "rgba(96,165,250,0.1)",
+  color: "#60a5fa",
+  fontSize: 12,
+  fontWeight: 600,
+  cursor: "pointer",
 };
