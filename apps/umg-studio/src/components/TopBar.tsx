@@ -102,6 +102,10 @@ export default function TopBar({
         </button>
       )}
       <span style={{ fontWeight: 600, fontSize: 15 }}>UMG Studio</span>
+      <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.2, marginLeft: 8 }}>
+        <span style={{ fontSize: 10, fontWeight: 600, color: "#ff69b4" }}>Universal Modular Generation</span>
+        <span style={{ fontSize: 9, fontWeight: 500, color: "#39ff14" }}>Invented By Christopher L. Haynes</span>
+      </div>
       {isDirty && (
         <span style={{ 
           fontSize: 10, 
