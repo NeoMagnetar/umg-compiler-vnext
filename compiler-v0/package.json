@@ -1,15 +1,46 @@
 {
-  "name": "umg-compiler-v0",
-  "version": "0.0.1",
+  "name": "umg-compiler",
+  "version": "0.1.0",
+  "description": "UMG Compiler — compiles UMG Sleeves into RuntimeSpec + Trace",
   "type": "module",
+  "license": "Apache-2.0",
+
+  "bin": {
+    "umg": "./dist/cli.js"
+  },
+
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.json",
+    "cli": "node ./dist/cli.js",
     "snapshot": "node --loader ts-node/esm scripts/snapshot.ts",
     "contract": "node --loader ts-node/esm scripts/contractCheck.ts"
   },
+
   "dependencies": {},
+
   "devDependencies": {
     "typescript": "^5.6.3",
     "ts-node": "^10.9.2"
+  },
+
+  "engines": {
+    "node": ">=20"
   }
 }
