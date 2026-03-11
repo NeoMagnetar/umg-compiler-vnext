@@ -96,11 +96,16 @@ export function selectSubject(
         });
 
         const candidates = subjectIds.map(id => blocksById.get(id)!).filter(Boolean);
-        const result = resolveByPriority(candidates, {
-          moltType: "subject",
-          stackId: stack.stackId,
-          reason: "select single subject from bundled alternates",
-        }, tracePush);
+        const result = resolveByPriority(
+          candidates,
+          {
+            moltType: "subject",
+            stackId: stack.stackId,
+            reason: "select single subject from bundled alternates",
+          },
+          tracePush,
+          priorityOverrides
+        );
 
         if (result.error) {
           selections.push({

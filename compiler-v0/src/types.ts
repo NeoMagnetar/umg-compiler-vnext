@@ -17,7 +17,7 @@ export interface Block {
   moltType: MoltType;
   role?: BlockRole;
   priorityGroup?: PriorityGroup; // categorical tier: Override > Explicit > Default > Fallback
-  priorityOrder?: number; // tie-breaker within same group (1 = highest, lower wins)
+  priorityOrder?: number; // tie-breaker within same group (higher number = stronger)
   content: string;
   tags?: string[];
 }

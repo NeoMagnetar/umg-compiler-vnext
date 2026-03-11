@@ -1,4 +1,5 @@
 import { compileSleeve, type Sleeve, type TriggerState, type Block, type PriorityGroup } from "../src/index.js";
+import { compareBlocksByPriority, sortByPriorityGroupAndOrder, resolveByPriority } from "../src/priority.js";
 
 function makeBlock(
   id: string,
@@ -32,8 +33,26 @@ function makeSleeve(blocks: Block[], stackBlockIds: string[], segments?: any[]):
 }
 
 const triggerState: TriggerState = { activeTriggerIds: [] };
+const noTrace = (_evt: any) => {};
+
+let passed = 0;
+let failed = 0;
+
+function assert(label: string, condition: boolean) {
+  if (condition) {
+    console.log(`  PASS: ${label} ✓`);
+    passed++;
+  } else {
+    console.log(`  FAIL: ${label} ✗`);
+    failed++;
+  }
+}
 
 console.log("=== Priority Resolution Tests ===\n");
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Existing tests — updated for higher-number-wins semantics
+// ─────────────────────────────────────────────────────────────────────────────
 
 console.log("Test 1: Non-breaking - single primary (no collision)");
 {
@@ -42,9 +61,8 @@ console.log("Test 1: Non-breaking - single primary (no collision)");
     ["p1"]
   );
   const result = compileSleeve(sleeve, triggerState);
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  primary selected:", result.runtime?.primaryByStackId?.["stack-1"]);
-  console.log("  PASS:", !result.hasErrors && result.runtime?.primaryByStackId?.["stack-1"] === "p1" ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("p1 selected", result.runtime?.primaryByStackId?.["stack-1"] === "p1");
 }
 
 console.log("\nTest 2: Group resolution - Override beats Explicit");
@@ -64,12 +82,11 @@ console.log("\nTest 2: Group resolution - Override beats Explicit");
     }]
   );
   const result = compileSleeve(sleeve, triggerState);
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  primary selected:", result.runtime?.primaryByStackId?.["stack-1"]);
-  console.log("  PASS:", !result.hasErrors && result.runtime?.primaryByStackId?.["stack-1"] === "p2" ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("Override group wins (p2)", result.runtime?.primaryByStackId?.["stack-1"] === "p2");
 }
 
-console.log("\nTest 3: Order resolution - lower priorityOrder wins within same group");
+console.log("\nTest 3: Order resolution - higher priorityOrder wins within same group");
 {
   const sleeve = makeSleeve(
     [
@@ -87,12 +104,11 @@ console.log("\nTest 3: Order resolution - lower priorityOrder wins within same g
     }]
   );
   const result = compileSleeve(sleeve, triggerState);
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  primary selected:", result.runtime?.primaryByStackId?.["stack-1"]);
-  console.log("  PASS:", !result.hasErrors && result.runtime?.primaryByStackId?.["stack-1"] === "p2" ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("highest order (p3=3) wins", result.runtime?.primaryByStackId?.["stack-1"] === "p3");
 }
 
-console.log("\nTest 4: Ambiguous priority - same group, no priorityOrder → FAIL");
+console.log("\nTest 4: Same group, no priorityOrder → deterministic id tie-break");
 {
   const sleeve = makeSleeve(
     [
@@ -109,10 +125,8 @@ console.log("\nTest 4: Ambiguous priority - same group, no priorityOrder → FAI
     }]
   );
   const result = compileSleeve(sleeve, triggerState);
-  const hasAmbiguousError = result.trace.events.some(e => e.code === "ERR_PRIORITY_AMBIGUOUS");
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  hasAmbiguousError:", hasAmbiguousError);
-  console.log("  PASS:", result.hasErrors && hasAmbiguousError ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("alphabetically first id wins (p1)", result.runtime?.primaryByStackId?.["stack-1"] === "p1");
 }
 
 console.log("\nTest 5: ID tie-break - same group + same order → alphabetical id wins");
@@ -133,12 +147,11 @@ console.log("\nTest 5: ID tie-break - same group + same order → alphabetical i
     }]
   );
   const result = compileSleeve(sleeve, triggerState);
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  primary selected:", result.runtime?.primaryByStackId?.["stack-1"]);
-  console.log("  PASS:", !result.hasErrors && result.runtime?.primaryByStackId?.["stack-1"] === "p_alpha" ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("p_alpha wins (alphabetically first)", result.runtime?.primaryByStackId?.["stack-1"] === "p_alpha");
 }
 
-console.log("\nTest 6: Default group (missing priorityGroup) → treated as Default");
+console.log("\nTest 6: Default group (missing priorityGroup) → treated as Default, beats Fallback");
 {
   const sleeve = makeSleeve(
     [
@@ -155,12 +168,11 @@ console.log("\nTest 6: Default group (missing priorityGroup) → treated as Defa
     }]
   );
   const result = compileSleeve(sleeve, triggerState);
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  primary selected:", result.runtime?.primaryByStackId?.["stack-1"]);
-  console.log("  PASS:", !result.hasErrors && result.runtime?.primaryByStackId?.["stack-1"] === "p1" ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("Default group beats Fallback (p1)", result.runtime?.primaryByStackId?.["stack-1"] === "p1");
 }
 
-console.log("\nTest 7: Directive alternates bundle - priority resolution");
+console.log("\nTest 7: Directive alternates bundle - higher priorityOrder wins");
 {
   const sleeve = makeSleeve(
     [
@@ -180,9 +192,175 @@ console.log("\nTest 7: Directive alternates bundle - priority resolution");
   const result = compileSleeve(sleeve, triggerState);
   const neoBlock = result.runtime?.neoBlocks.find(nb => nb.stackId === "stack-1");
   const activeDirectives = neoBlock?.active.directiveIds;
-  console.log("  hasErrors:", result.hasErrors);
-  console.log("  activeDirectives:", activeDirectives);
-  console.log("  PASS:", !result.hasErrors && activeDirectives?.length === 1 && activeDirectives[0] === "d2" ? "✓" : "✗");
+  assert("no errors", !result.hasErrors);
+  assert("d1 wins (order=2 > order=1)", activeDirectives?.length === 1 && activeDirectives[0] === "d1");
 }
 
-console.log("\n=== All Tests Complete ===");
+// ─────────────────────────────────────────────────────────────────────────────
+// New tests required by pass-1 spec (Tests A–E)
+// ─────────────────────────────────────────────────────────────────────────────
+
+console.log("\nTest A: Higher numeric order wins (100 beats 10)");
+{
+  const blockA = makeBlock("block-a", "primary", "Explicit", 10);
+  const blockB = makeBlock("block-b", "primary", "Explicit", 100);
+  const cmp = compareBlocksByPriority(blockA, blockB);
+  assert("B (order=100) beats A (order=10): comparator returns positive", cmp > 0);
+
+  const sleeve = makeSleeve(
+    [blockA, blockB],
+    ["block-a", "block-b"],
+    [{
+      id: "bundle-1",
+      kind: "bundle",
+      stackId: "stack-1",
+      blockIds: ["block-a", "block-b"],
+      intent: "alternates",
+    }]
+  );
+  const result = compileSleeve(sleeve, triggerState);
+  assert("no errors", !result.hasErrors);
+  assert("block-b (order=100) selected as primary", result.runtime?.primaryByStackId?.["stack-1"] === "block-b");
+}
+
+console.log("\nTest B: Explicit numeric priority beats undefined");
+{
+  const blockA = makeBlock("block-a", "primary", "Explicit", undefined);
+  const blockB = makeBlock("block-b", "primary", "Explicit", 1);
+  const cmp = compareBlocksByPriority(blockA, blockB);
+  assert("B (order=1) beats A (order=undefined): comparator returns positive", cmp > 0);
+
+  const sleeve = makeSleeve(
+    [blockA, blockB],
+    ["block-a", "block-b"],
+    [{
+      id: "bundle-1",
+      kind: "bundle",
+      stackId: "stack-1",
+      blockIds: ["block-a", "block-b"],
+      intent: "alternates",
+    }]
+  );
+  const result = compileSleeve(sleeve, triggerState);
+  assert("no errors", !result.hasErrors);
+  assert("block-b (defined order) beats block-a (undefined)", result.runtime?.primaryByStackId?.["stack-1"] === "block-b");
+}
+
+console.log("\nTest C: Group precedence dominates over numeric order");
+{
+  const blockWeak = makeBlock("block-weak", "primary", "Fallback", 999);
+  const blockStrong = makeBlock("block-strong", "primary", "Override", 1);
+  const cmp = compareBlocksByPriority(blockWeak, blockStrong);
+  assert("Override (order=1) beats Fallback (order=999): comparator returns positive", cmp > 0);
+
+  const sleeve = makeSleeve(
+    [blockWeak, blockStrong],
+    ["block-weak", "block-strong"],
+    [{
+      id: "bundle-1",
+      kind: "bundle",
+      stackId: "stack-1",
+      blockIds: ["block-weak", "block-strong"],
+      intent: "alternates",
+    }]
+  );
+  const result = compileSleeve(sleeve, triggerState);
+  assert("no errors", !result.hasErrors);
+  assert("Override group wins despite lower numeric order", result.runtime?.primaryByStackId?.["stack-1"] === "block-strong");
+}
+
+console.log("\nTest D: Override changes winner");
+{
+  const blockA = makeBlock("block-a", "primary", "Explicit", 100);
+  const blockB = makeBlock("block-b", "primary", "Explicit", 10);
+
+  // Without override, A wins (order=100 > order=10)
+  const cmpNoOverride = compareBlocksByPriority(blockA, blockB);
+  assert("Without override: A (order=100) beats B (order=10)", cmpNoOverride < 0);
+
+  // With override boosting B to 200, B should win
+  const overrides = new Map<string, number>([["block-b", 200]]);
+  const cmpWithOverride = compareBlocksByPriority(blockA, blockB, overrides);
+  assert("With override (B→200): B beats A", cmpWithOverride > 0);
+
+  // Verify through full compile using governance override_priority effect
+  const sleeve: Sleeve = {
+    id: "test-sleeve",
+    name: "Test Sleeve",
+    blocks: [blockA, blockB],
+    stacks: [{
+      id: "stack-1",
+      name: "Test Stack",
+      blockIds: ["block-a", "block-b"],
+      segments: [{
+        id: "bundle-1",
+        kind: "bundle",
+        stackId: "stack-1",
+        blockIds: ["block-a", "block-b"],
+        intent: "alternates",
+      }],
+    }],
+    governance: [{
+      id: "gov-1",
+      scope: { type: "sleeve" },
+      rules: [{
+        id: "rule-boost-b",
+        name: "Boost block-b",
+        target: { blockIds: ["block-b"] },
+        effect: { type: "override_priority", severity: "hard", setTo: 200 },
+      }],
+    }],
+  };
+  const result = compileSleeve(sleeve, triggerState);
+  assert("no errors", !result.hasErrors);
+  assert("block-b wins after governance override boosts its priority to 200", result.runtime?.primaryByStackId?.["stack-1"] === "block-b");
+}
+
+console.log("\nTest E: Alternates and ranked paths agree on strongest candidate");
+{
+  const blockA = makeBlock("cand-a", "directive", "Explicit", 10);
+  const blockB = makeBlock("cand-b", "directive", "Explicit", 100);
+  const blocksById = new Map<string, Block>([
+    ["cand-a", blockA],
+    ["cand-b", blockB],
+  ]);
+
+  // Ranked path: sortByPriorityGroupAndOrder puts B first (higher order wins)
+  const ranked = sortByPriorityGroupAndOrder(["cand-a", "cand-b"], blocksById);
+  assert("Ranked path: cand-b first (order=100)", ranked[0] === "cand-b");
+
+  // Alternates path: resolveByPriority picks B
+  let resolvedWinner: string | undefined;
+  resolveByPriority([blockA, blockB], { moltType: "directive", reason: "test" }, (evt) => {
+    if (evt.priorityWinnerId) resolvedWinner = evt.priorityWinnerId;
+  });
+  assert("Alternates path: cand-b wins (order=100)", resolvedWinner === "cand-b");
+
+  assert("Ranked and alternates agree: both pick cand-b", ranked[0] === resolvedWinner);
+
+  // Verify through full compile (alternates bundle)
+  const sleeve = makeSleeve(
+    [makeBlock("p1", "primary"), blockA, blockB],
+    ["p1", "cand-a", "cand-b"],
+    [{
+      id: "bundle-dir",
+      kind: "bundle",
+      stackId: "stack-1",
+      blockIds: ["cand-a", "cand-b"],
+      intent: "alternates",
+    }]
+  );
+  const result = compileSleeve(sleeve, triggerState);
+  const neoBlock = result.runtime?.neoBlocks.find(nb => nb.stackId === "stack-1");
+  assert("no errors", !result.hasErrors);
+  assert("Alternates compile: cand-b selected as active directive", neoBlock?.active.directiveIds[0] === "cand-b");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Summary
+// ─────────────────────────────────────────────────────────────────────────────
+
+console.log(`\n=== All Tests Complete: ${passed} passed, ${failed} failed ===`);
+if (failed > 0) {
+  process.exit(1);
+}

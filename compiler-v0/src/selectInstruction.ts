@@ -96,11 +96,16 @@ export function selectInstruction(
         });
 
         const candidates = instructionIds.map(id => blocksById.get(id)!).filter(Boolean);
-        const result = resolveByPriority(candidates, {
-          moltType: "instruction",
-          stackId: stack.stackId,
-          reason: "select single instruction from bundled alternates",
-        }, tracePush);
+        const result = resolveByPriority(
+          candidates,
+          {
+            moltType: "instruction",
+            stackId: stack.stackId,
+            reason: "select single instruction from bundled alternates",
+          },
+          tracePush,
+          priorityOverrides
+        );
 
         if (result.error) {
           selections.push({

@@ -93,11 +93,16 @@ export function selectDirective(
         });
 
         const candidates = directiveIds.map(id => blocksById.get(id)!).filter(Boolean);
-        const result = resolveByPriority(candidates, {
-          moltType: "directive",
-          stackId: stack.stackId,
-          reason: "select single directive from bundled alternates",
-        }, tracePush);
+        const result = resolveByPriority(
+          candidates,
+          {
+            moltType: "directive",
+            stackId: stack.stackId,
+            reason: "select single directive from bundled alternates",
+          },
+          tracePush,
+          priorityOverrides
+        );
 
         if (result.error) {
           selections.push({

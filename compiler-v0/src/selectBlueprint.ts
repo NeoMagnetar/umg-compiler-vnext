@@ -96,11 +96,16 @@ export function selectBlueprint(
         });
 
         const candidates = blueprintIds.map(id => blocksById.get(id)!).filter(Boolean);
-        const result = resolveByPriority(candidates, {
-          moltType: "blueprint",
-          stackId: stack.stackId,
-          reason: "select single blueprint from bundled alternates",
-        }, tracePush);
+        const result = resolveByPriority(
+          candidates,
+          {
+            moltType: "blueprint",
+            stackId: stack.stackId,
+            reason: "select single blueprint from bundled alternates",
+          },
+          tracePush,
+          priorityOverrides
+        );
 
         if (result.error) {
           selections.push({

@@ -113,11 +113,16 @@ export function selectPrimary(
     });
 
     const candidates = primaryIds.map(id => blocksById.get(id)!).filter(Boolean);
-    const result = resolveByPriority(candidates, {
-      moltType: "primary",
-      stackId: stack.stackId,
-      reason: "select single primary from bundled alternates",
-    }, tracePush);
+    const result = resolveByPriority(
+      candidates,
+      {
+        moltType: "primary",
+        stackId: stack.stackId,
+        reason: "select single primary from bundled alternates",
+      },
+      tracePush,
+      priorityOverrides
+    );
 
     if (result.error) {
       continue;
