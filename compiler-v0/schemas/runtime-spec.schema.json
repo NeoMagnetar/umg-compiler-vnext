@@ -1,0 +1,28 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://umg.envoy/schemas/runtime-spec.schema.json",
+  "title": "UMG RuntimeSpec Schema v0.1",
+  "description": "Resolved operating structure emitted by the compiler.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "runtime_spec_version": { "type": "string" },
+    "runtime_spec_id": { "type": "string", "minLength": 1 },
+    "source_ir_id": { "type": "string", "minLength": 1 },
+    "active_sleeve": { "type": ["object", "string"] },
+    "active_route": { "type": ["object", "string"] },
+    "active_neostacks": { "type": "array", "items": { "type": ["object", "string"] } },
+    "active_neoblocks": { "type": "array", "items": { "type": ["object", "string"] } },
+    "active_molt_blocks": { "type": "array", "items": { "type": ["object", "string"] } },
+    "bundles": { "type": "array", "items": { "type": ["object", "string"] } },
+    "overlays": { "type": "array", "items": { "type": ["object", "string"] } },
+    "runtime_slots": { "type": "array", "items": { "type": ["object", "string"] } },
+    "excluded": { "type": "array", "items": { "type": ["object", "string"] } },
+    "merge_outputs": { "type": "array", "items": { "type": ["object", "string"] } },
+    "capabilities": { "type": "array", "items": { "type": ["object", "string"] } },
+    "services": { "type": "array", "items": { "type": ["object", "string"] } },
+    "state": { "type": "object", "additionalProperties": true },
+    "diagnostics": { "type": "array", "items": { "type": ["object", "string"] } }
+  },
+  "required": ["runtime_spec_version", "runtime_spec_id", "source_ir_id", "active_sleeve", "active_route", "diagnostics"]
+}
