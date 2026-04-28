@@ -1,0 +1,47 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://umg.envoy/schemas/trace.schema.json",
+  "title": "UMG Trace Schema v0.1",
+  "description": "Machine-readable and human-auditable compiler explanation history.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "trace_version": { "type": "string" },
+    "trace_id": { "type": "string", "minLength": 1 },
+    "source_ir_id": { "type": "string", "minLength": 1 },
+    "runtime_spec_id": { "type": ["string", "null"] },
+    "compiler": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "version": { "type": ["string", "null"] },
+        "profile": { "type": ["string", "null"] }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "event_id": { "type": "string", "minLength": 1 },
+          "event_type": { "type": "string", "minLength": 1 },
+          "pass": { "type": ["integer", "null"] },
+          "timestamp": { "type": ["string", "null"], "format": "date-time" },
+          "artifact_refs": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "decision": { "type": ["string", "object", "null"] },
+          "reason": { "type": ["string", "null"] },
+          "inputs": { "type": ["object", "array", "null"] },
+          "outputs": { "type": ["object", "array", "null"] },
+          "diagnostic_level": { "type": ["string", "null"], "enum": ["info", "warn", "error", null] },
+          "source_refs": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+        },
+        "required": ["event_id", "event_type"]
+      }
+    },
+    "diagnostics": { "type": "array", "items": { "type": ["object", "string"] } },
+    "summary": { "type": ["object", "string", "null"] }
+  },
+  "required": ["trace_version", "trace_id", "source_ir_id", "events"]
+}

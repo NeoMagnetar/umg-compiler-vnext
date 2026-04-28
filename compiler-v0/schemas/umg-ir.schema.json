@@ -1,0 +1,77 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://umg.envoy/schemas/umg-ir.schema.json",
+  "title": "UMG IR Schema v0.1",
+  "description": "Canonical normalized compiler graph input for UMG.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ir_version": { "type": "string" },
+    "ir_id": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sleeve_id": { "type": ["string", "null"] },
+        "sleeve_version": { "type": ["string", "null"] },
+        "library_sources": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "compiled_at": { "type": ["string", "null"], "format": "date-time" },
+        "compiler_target": { "type": ["string", "null"] }
+      }
+    },
+    "priority_profile": { "type": ["string", "null"] },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "node_id": { "type": "string", "minLength": 1 },
+          "node_type": { "type": "string", "minLength": 1 },
+          "artifact_ref": { "type": ["string", "null"] },
+          "state": { "type": ["string", "null"] },
+          "payload": { "type": ["object", "array", "string", "null"] }
+        },
+        "required": ["node_id", "node_type"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "edge_kind": { "type": "string", "minLength": 1 },
+          "condition": { "type": ["string", "object", "null"] },
+          "notes": { "type": ["string", "null"] }
+        },
+        "required": ["from", "to", "edge_kind"]
+      }
+    },
+    "routes": { "type": "array", "items": { "type": ["object", "string"] } },
+    "gates": { "type": "array", "items": { "type": ["object", "string"] } },
+    "bundles": { "type": "array", "items": { "type": ["object", "string"] } },
+    "overlays": { "type": "array", "items": { "type": ["object", "string"] } },
+    "merge_recipes": { "type": "array", "items": { "type": ["object", "string"] } },
+    "capabilities": { "type": "array", "items": { "type": ["object", "string"] } },
+    "states": { "type": "object", "additionalProperties": true },
+    "source_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "node_id": { "type": "string" },
+          "artifact_id": { "type": ["string", "null"] },
+          "source_path": { "type": ["string", "null"] },
+          "source_ref": { "type": ["string", "null"] }
+        },
+        "required": ["node_id"]
+      }
+    },
+    "diagnostics": { "type": "array", "items": { "type": ["object", "string"] } }
+  },
+  "required": ["ir_version", "ir_id", "source", "nodes", "edges", "diagnostics"]
+}

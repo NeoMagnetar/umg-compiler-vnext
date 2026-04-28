@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 /**
  * UMG Compiler v0 — CLI
- *
- * Usage:
- *   umg compile --in sleeve.json --out runtime.json
- *   umg compile --in sleeve.json
- *   cat sleeve.json | umg compile
- *
- * Notes:
- * - Keeps CLI “dumb”: it just reads JSON and calls compileSleeve().
- * - Works with ESM + NodeNext (your tsconfig).
  */
 
 import fs from "node:fs";
@@ -17,13 +8,14 @@ import path from "node:path";
 import process from "node:process";
 
 import { compileSleeve } from "./compile.js";
+import { compileIr } from "./compileIr.js";
+import { finalizeDiagnostics, makeDiagnostics, pushError } from "./diagnostics.js";
 
 type ArgMap = Record<string, string | boolean>;
 
 function parseArgs(argv: string[]): { cmd: string; args: ArgMap } {
   const out: ArgMap = {};
   const rest = argv.slice(2);
-
   const cmd = rest[0] && !rest[0].startsWith("-") ? String(rest.shift()) : "help";
 
   for (let i = 0; i < rest.length; i++) {
@@ -58,15 +50,18 @@ UMG Compiler v0 — CLI
 
 Commands:
   compile         Compile a sleeve bundle JSON into RuntimeSpec + Trace
+  compile-ir      Compile canonical IR JSON into runtime-spec.json + trace.json + diagnostics.json
 
 Examples:
   umg compile --in samples/sleeve.json
   umg compile --in samples/sleeve.json --out out/runtime.json
   cat samples/sleeve.json | umg compile
+  umg compile-ir --in resolved.ir.json --out-dir out
 
 Options:
-  --in,  -i        Input JSON file (if omitted, reads stdin)
-  --out, -o        Output file (if omitted, prints to stdout)
+  --in,  -i        Input JSON file
+  --out, -o        Output file (compile only)
+  --out-dir        Output directory (compile-ir only)
   --pretty         Pretty-print JSON (2 spaces)
   --help, -h       Show help
 
@@ -88,23 +83,30 @@ function readStdin(): Promise<string> {
   });
 }
 
+function resolvePath(p: string): string {
+  return path.resolve(process.cwd(), p);
+}
+
 function readFile(p: string): string {
-  const abs = path.resolve(process.cwd(), p);
-  return fs.readFileSync(abs, "utf8");
+  return fs.readFileSync(resolvePath(p), "utf8");
 }
 
 function writeFile(p: string, content: string) {
-  const abs = path.resolve(process.cwd(), p);
+  const abs = resolvePath(p);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
   fs.writeFileSync(abs, content, "utf8");
 }
 
-async function main() {
-  const { cmd, args } = parseArgs(process.argv);
+function writeJsonFile(p: string, value: unknown, pretty = true) {
+  writeFile(p, `${JSON.stringify(value, null, pretty ? 2 : 0)}\n`);
+}
 
-  if (cmd === "help" || args.help || args.h) usage(0);
-  if (cmd !== "compile") usage(1);
+function parseJson(raw: string): any {
+  const normalized = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
+  return JSON.parse(normalized);
+}
 
+async function runCompile(args: ArgMap) {
   const inPath = (args.in ?? args.i) as string | undefined;
   const outPath = (args.out ?? args.o) as string | undefined;
   const pretty = Boolean(args.pretty);
@@ -117,7 +119,7 @@ async function main() {
 
   let input: any;
   try {
-    input = JSON.parse(raw);
+    input = parseJson(raw);
   } catch (e: any) {
     console.error("Input is not valid JSON.");
     console.error(e?.message ?? e);
@@ -126,16 +128,11 @@ async function main() {
 
   let result: any;
   try {
-    // Your compiler API: compileSleeve(sleeve: SleeveInput, triggerState: TriggerState)
-    // Support both shapes:
-    //   A) { sleeve: ..., triggerState: ... }
-    //   B) direct sleeve object (fallback)
     if (input && typeof input === "object" && ("sleeve" in input || "triggerState" in input)) {
       const sleeve = (input as any).sleeve ?? input;
       const triggerState = (input as any).triggerState ?? {};
       result = compileSleeve(sleeve as any, triggerState as any);
     } else {
-      // If you pass only the sleeve JSON, we assume empty triggerState.
       result = compileSleeve(input as any, {} as any);
     }
   } catch (e: any) {
@@ -152,6 +149,90 @@ async function main() {
   } else {
     process.stdout.write(outJson + "\n");
   }
+}
+
+async function runCompileIr(args: ArgMap) {
+  const inPath = (args.in ?? args.i) as string | undefined;
+  const outDir = args["out-dir"] as string | undefined;
+
+  if (!inPath) {
+    console.error("compile-ir requires --in <path>");
+    process.exit(1);
+  }
+  if (!outDir) {
+    console.error("compile-ir requires --out-dir <path>");
+    process.exit(1);
+  }
+
+  const diagnostics = makeDiagnostics();
+  const inputAbs = resolvePath(inPath);
+  const outDirAbs = resolvePath(outDir);
+
+  if (!fs.existsSync(inputAbs)) {
+    pushError(diagnostics, "INPUT_FILE_MISSING", `Input file does not exist: ${inputAbs}`, "$input");
+    console.error(JSON.stringify(finalizeDiagnostics(diagnostics), null, 2));
+    process.exit(1);
+  }
+
+  let raw = "";
+  try {
+    raw = fs.readFileSync(inputAbs, "utf8");
+  } catch (e: any) {
+    pushError(diagnostics, "INPUT_FILE_READ_FAILED", `Failed to read input file: ${inputAbs}`, "$input", e?.message ?? e);
+    console.error(JSON.stringify(finalizeDiagnostics(diagnostics), null, 2));
+    process.exit(1);
+  }
+
+  let input: any;
+  try {
+    input = parseJson(raw);
+  } catch (e: any) {
+    pushError(diagnostics, "INPUT_JSON_INVALID", "Input is not valid JSON.", "$", e?.message ?? e);
+    console.error(JSON.stringify(finalizeDiagnostics(diagnostics), null, 2));
+    process.exit(1);
+  }
+
+  let result;
+  try {
+    result = compileIr(input);
+  } catch (e: any) {
+    pushError(diagnostics, "COMPILE_IR_FAILED", "compile-ir failed.", "$", e?.stack ?? e?.message ?? e);
+    const finalDiagnostics = finalizeDiagnostics(diagnostics);
+    fs.mkdirSync(outDirAbs, { recursive: true });
+    fs.writeFileSync(path.join(outDirAbs, "diagnostics.json"), `${JSON.stringify(finalDiagnostics, null, 2)}\n`, "utf8");
+    console.error(JSON.stringify(finalDiagnostics, null, 2));
+    process.exit(1);
+  }
+
+  fs.mkdirSync(outDirAbs, { recursive: true });
+  writeJsonFile(path.join(outDirAbs, "runtime-spec.json"), result.runtimeSpec);
+  writeJsonFile(path.join(outDirAbs, "trace.json"), result.trace);
+  writeJsonFile(path.join(outDirAbs, "diagnostics.json"), result.diagnostics);
+
+  if (!result.diagnostics.ok) {
+    console.error(JSON.stringify(result.diagnostics, null, 2));
+    process.exit(1);
+  }
+
+  console.log(`Wrote ${path.join(outDirAbs, "runtime-spec.json")}`);
+  console.log(`Wrote ${path.join(outDirAbs, "trace.json")}`);
+  console.log(`Wrote ${path.join(outDirAbs, "diagnostics.json")}`);
+}
+
+async function main() {
+  const { cmd, args } = parseArgs(process.argv);
+
+  if (cmd === "help" || args.help || args.h) usage(0);
+  if (cmd === "compile") {
+    await runCompile(args);
+    return;
+  }
+  if (cmd === "compile-ir") {
+    await runCompileIr(args);
+    return;
+  }
+
+  usage(1);
 }
 
 main().catch((e) => {
