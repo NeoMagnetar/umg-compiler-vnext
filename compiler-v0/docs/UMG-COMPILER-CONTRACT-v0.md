@@ -118,6 +118,7 @@ Current sleeve-path merge input is segment-based:
 - block ids
 - result block id
 - optional result MOLT type
+- optional `override.allowAdvanced`
 
 Current IR path also reserves `merge_recipes`.
 
@@ -167,11 +168,14 @@ More stable in direction:
 - RuntimeSpec / Trace naming on canonical IR path
 - schema validation surfaces
 - deterministic ordering intent
+- explicit RuntimeSpec non-execution metadata
+- explicit Trace audit/provenance wording
 
 More provisional:
 - richer sleeve-path `runtime` object shape
 - prompt/index/display-adjacent surfaces embedded in sleeve compile output
 - exact error/warning/diagnostic unification across both paths
+- sleeve-path top-level field name remains `runtime`
 
 ## 4. Transitional Path Policy
 
@@ -230,6 +234,8 @@ Contract rules:
 Current implementation note:
 - existing role-based Off handling is legacy/provisional if retained
 - future alignment may move Off into a clearer state/exclusion model
+- current trace event:
+  - `INFO_BLOCK_EXCLUDED_OFF_STATE`
 
 ## 7. Merge Contract
 
@@ -243,9 +249,13 @@ Contract rules:
 - Merge provenance must be traceable.
 - Suppressed or replaced inputs must remain audit-visible in Trace.
 
-Transitional note:
-- current implementation contains optional cross-type merge support surfaces
-- this contract does not treat that as settled canon approval
+Current aligned behavior:
+- same-type merge is supported
+- cross-type merge is guarded by default
+- advanced cross-type use currently requires:
+  - `override.allowAdvanced=true`
+- current trace event:
+  - `INFO_MERGE_APPLIED`
 
 ## 8. Priority Contract
 
@@ -268,6 +278,13 @@ Priority rules:
 - Priority does not replace governance.
 - Priority is tie-breaking only.
 
+Current aligned behavior:
+- single-candidate cases are not treated as conflict resolution
+- real conflict-site traces use:
+  - `INFO_PRIORITY_RESOLVED`
+- single-candidate traces use:
+  - `INFO_PRIORITY_NOT_NEEDED`
+
 ## 9. Governance Contract
 
 Governance runs before downstream resolution where applicable.
@@ -288,6 +305,12 @@ Governance effects must appear in Trace.
 
 This contract records current implementation behavior while preserving canon pressure toward inspectable, boring, binding governance.
 
+Current aligned trace behavior includes:
+- governance exclusion trace event:
+  - `INFO_BLOCK_EXCLUDED_GOVERNANCE`
+- skipped trigger-gated rule trace event:
+  - `WARN_GOVERNANCE_RULE_SKIPPED`
+
 ## 10. Trigger Contract
 
 Trigger is an eligibility gate.
@@ -298,6 +321,12 @@ Trigger rules:
 - Trigger cannot override Governance.
 - Trigger cannot override Off.
 - Active/inactive trigger states must be traceable.
+
+Current aligned behavior:
+- trigger state is eligibility-only context
+- trigger cannot revive governance-forbidden blocks
+- trigger cannot revive Off blocks
+- trigger context is traceable through rule-skip and completion events
 
 Open note:
 - unresolved trigger evaluation semantics must remain explicitly open
@@ -313,6 +342,10 @@ RuntimeSpec:
 - does not imply actual tool execution
 - does not itself execute
 - does not mutate runtime state
+
+Current aligned behavior:
+- sleeve-path `runtime.meta` includes explicit non-executing RuntimeSpec boundary metadata
+- IR-path `runtimeSpec.state` includes equivalent non-executing RuntimeSpec boundary metadata
 
 Any wording suggesting execution should be treated as legacy drift and corrected over time.
 
@@ -334,6 +367,14 @@ Trace rules:
   - trigger-relevant decisions
   - errors
   - warnings
+
+Current aligned behavior includes explicit records or deterministic messages for:
+- Off exclusion
+- governance exclusion
+- merge application
+- priority conflict-site resolution
+- trigger-gated governance skip
+- compile completion trigger context
 
 ## 13. Determinism Contract
 
@@ -373,6 +414,14 @@ Preserve without silent resolution:
 - NeoStack schema
 - bounded exception model
 - cross-type Merge policy
+- whether sleeve output top-level `runtime` should be renamed/aliased to `runtimeSpec`
+- whether volatile trace ids/timestamps should become null/stable
+- whether `compiledAt` should remain raw output
+- whether Off should move from `role=off` to a dedicated state field
+- whether governance/off exclusions should share structured exclusion records
+- whether merge provenance should move from message text to structured trace fields
+- whether IR path should enforce equivalent MOLT/Governance/Trigger/Merge laws more deeply
+- whether a shared RuntimeSpec schema should cover sleeve and IR outputs together
 
 ## 15. Transitional Implementation Notes
 
@@ -384,14 +433,29 @@ It exists to:
 - name the relationship between sleeve-path and canonical-IR-path compilation
 - reduce silent drift during later implementation lanes
 
-## 16. Recommended Follow-Through
+## 16. Downstream Handoff Targets
 
-After this contract/spec lane, the next implementation lane should be:
-- `UMG_COMPILER_MOLT_REGISTRY_ALIGNMENT`
+Primary downstream alignment targets:
+- UMG MCP Server contract alignment
+- UMG Envoy runtime consumption alignment
+- Hermes portability retesting
+- Block Library package/card/retrieval contracts
 
-Recommended narrow scope for that lane:
-- schema-level rejection of Merge as `moltType`
-- schema-level rejection of Off as `moltType`
-- deterministic unknown-type errors
-- tests/fixtures proving valid seven MOLT types pass
-- documentation reinforcing registry law
+Each downstream target should consume or respect:
+- compiler output contract
+- RuntimeSpec non-execution metadata
+- Trace audit/provenance records
+- deterministic comparison policy
+- rejected MOLT type behavior
+- Off/Merge/Priority/Governance/Trigger boundaries
+
+## 17. Migration / Follow-Through Notes
+
+Migration/handoff notes now live in:
+- `compiler-v0/docs/UMG-COMPILER-MIGRATION-NOTES-v0.md`
+
+That document records:
+- old behavior vs aligned behavior
+- downstream implications
+- snapshot update reasons
+- remaining open questions

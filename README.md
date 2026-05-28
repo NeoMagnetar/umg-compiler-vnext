@@ -3,15 +3,25 @@
 **UMG Compiler** is the canonical reference compiler for  
 **Universal Modular Generation (UMG)**.
 
-It compiles a UMG **Sleeve bundle (JSON)** into a deterministic:
+It is a deterministic resolver and artifact generator for UMG sleeves and canonical IR.
 
-- **RuntimeSpec** — the final, ordered cognitive structure  
-- **Trace** — a full explanation of how that structure was derived  
+It compiles a UMG **Sleeve bundle (JSON)** into deterministic compiler artifacts:
+
+- **RuntimeSpec** — a downstream-facing specification artifact, not execution  
+- **Trace** — an audit/provenance artifact showing how that specification was derived, not permission  
 
 This repository is intentionally **headless**.  
 No UI. No framework bindings. No opinionated runtime.
 
 It is designed to be used as a **library, CLI, or embedded compiler**.
+
+The compiler does **not**:
+- execute tools
+- mutate runtime state
+- publish packages
+- act as an agent
+- grant permission
+- perform hidden reasoning
 
 ---
 
@@ -39,22 +49,36 @@ coherent, auditable downstream-facing specification artifact.
 Given a valid **Sleeve JSON** input, the compiler:
 
 1. Normalizes blocks and roles  
-2. Resolves authority and precedence  
-3. Applies priority and ordering rules  
-4. Merges compatible structures  
-5. Emits:
+2. Applies governance and eligibility constraints  
+3. Resolves authority and precedence  
+4. Applies priority and ordering rules at conflict sites  
+5. Merges compatible structures where allowed  
+6. Emits:
    - RuntimeSpec
    - Trace
 
-The output is deterministic and reproducible.
+The output is deterministic and reproducible at the semantic level.
 
 The compiler does **not**:
 - Call LLMs
 - Generate text
 - Execute prompts
 - Perform inference
+- Perform tool execution
+- Publish packages or mutate external runtimes
 
-It only **structures cognition**.
+It only **structures cognition into compiler artifacts**.
+
+---
+
+## Validation Commands
+
+Current repo validation commands:
+
+    npm run build
+    npm run contract
+    npm run snapshot
+    npm test
 
 ---
 
@@ -103,8 +127,13 @@ Read from stdin:
 
     const result = compileSleeve(sleeveInput, triggerState);
 
-    console.log(result.runtimeSpec);
+    console.log(result.runtime);
     console.log(result.trace);
+
+Note:
+- current sleeve-path compatibility output uses `result.runtime`
+- canonical IR path uses `result.runtimeSpec`
+- both surfaces should be treated as non-executing compiler artifacts
 
 ---
 
@@ -116,6 +145,8 @@ Read from stdin:
 - No hidden inference
 - No runtime side effects
 - Stable core semantics
+- RuntimeSpec as non-executing specification artifact
+- Trace as audit/provenance artifact
 
 Future extensions layer on top **without breaking meaning**.
 
