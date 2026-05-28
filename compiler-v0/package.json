@@ -25,7 +25,8 @@
     "build": "tsc -p tsconfig.json",
     "cli": "node ./dist/cli.js",
     "snapshot": "node --loader ts-node/esm scripts/snapshot.ts",
-    "contract": "node --loader ts-node/esm scripts/contractCheck.ts"
+    "contract": "node --loader ts-node/esm scripts/contractCheck.ts",
+    "test": "node --loader ts-node/esm tests/priority.test.ts"
   },
   "dependencies": {
     "ajv": "^8.20.0",
