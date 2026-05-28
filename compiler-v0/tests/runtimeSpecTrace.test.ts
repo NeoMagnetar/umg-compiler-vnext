@@ -1,4 +1,8 @@
 import { compileSleeve, compileIr, type Sleeve, type TriggerState } from "../src/index.js";
+import {
+  normalizeSleeveCompileResultForSemanticComparison,
+  normalizeIrCompileResultForSemanticComparison,
+} from "./determinismHelpers.js";
 
 let passed = 0;
 let failed = 0;
@@ -11,15 +15,6 @@ function assert(label: string, condition: boolean) {
     console.log(`  FAIL: ${label} ✗`);
     failed++;
   }
-}
-
-function semanticTrace(events: Array<any>) {
-  return events.map((evt) => {
-    const clone = { ...evt };
-    delete clone.id;
-    delete clone.timestamp;
-    return clone;
-  });
 }
 
 console.log("=== RuntimeSpec / Trace Boundary Tests ===\n");
@@ -79,8 +74,11 @@ assert("trace includes Off exclusion record", !!offTrace);
 assert("trace includes governance exclusion record", !!govTrace);
 assert("trace completion event includes trigger context field", Array.isArray(doneEvent?.relatedTriggerIds));
 assert("trace messages do not claim permission", !sleeveResultA.trace.events.some((evt) => /permission granted|approved to execute/i.test(evt.message)));
-assert("trace semantic output is deterministic across repeated compile", JSON.stringify(semanticTrace(sleeveResultA.trace.events)) === JSON.stringify(semanticTrace(sleeveResultB.trace.events)));
-assert("runtime semantic output is deterministic excluding compiledAt", JSON.stringify({ ...sleeveResultA.runtime, meta: { ...sleeveResultA.runtime?.meta, compiledAt: "IGNORED" } }) === JSON.stringify({ ...sleeveResultB.runtime, meta: { ...sleeveResultB.runtime?.meta, compiledAt: "IGNORED" } }));
+assert(
+  "sleeve compile semantic output deterministic via normalization helper",
+  JSON.stringify(normalizeSleeveCompileResultForSemanticComparison(sleeveResultA)) ===
+    JSON.stringify(normalizeSleeveCompileResultForSemanticComparison(sleeveResultB))
+);
 assert("merge trace is optional for non-merge sample", !mergeLike);
 assert("priority trace is optional for non-conflict sample", !priorityLike);
 
@@ -98,6 +96,7 @@ const ir = {
 };
 
 const irResult = compileIr(ir as any);
+const irResultRepeat = compileIr(ir as any);
 assert("compileIr succeeds without diagnostics errors", (irResult.diagnostics.errors?.length ?? 0) === 0);
 assert("IR runtimeSpec state marks non-executing artifact", irResult.runtimeSpec.state?.non_executing === true);
 assert(
@@ -109,6 +108,11 @@ const traceEmitted = irResult.trace.events.find((evt) => evt.event_type === "tra
 assert(
   "IR trace event states audit/provenance boundary",
   traceEmitted?.reason === "Emitted deterministic compiler trace as audit/provenance artifact; not permission and not execution."
+);
+assert(
+  "IR compile semantic output deterministic via normalization helper",
+  JSON.stringify(normalizeIrCompileResultForSemanticComparison(irResult)) ===
+    JSON.stringify(normalizeIrCompileResultForSemanticComparison(irResultRepeat))
 );
 
 console.log(`\n=== All Tests Complete: ${passed} passed, ${failed} failed ===`);

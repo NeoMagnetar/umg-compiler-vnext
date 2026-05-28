@@ -345,6 +345,12 @@ Determinism requirements:
 - stable ordering rules must be explicit
 - deterministic tie-breaks must be named
 
+Current v0 semantic comparison policy:
+- sleeve-path `runtime.meta.compiledAt` is volatile and excluded from semantic determinism checks
+- sleeve-path trace event `id` and `timestamp` are volatile and excluded from semantic determinism checks
+- IR-path `trace.events[*].event_id` is normalized during semantic determinism checks
+- normalization helpers must strip or replace only explicitly volatile fields, not meaningful semantic content
+
 Observed stable-order intent currently includes:
 - fixed MOLT ordering
 - stable priority-group ordering
