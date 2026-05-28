@@ -417,7 +417,7 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_MERGE_APPLIED",
-        "message": "Merge seg_merge_blueprints: replaced [blk_merge_source_1, blk_merge_source_2] with blk_merge_result in stack stack_torture.",
+        "message": "Merge seg_merge_blueprints: replaced [blk_merge_source_1, blk_merge_source_2] with blk_merge_result (resultMoltType=blueprint) in stack stack_torture. SourceMoltTypes=[blueprint].",
         "relatedStackIds": [
           "stack_torture"
         ],

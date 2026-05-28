@@ -33,11 +33,15 @@ export function applyMerges(
           if (!replaced) {
             newBlockIds.push(merge.resultBlockId);
             replaced = true;
+            const resultBlock = blocksById.get(merge.resultBlockId);
+            const sourceMoltTypes = [...new Set(merge.blockIds.map((id) => blocksById.get(id)?.moltType).filter(Boolean))].sort();
+            const effectiveResultMoltType = merge.resultMoltType ?? resultBlock?.moltType;
+
             notes.push({
               kind: "note",
               severity: "info",
               code: "INFO_MERGE_APPLIED",
-              message: `Merge ${merge.id}: replaced [${merge.blockIds.join(", ")}] with ${merge.resultBlockId} in stack ${stack.id}.`,
+              message: `Merge ${merge.id}: replaced [${merge.blockIds.join(", ")}] with ${merge.resultBlockId} (resultMoltType=${String(effectiveResultMoltType)}) in stack ${stack.id}. SourceMoltTypes=[${sourceMoltTypes.join(", ")}].`,
               relatedStackIds: [stack.id],
               relatedBlockIds: [merge.resultBlockId, ...merge.blockIds],
             });

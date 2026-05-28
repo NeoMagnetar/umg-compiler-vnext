@@ -56,6 +56,7 @@ export function normalizeSegments(
 
         const hasRestrictedMolt = [...sourceMoltTypes].some(m => RESTRICTED_MOLT_SET.has(m));
         const isCrossMolt = sourceMoltTypes.size > 1;
+        const allowAdvancedCrossMolt = seg.override?.allowAdvanced === true;
 
         if (isCrossMolt && hasRestrictedMolt && !seg.resultMoltType) {
           errors.push({
@@ -64,6 +65,18 @@ export function normalizeSegments(
             code: "ERR_MERGE_RESULT_MOLT_TYPE_REQUIRED",
             message: `Cross-MOLT merge ${seg.id} with restricted types requires explicit resultMoltType.`,
             relatedStackIds: [stack.id],
+          });
+          continue;
+        }
+
+        if (isCrossMolt && !allowAdvancedCrossMolt) {
+          errors.push({
+            kind: "validation_failed",
+            severity: "error",
+            code: "ERR_MERGE_CROSS_MOLT_FORBIDDEN",
+            message: `Cross-MOLT merge ${seg.id} is not allowed in v0 without override.allowAdvanced=true.`,
+            relatedStackIds: [stack.id],
+            relatedBlockIds: [...seg.blockIds, seg.resultBlockId],
           });
           continue;
         }

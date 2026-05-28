@@ -206,7 +206,7 @@
         "kind": "note",
         "severity": "info",
         "code": "INFO_MERGE_APPLIED",
-        "message": "Merge seg_merge_instr: replaced [blk_instr_1, blk_instr_2] with blk_merged_instr in stack stack_main.",
+        "message": "Merge seg_merge_instr: replaced [blk_instr_1, blk_instr_2] with blk_merged_instr (resultMoltType=instruction) in stack stack_main. SourceMoltTypes=[instruction].",
         "relatedStackIds": [
           "stack_main"
         ],
