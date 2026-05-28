@@ -660,7 +660,7 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_SUBJECT_BUNDLED",
-        "message": "Stack stack_a has 2 bundled subject alternates; selecting highest priority.",
+        "message": "Stack stack_a has 2 bundled subject alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_a"
         ],
@@ -672,16 +672,32 @@
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_SUBJECT_SELECTED",
-        "message": "Stack stack_a: selected subject blk_subject_a2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED",
+        "message": "Priority resolution: blk_subject_a2 selected.\nContext: select single subject from bundled alternates",
         "relatedBlockIds": [
-          "blk_subject_a2"
+          "blk_subject_a2",
+          "blk_subject_a1"
         ],
+        "priorityContext": {
+          "moltType": "subject",
+          "stackId": "stack_a",
+          "reason": "select single subject from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_subject_a2",
+            "priorityGroup": "Default",
+            "priorityOrder": 50
+          },
+          {
+            "id": "blk_subject_a1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          }
+        ],
+        "priorityWinnerId": "blk_subject_a2",
         "id": "evt_00027",
         "timestamp": "TEST_TIME"
       },

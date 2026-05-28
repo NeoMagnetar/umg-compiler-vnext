@@ -603,7 +603,7 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_PRIMARY_BUNDLED",
-        "message": "Stack stack_torture has 2 bundled primary alternates; selecting highest priority.",
+        "message": "Stack stack_torture has 2 bundled primary alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_torture"
         ],
@@ -615,16 +615,32 @@
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_PRIMARY_SELECTED",
-        "message": "Stack stack_torture: selected primary blk_primary_2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_torture"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED",
+        "message": "Priority resolution: blk_primary_2 selected.\nContext: select single primary from bundled alternates",
         "relatedBlockIds": [
-          "blk_primary_2"
+          "blk_primary_2",
+          "blk_primary_1"
         ],
+        "priorityContext": {
+          "moltType": "primary",
+          "stackId": "stack_torture",
+          "reason": "select single primary from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_primary_2",
+            "priorityGroup": "Default",
+            "priorityOrder": 50
+          },
+          {
+            "id": "blk_primary_1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          }
+        ],
+        "priorityWinnerId": "blk_primary_2",
         "id": "evt_00025",
         "timestamp": "TEST_TIME"
       },
@@ -640,7 +656,7 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_DIRECTIVE_BUNDLED",
-        "message": "Stack stack_torture has 2 bundled directive alternates; selecting highest priority.",
+        "message": "Stack stack_torture has 2 bundled directive alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_torture"
         ],
@@ -652,16 +668,32 @@
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_DIRECTIVE_SELECTED",
-        "message": "Stack stack_torture: selected directive blk_directive_alt_1 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_torture"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED",
+        "message": "Priority resolution: blk_directive_alt_1 selected.\nContext: select single directive from bundled alternates",
         "relatedBlockIds": [
-          "blk_directive_alt_1"
+          "blk_directive_alt_1",
+          "blk_directive_alt_2"
         ],
+        "priorityContext": {
+          "moltType": "directive",
+          "stackId": "stack_torture",
+          "reason": "select single directive from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_directive_alt_1",
+            "priorityGroup": "Default",
+            "priorityOrder": 210
+          },
+          {
+            "id": "blk_directive_alt_2",
+            "priorityGroup": "Default",
+            "priorityOrder": 100
+          }
+        ],
+        "priorityWinnerId": "blk_directive_alt_1",
         "id": "evt_00028",
         "timestamp": "TEST_TIME"
       },
@@ -682,9 +714,9 @@
           "stack_torture"
         ],
         "relatedBlockIds": [
-          "blk_instr_ranked_a",
+          "blk_instr_ranked_c",
           "blk_instr_ranked_b",
-          "blk_instr_ranked_c"
+          "blk_instr_ranked_a"
         ],
         "id": "evt_00030",
         "timestamp": "TEST_TIME"

@@ -358,11 +358,11 @@
           "stack_main"
         ],
         "relatedBlockIds": [
-          "blk_instruction_1",
-          "blk_instruction_2",
-          "blk_instruction_3",
+          "blk_instruction_5",
           "blk_instruction_4",
-          "blk_instruction_5"
+          "blk_instruction_3",
+          "blk_instruction_2",
+          "blk_instruction_1"
         ],
         "id": "evt_00014",
         "timestamp": "TEST_TIME"

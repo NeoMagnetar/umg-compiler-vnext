@@ -665,7 +665,7 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_BLUEPRINT_BUNDLED",
-        "message": "Stack stack_a has 2 bundled blueprint alternates; selecting highest priority.",
+        "message": "Stack stack_a has 2 bundled blueprint alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_a"
         ],
@@ -677,16 +677,32 @@
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_BLUEPRINT_SELECTED",
-        "message": "Stack stack_a: selected blueprint blk_blueprint_a2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED",
+        "message": "Priority resolution: blk_blueprint_a2 selected.\nContext: select single blueprint from bundled alternates",
         "relatedBlockIds": [
-          "blk_blueprint_a2"
+          "blk_blueprint_a2",
+          "blk_blueprint_a1"
         ],
+        "priorityContext": {
+          "moltType": "blueprint",
+          "stackId": "stack_a",
+          "reason": "select single blueprint from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_blueprint_a2",
+            "priorityGroup": "Default",
+            "priorityOrder": 50
+          },
+          {
+            "id": "blk_blueprint_a1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          }
+        ],
+        "priorityWinnerId": "blk_blueprint_a2",
         "id": "evt_00028",
         "timestamp": "TEST_TIME"
       },

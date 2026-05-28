@@ -559,7 +559,7 @@
         "kind": "pipeline_stage",
         "severity": "warning",
         "code": "WARN_MULTIPLE_INSTRUCTION_BUNDLED",
-        "message": "Stack stack_a has 2 bundled instruction alternates; selecting highest priority.",
+        "message": "Stack stack_a has 2 bundled instruction alternates; resolving by priority.",
         "relatedStackIds": [
           "stack_a"
         ],
@@ -571,16 +571,32 @@
         "timestamp": "TEST_TIME"
       },
       {
-        "kind": "pipeline_stage",
+        "kind": "priority_resolution",
         "severity": "info",
-        "code": "INFO_INSTRUCTION_SELECTED",
-        "message": "Stack stack_a: selected instruction blk_instruction_a2 from 2 candidates.",
-        "relatedStackIds": [
-          "stack_a"
-        ],
+        "code": "INFO_PRIORITY_RESOLVED",
+        "message": "Priority resolution: blk_instruction_a2 selected.\nContext: select single instruction from bundled alternates",
         "relatedBlockIds": [
-          "blk_instruction_a2"
+          "blk_instruction_a2",
+          "blk_instruction_a1"
         ],
+        "priorityContext": {
+          "moltType": "instruction",
+          "stackId": "stack_a",
+          "reason": "select single instruction from bundled alternates"
+        },
+        "priorityCandidates": [
+          {
+            "id": "blk_instruction_a2",
+            "priorityGroup": "Default",
+            "priorityOrder": 50
+          },
+          {
+            "id": "blk_instruction_a1",
+            "priorityGroup": "Default",
+            "priorityOrder": 10
+          }
+        ],
+        "priorityWinnerId": "blk_instruction_a2",
         "id": "evt_00022",
         "timestamp": "TEST_TIME"
       },
