@@ -401,11 +401,22 @@
         "timestamp": "TEST_TIME"
       },
       {
+        "kind": "note",
+        "severity": "info",
+        "code": "INFO_BLOCK_EXCLUDED_GOVERNANCE",
+        "message": "Block blk_instr_forbidden excluded from active participation because governance forbids it.",
+        "relatedBlockIds": [
+          "blk_instr_forbidden"
+        ],
+        "id": "evt_00018",
+        "timestamp": "TEST_TIME"
+      },
+      {
         "kind": "pipeline_stage",
         "severity": "info",
         "code": "INFO_RESOLVE_AUTHORITY_DONE",
         "message": "Authority resolved for 1 stack(s).",
-        "id": "evt_00018",
+        "id": "evt_00019",
         "timestamp": "TEST_TIME"
       },
       {
@@ -419,7 +430,7 @@
         "relatedBlockIds": [
           "blk_primary_main"
         ],
-        "id": "evt_00019",
+        "id": "evt_00020",
         "timestamp": "TEST_TIME"
       },
       {
@@ -427,7 +438,7 @@
         "severity": "info",
         "code": "INFO_PRIMARY_SELECTION_DONE",
         "message": "Primary selection complete for 1 stack(s).",
-        "id": "evt_00020",
+        "id": "evt_00021",
         "timestamp": "TEST_TIME"
       },
       {
@@ -435,7 +446,7 @@
         "severity": "info",
         "code": "INFO_DIRECTIVE_SELECTION_DONE",
         "message": "Directive selection complete for 1 stack(s).",
-        "id": "evt_00021",
+        "id": "evt_00022",
         "timestamp": "TEST_TIME"
       },
       {
@@ -450,7 +461,7 @@
           "blk_instr_a",
           "blk_instr_b"
         ],
-        "id": "evt_00022",
+        "id": "evt_00023",
         "timestamp": "TEST_TIME"
       },
       {
@@ -458,7 +469,7 @@
         "severity": "info",
         "code": "INFO_INSTRUCTION_SELECTION_DONE",
         "message": "Instruction selection complete for 1 stack(s).",
-        "id": "evt_00023",
+        "id": "evt_00024",
         "timestamp": "TEST_TIME"
       },
       {
@@ -466,7 +477,7 @@
         "severity": "info",
         "code": "INFO_SUBJECT_SELECTION_DONE",
         "message": "Subject selection complete for 1 stack(s).",
-        "id": "evt_00024",
+        "id": "evt_00025",
         "timestamp": "TEST_TIME"
       },
       {
@@ -474,7 +485,7 @@
         "severity": "info",
         "code": "INFO_BLUEPRINT_SELECTION_DONE",
         "message": "Blueprint selection complete for 1 stack(s).",
-        "id": "evt_00025",
+        "id": "evt_00026",
         "timestamp": "TEST_TIME"
       },
       {
@@ -482,7 +493,7 @@
         "severity": "info",
         "code": "INFO_PROMPT_SPEC_DONE",
         "message": "Built promptSpec for 1 neoBlocks.",
-        "id": "evt_00026",
+        "id": "evt_00027",
         "timestamp": "TEST_TIME"
       },
       {
@@ -491,7 +502,7 @@
         "code": "INFO_DONE",
         "message": "compileSleeve(v0) succeeded. Active triggers: 0.",
         "relatedTriggerIds": [],
-        "id": "evt_00027",
+        "id": "evt_00028",
         "timestamp": "TEST_TIME"
       }
     ]

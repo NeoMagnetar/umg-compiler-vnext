@@ -252,6 +252,17 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     blockIds: st.blockIds.filter(id => isLiveBlock(id)),
   }));
 
+  const uniqueGovernanceExcludedBlockIds = [...new Set([...governanceResult.forbiddenBlockIds])].sort((a, b) => a.localeCompare(b));
+  for (const blockId of uniqueGovernanceExcludedBlockIds) {
+    push({
+      kind: "note",
+      severity: "info",
+      code: "INFO_BLOCK_EXCLUDED_GOVERNANCE",
+      message: `Block ${blockId} excluded from active participation because governance forbids it.`,
+      relatedBlockIds: [blockId],
+    });
+  }
+
   const uniqueOffExcludedBlockIds = [...new Set(offExcludedBlockIds)].sort((a, b) => a.localeCompare(b));
   for (const blockId of uniqueOffExcludedBlockIds) {
     push({

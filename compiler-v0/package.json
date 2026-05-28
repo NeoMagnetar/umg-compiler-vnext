@@ -26,7 +26,7 @@
     "cli": "node ./dist/cli.js",
     "snapshot": "node --loader ts-node/esm scripts/snapshot.ts",
     "contract": "node --loader ts-node/esm scripts/contractCheck.ts",
-    "test": "node --loader ts-node/esm tests/priority.test.ts && node --loader ts-node/esm tests/moltRegistry.test.ts && node --loader ts-node/esm tests/offState.test.ts && node --loader ts-node/esm tests/mergeAction.test.ts"
+    "test": "node --loader ts-node/esm tests/priority.test.ts && node --loader ts-node/esm tests/moltRegistry.test.ts && node --loader ts-node/esm tests/offState.test.ts && node --loader ts-node/esm tests/mergeAction.test.ts && node --loader ts-node/esm tests/governanceTrigger.test.ts"
   },
   "dependencies": {
     "ajv": "^8.20.0",

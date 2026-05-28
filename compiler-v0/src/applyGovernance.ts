@@ -167,7 +167,8 @@ export function applyGovernance(
           kind: "note",
           severity: "warning",
           code: "WARN_GOVERNANCE_RULE_SKIPPED",
-          message: `Rule ${rule.id} skipped: condition not met.`,
+          message: `Rule ${rule.id} skipped: trigger condition not met.`,
+          relatedTriggerIds: triggerState.activeTriggerIds,
         });
         continue;
       }
