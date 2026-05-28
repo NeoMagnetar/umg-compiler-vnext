@@ -675,7 +675,7 @@
         "kind": "priority_resolution",
         "severity": "info",
         "code": "INFO_PRIORITY_RESOLVED",
-        "message": "Priority resolution: blk_subject_a2 selected.\nContext: select single subject from bundled alternates",
+        "message": "Priority conflict resolved: blk_subject_a2 selected; suppressed [blk_subject_a1].\nContext: select single subject from bundled alternates",
         "relatedBlockIds": [
           "blk_subject_a2",
           "blk_subject_a1"

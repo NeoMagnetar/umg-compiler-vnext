@@ -618,7 +618,7 @@
         "kind": "priority_resolution",
         "severity": "info",
         "code": "INFO_PRIORITY_RESOLVED",
-        "message": "Priority resolution: blk_primary_2 selected.\nContext: select single primary from bundled alternates",
+        "message": "Priority conflict resolved: blk_primary_2 selected; suppressed [blk_primary_1].\nContext: select single primary from bundled alternates",
         "relatedBlockIds": [
           "blk_primary_2",
           "blk_primary_1"
@@ -671,7 +671,7 @@
         "kind": "priority_resolution",
         "severity": "info",
         "code": "INFO_PRIORITY_RESOLVED",
-        "message": "Priority resolution: blk_directive_alt_1 selected.\nContext: select single directive from bundled alternates",
+        "message": "Priority conflict resolved: blk_directive_alt_1 selected; suppressed [blk_directive_alt_2].\nContext: select single directive from bundled alternates",
         "relatedBlockIds": [
           "blk_directive_alt_1",
           "blk_directive_alt_2"

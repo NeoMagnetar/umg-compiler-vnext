@@ -680,7 +680,7 @@
         "kind": "priority_resolution",
         "severity": "info",
         "code": "INFO_PRIORITY_RESOLVED",
-        "message": "Priority resolution: blk_blueprint_a2 selected.\nContext: select single blueprint from bundled alternates",
+        "message": "Priority conflict resolved: blk_blueprint_a2 selected; suppressed [blk_blueprint_a1].\nContext: select single blueprint from bundled alternates",
         "relatedBlockIds": [
           "blk_blueprint_a2",
           "blk_blueprint_a1"

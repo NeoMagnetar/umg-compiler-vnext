@@ -360,6 +360,43 @@ console.log("\nTest E: Alternates and ranked paths agree on strongest candidate"
 // Summary
 // ─────────────────────────────────────────────────────────────────────────────
 
+console.log("\nTest F: Single candidate is not treated as conflict-site priority resolution");
+{
+  const blockSolo = makeBlock("solo-directive", "directive", "Default", 1);
+  let seenEvent: any;
+  const result = resolveByPriority(
+    [blockSolo],
+    { moltType: "directive", reason: "single candidate check" },
+    (evt) => {
+      seenEvent = evt;
+    }
+  );
+  assert("single candidate still returns winner", result.winner?.id === "solo-directive");
+  assert("single candidate uses INFO_PRIORITY_NOT_NEEDED", seenEvent?.code === "INFO_PRIORITY_NOT_NEEDED");
+  assert("single candidate trace is note, not priority_resolution", seenEvent?.kind === "note");
+}
+
+console.log("\nTest G: Conflict-site trace records suppressed losers deterministically");
+{
+  const blockA = makeBlock("cand-a", "directive", "Default", 10);
+  const blockB = makeBlock("cand-b", "directive", "Default", 100);
+  const blockC = makeBlock("cand-c", "directive", "Default", 50);
+  let seenEvent: any;
+  const result = resolveByPriority(
+    [blockA, blockB, blockC],
+    { moltType: "directive", stackId: "stack-1", reason: "conflict-site trace check" },
+    (evt) => {
+      seenEvent = evt;
+    }
+  );
+  assert("highest-priority candidate wins", result.winner?.id === "cand-b");
+  assert("conflict-site event kind remains priority_resolution", seenEvent?.kind === "priority_resolution");
+  assert(
+    "loser list is deterministic in message",
+    seenEvent?.message === "Priority conflict resolved: cand-b selected; suppressed [cand-c, cand-a].\nContext: conflict-site trace check"
+  );
+}
+
 console.log(`\n=== All Tests Complete: ${passed} passed, ${failed} failed ===`);
 if (failed > 0) {
   process.exit(1);

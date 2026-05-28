@@ -100,10 +100,10 @@ export function resolveByPriority(
   if (candidates.length === 1) {
     const winner = candidates[0];
     const traceEvent: Omit<TraceEvent, "id" | "timestamp"> = {
-      kind: "priority_resolution",
+      kind: "note",
       severity: "info",
-      code: "INFO_PRIORITY_SINGLE_CANDIDATE",
-      message: `Priority resolution: single candidate ${winner.id} selected.\nContext: ${context.reason}`,
+      code: "INFO_PRIORITY_NOT_NEEDED",
+      message: `Priority not needed: single eligible candidate ${winner.id}.\nContext: ${context.reason}`,
       relatedBlockIds: [winner.id],
       priorityContext: ctx,
       priorityCandidates: [
@@ -130,12 +130,13 @@ export function resolveByPriority(
   );
 
   const winner = sorted[0];
+  const loserIds = sorted.slice(1).map((b) => b.id);
 
   const traceEvent: Omit<TraceEvent, "id" | "timestamp"> = {
     kind: "priority_resolution",
     severity: "info",
     code: "INFO_PRIORITY_RESOLVED",
-    message: `Priority resolution: ${winner.id} selected.\nContext: ${context.reason}`,
+    message: `Priority conflict resolved: ${winner.id} selected; suppressed [${loserIds.join(", ")}].\nContext: ${context.reason}`,
     relatedBlockIds: candidates.map((c) => c.id),
     priorityContext: ctx,
     priorityCandidates,

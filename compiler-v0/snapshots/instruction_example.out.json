@@ -574,7 +574,7 @@
         "kind": "priority_resolution",
         "severity": "info",
         "code": "INFO_PRIORITY_RESOLVED",
-        "message": "Priority resolution: blk_instruction_a2 selected.\nContext: select single instruction from bundled alternates",
+        "message": "Priority conflict resolved: blk_instruction_a2 selected; suppressed [blk_instruction_a1].\nContext: select single instruction from bundled alternates",
         "relatedBlockIds": [
           "blk_instruction_a2",
           "blk_instruction_a1"
