@@ -233,10 +233,16 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
   }
 
   // Step 7: Filter live blocks (post-merge, post-governance)
+  const offExcludedBlockIds: string[] = [];
+
   const isLiveBlock = (id: string): boolean => {
     if (governanceResult.forbiddenBlockIds.has(id)) return false;
     const b = blocksById.get(id);
-    if (!b || b.role === "off") return false;
+    if (!b) return false;
+    if (b.role === "off") {
+      offExcludedBlockIds.push(id);
+      return false;
+    }
     return true;
   };
 
@@ -245,6 +251,17 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
     domainKey: st.domainKey,
     blockIds: st.blockIds.filter(id => isLiveBlock(id)),
   }));
+
+  const uniqueOffExcludedBlockIds = [...new Set(offExcludedBlockIds)].sort((a, b) => a.localeCompare(b));
+  for (const blockId of uniqueOffExcludedBlockIds) {
+    push({
+      kind: "note",
+      severity: "info",
+      code: "INFO_BLOCK_EXCLUDED_OFF_STATE",
+      message: `Block ${blockId} excluded from active participation because role=off (legacy provisional Off-state representation).`,
+      relatedBlockIds: [blockId],
+    });
+  }
 
   // Step 8: Resolve authority (MOLT hierarchy + priority + id tie-break)
   const authorityResult = resolveAuthority(
