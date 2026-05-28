@@ -298,6 +298,9 @@ export interface RuntimeSpec {
   meta: {
     compiledAt: string;
     compilerVersion: "v0";
+    artifactKind: "runtime_spec";
+    nonExecuting: true;
+    boundaryNote: "RuntimeSpec is a non-executing compiler artifact and does not grant permission or perform execution.";
   };
 }
 

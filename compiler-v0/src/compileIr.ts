@@ -132,6 +132,9 @@ export function compileIr(ir: CanonicalIr): CompileIrResult {
       edge_count: ir.edges.length,
       priority_profile: ir.priority_profile ?? null,
       compiler_mode: "canonical_ir",
+      artifact_kind: "runtime_spec",
+      non_executing: true,
+      boundary_note: "RuntimeSpec is a non-executing compiler artifact and does not grant permission or perform execution.",
     },
     diagnostics: [],
   };
@@ -149,7 +152,7 @@ export function compileIr(ir: CanonicalIr): CompileIrResult {
     events: [
       event(1, "ir.accepted", "Accepted canonical IR input.", [ir.ir_id]),
       event(2, "runtime_spec.emitted", "Emitted runtime spec from canonical IR.", nodeArtifacts),
-      event(3, "trace.emitted", "Emitted deterministic compiler trace.", [runtimeSpec.runtime_spec_id]),
+      event(3, "trace.emitted", "Emitted deterministic compiler trace as audit/provenance artifact; not permission and not execution.", [runtimeSpec.runtime_spec_id]),
     ],
     diagnostics: [],
     summary: {

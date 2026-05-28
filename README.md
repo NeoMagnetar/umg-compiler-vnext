@@ -30,7 +30,7 @@ Blocks can be composed into:
 - **Sleeves**
 
 The compiler is responsible for turning those structures into a single,
-coherent, auditable execution specification.
+coherent, auditable downstream-facing specification artifact.
 
 ---
 

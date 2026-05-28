@@ -543,6 +543,9 @@ export function compileSleeve(sleeve: Sleeve, triggerState: TriggerState): Compi
       meta: {
         compiledAt: isoNow(),
         compilerVersion: "v0",
+        artifactKind: "runtime_spec",
+        nonExecuting: true,
+        boundaryNote: "RuntimeSpec is a non-executing compiler artifact and does not grant permission or perform execution.",
       },
     },
     trace: { sleeveId: sleeve.id, events },
