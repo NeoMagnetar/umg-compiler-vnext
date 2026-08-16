@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-16T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.RETENTION",
+    "NS.WARRANTY",
+    "NS.ROOT",
+    "NS.SUPPORT",
+    "NS.SERVICE",
+    "NS.BILLING",
+    "NS.SALES"
+  ],
+  "activeNeoBlockIds": [
+    "NB.RETENTION.RENEW",
+    "NB.WARRANTY.CLAIM",
+    "NB.SUPPORT.REPLY",
+    "NB.ROOT.ROUTE",
+    "NB.SERVICE.DISPATCH",
+    "NB.BILLING.COLLECT",
+    "NB.SALES.LEAD",
+    "NB.SERVICE.INTAKE"
+  ],
+  "triggerState": {
+    "T.ROOT.DEFAULT": true,
+    "T.SALES.DEFAULT": true,
+    "T.SVC.INTAKE.DEFAULT": true,
+    "T.SVC.DISPATCH.DEFAULT": true,
+    "T.WARRANTY.DEFAULT": true,
+    "T.SUPPORT.DEFAULT": true,
+    "T.BILLING.DEFAULT": true,
+    "T.RETENTION.DEFAULT": true
+  }
+}
