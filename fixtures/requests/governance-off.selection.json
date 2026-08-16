@@ -7,8 +7,7 @@
   ],
   "activeNeoBlockIds": [
     "NB.CONTROLLER.INTAKE",
-    "NB.SERVICE.TRIAGE",
-    "NB.SERVICE.DRIVE_IN"
+    "NB.SERVICE.TRIAGE"
   ],
   "triggerState": {
     "T.CTRL.DEFAULT": true,

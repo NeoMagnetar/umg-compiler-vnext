@@ -803,8 +803,7 @@
             ],
             "neoBlockIds": [
               "NB.CONTROLLER.INTAKE",
-              "NB.SERVICE.TRIAGE",
-              "NB.SERVICE.DRIVE_IN"
+              "NB.SERVICE.TRIAGE"
             ]
           },
           "triggerStateTrueIds": [
@@ -833,19 +832,19 @@
       },
       {
         "seq": 2,
-        "type": "GOVERNANCE_RULE_APPLIED",
-        "subjectId": "GOV.SAFETY.NO_DRIVE",
-        "data": {
-          "name": "Unsafe Vehicle No-Drive Rule"
-        }
-      },
-      {
-        "seq": 3,
         "type": "NEOBLOCK_OFF",
         "subjectId": "NB.SERVICE.DRIVE_IN",
         "data": {
           "neoStackId": "NS.SERVICE",
           "rowInNeoStack": 2
+        }
+      },
+      {
+        "seq": 3,
+        "type": "GOVERNANCE_RULE_APPLIED",
+        "subjectId": "GOV.SAFETY.NO_DRIVE",
+        "data": {
+          "name": "Unsafe Vehicle No-Drive Rule"
         }
       },
       {

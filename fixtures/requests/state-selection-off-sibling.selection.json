@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-16T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.ROOT",
+    "NS.PARENT",
+    "NS.CHILD"
+  ],
+  "activeNeoBlockIds": [
+    "NB.ROOT.ROUTE",
+    "NB.PARENT.LEFT",
+    "NB.CHILD.DESCENDANT"
+  ],
+  "triggerState": {
+    "T.ROOT.DEFAULT": true,
+    "T.PARENT.LEFT.DEFAULT": true,
+    "T.CHILD.DEFAULT": true
+  },
+  "activeGovernanceRuleIds": [
+    "GOV.PARENT.RIGHT.OFF"
+  ]
+}
