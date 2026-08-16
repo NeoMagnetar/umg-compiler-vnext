@@ -19,7 +19,7 @@
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.json",
     "update:expected": "npm run build && node test/update-expected.mjs",
-    "test": "npm run build && node test/run-fixtures.mjs && node test/failure-contract.mjs && node test/state-selection-contract.mjs && node test/governance-contract.mjs && node test/directive-geometry-contract.mjs && node test/bundle-overlay-contract.mjs && node test/cli-contract.mjs && node test/merge-contract.mjs",
+    "test": "npm run build && node test/run-fixtures.mjs && node test/public-output-contract.mjs && node test/failure-contract.mjs && node test/state-selection-contract.mjs && node test/governance-contract.mjs && node test/directive-geometry-contract.mjs && node test/bundle-overlay-contract.mjs && node test/cli-contract.mjs && node test/merge-contract.mjs",
     "validate:sample": "npm run build && node dist/cli.js validate fixtures/dealership.sleeve.json",
     "compile:normal": "npm run build && node dist/cli.js compile fixtures/dealership.sleeve.json fixtures/requests/normal.selection.json"
   },
