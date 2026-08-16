@@ -1,0 +1,460 @@
+{
+  "runtime": {
+    "schemaVersion": "umg.compiler-vnext.runtime.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+    "sleeveName": "Dealership Golden Fixture",
+    "controllerNeoStackId": "NS.CONTROLLER",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "activeNeoStackIds": [
+      "NS.CONTROLLER"
+    ],
+    "resolvedNeoBlocks": [
+      {
+        "id": "NB.CONTROLLER.INTAKE",
+        "name": "Controller Intake",
+        "state": "active",
+        "postRunState": "ready",
+        "primeDirectiveId": "D.CTRL.PRIME",
+        "activeTriggerIds": [
+          "T.CTRL.DEFAULT"
+        ],
+        "lanes": [
+          {
+            "moltType": "trigger",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "T.CTRL.DEFAULT",
+                    "type": "trigger",
+                    "content": "The Controller NeoBlock is selected for a request.",
+                    "title": "Controller Default Trigger",
+                    "sourceMode": "local",
+                    "sourceId": "T.CTRL.DEFAULT"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "evaluated-trigger-lane"
+          },
+          {
+            "moltType": "directive",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "D.CTRL.PRIME",
+                    "type": "directive",
+                    "content": "Interpret the request and identify the smallest relevant path through the Sleeve.",
+                    "title": "Controller Prime Directive",
+                    "sourceMode": "local",
+                    "sourceId": "D.CTRL.PRIME"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "generated-directive-lane"
+          },
+          {
+            "moltType": "instruction",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "I.CTRL.INTERPRET",
+                    "type": "instruction",
+                    "content": "Use the explicit route proposal, tags, Use, Aim, and Need to identify relevant downstream domains.",
+                    "title": "Interpret and Route",
+                    "sourceMode": "local",
+                    "sourceId": "I.CTRL.INTERPRET"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "subject",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "S.CTRL.REQUEST",
+                    "type": "subject",
+                    "content": "Incoming dealership customer request.",
+                    "title": "Incoming Request",
+                    "sourceMode": "local",
+                    "sourceId": "S.CTRL.REQUEST"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "primary",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "P.CTRL.ROUTE",
+                    "type": "primary",
+                    "content": "Explicit selection of relevant NeoStacks and NeoBlocks.",
+                    "title": "Resolved Route",
+                    "sourceMode": "local",
+                    "sourceId": "P.CTRL.ROUTE"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "philosophy",
+            "scoped": [
+              {
+                "id": "PH.SLEEVE.PRAGMATISM",
+                "type": "philosophy",
+                "content": "Pragmatism",
+                "title": "Pragmatism",
+                "sourceMode": "scoped",
+                "sourceId": "ATT.SLEEVE.PH.PRAGMATISM",
+                "sourceScope": {
+                  "kind": "sleeve"
+                }
+              }
+            ],
+            "rows": [],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "blueprint",
+            "scoped": [
+              {
+                "id": "BP.SLEEVE.INTAKE_FLOW",
+                "type": "blueprint",
+                "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+                "title": "Dealership Intake Flow",
+                "sourceMode": "scoped",
+                "sourceId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+                "sourceScope": {
+                  "kind": "sleeve"
+                }
+              }
+            ],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "BP.CTRL.SUMMARY",
+                    "type": "blueprint",
+                    "content": "Request -> Relevant Domains -> Missing Information -> Proposed Route",
+                    "title": "Controller Route Summary",
+                    "sourceMode": "local",
+                    "sourceId": "BP.CTRL.SUMMARY"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          }
+        ]
+      }
+    ],
+    "promptParts": [
+      {
+        "id": "T.CTRL.DEFAULT",
+        "type": "trigger",
+        "content": "The Controller NeoBlock is selected for a request.",
+        "title": "Controller Default Trigger",
+        "sourceMode": "local",
+        "sourceId": "T.CTRL.DEFAULT",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "D.CTRL.PRIME",
+        "type": "directive",
+        "content": "Interpret the request and identify the smallest relevant path through the Sleeve.",
+        "title": "Controller Prime Directive",
+        "sourceMode": "local",
+        "sourceId": "D.CTRL.PRIME",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "I.CTRL.INTERPRET",
+        "type": "instruction",
+        "content": "Use the explicit route proposal, tags, Use, Aim, and Need to identify relevant downstream domains.",
+        "title": "Interpret and Route",
+        "sourceMode": "local",
+        "sourceId": "I.CTRL.INTERPRET",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "S.CTRL.REQUEST",
+        "type": "subject",
+        "content": "Incoming dealership customer request.",
+        "title": "Incoming Request",
+        "sourceMode": "local",
+        "sourceId": "S.CTRL.REQUEST",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 4,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "P.CTRL.ROUTE",
+        "type": "primary",
+        "content": "Explicit selection of relevant NeoStacks and NeoBlocks.",
+        "title": "Resolved Route",
+        "sourceMode": "local",
+        "sourceId": "P.CTRL.ROUTE",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 5,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "PH.SLEEVE.PRAGMATISM",
+        "type": "philosophy",
+        "content": "Pragmatism",
+        "title": "Pragmatism",
+        "sourceMode": "scoped",
+        "sourceId": "ATT.SLEEVE.PH.PRAGMATISM",
+        "sourceScope": {
+          "kind": "sleeve"
+        },
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 6,
+        "scopeLayer": 0,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "BP.SLEEVE.INTAKE_FLOW",
+        "type": "blueprint",
+        "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+        "title": "Dealership Intake Flow",
+        "sourceMode": "scoped",
+        "sourceId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+        "sourceScope": {
+          "kind": "sleeve"
+        },
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 7,
+        "scopeLayer": 0,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "BP.CTRL.SUMMARY",
+        "type": "blueprint",
+        "content": "Request -> Relevant Domains -> Missing Information -> Proposed Route",
+        "title": "Controller Route Summary",
+        "sourceMode": "local",
+        "sourceId": "BP.CTRL.SUMMARY",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 7,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      }
+    ],
+    "diagnostics": [],
+    "resetPlan": {
+      "neoStackIds": [
+        "NS.CONTROLLER"
+      ],
+      "neoBlockIds": [
+        "NB.CONTROLLER.INTAKE"
+      ],
+      "targetState": "ready"
+    },
+    "runtimeHash": "3b5f896cf01029fd41b59d7ea50bf47191b0e93befbcd1977db058512be95e90"
+  },
+  "trace": {
+    "schemaVersion": "umg.compiler-vnext.trace.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "events": [
+      {
+        "seq": 1,
+        "type": "NEOSTACK_DISABLED",
+        "subjectId": "NS.SALES"
+      },
+      {
+        "seq": 2,
+        "type": "NEOBLOCK_DISABLED",
+        "subjectId": "NB.SALES.TRADE_IN"
+      },
+      {
+        "seq": 3,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.CONTROLLER"
+      },
+      {
+        "seq": 4,
+        "type": "NEOSTACK_READY",
+        "subjectId": "NS.SERVICE"
+      },
+      {
+        "seq": 5,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "neoStackId": "NS.CONTROLLER"
+        }
+      },
+      {
+        "seq": 6,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.CTRL.DEFAULT",
+        "data": {
+          "active": true
+        }
+      },
+      {
+        "seq": 7,
+        "type": "PRIME_DIRECTIVE_APPLIED",
+        "subjectId": "D.CTRL.PRIME",
+        "data": {
+          "neoBlockId": "NB.CONTROLLER.INTAKE"
+        }
+      },
+      {
+        "seq": 8,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 9,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "PH.SLEEVE.PRAGMATISM",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.PH.PRAGMATISM",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 10,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "instruction"
+        }
+      },
+      {
+        "seq": 11,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "subject"
+        }
+      },
+      {
+        "seq": 12,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "primary"
+        }
+      },
+      {
+        "seq": 13,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "blueprint"
+        }
+      },
+      {
+        "seq": 14,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SERVICE.TRIAGE"
+      },
+      {
+        "seq": 15,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SERVICE.DRIVE_IN"
+      },
+      {
+        "seq": 16,
+        "type": "RUNTIME_COMPILED",
+        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "data": {
+          "runtimeHash": "3b5f896cf01029fd41b59d7ea50bf47191b0e93befbcd1977db058512be95e90",
+          "promptPartCount": 8
+        }
+      },
+      {
+        "seq": 17,
+        "type": "POST_RUN_RESET_DECLARED",
+        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "data": {
+          "neoStackIds": [
+            "NS.CONTROLLER"
+          ],
+          "neoBlockIds": [
+            "NB.CONTROLLER.INTAKE"
+          ],
+          "targetState": "ready"
+        }
+      }
+    ],
+    "diagnostics": [],
+    "finalNeoStackStates": {
+      "NS.CONTROLLER": "active",
+      "NS.SERVICE": "ready",
+      "NS.SALES": "disabled"
+    },
+    "finalNeoBlockStates": {
+      "NB.CONTROLLER.INTAKE": "active",
+      "NB.SERVICE.TRIAGE": "ready",
+      "NB.SERVICE.DRIVE_IN": "ready",
+      "NB.SALES.TRADE_IN": "disabled"
+    }
+  },
+  "hasErrors": false
+}

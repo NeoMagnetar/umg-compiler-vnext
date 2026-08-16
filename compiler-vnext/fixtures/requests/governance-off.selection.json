@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-16T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.CONTROLLER",
+    "NS.SERVICE"
+  ],
+  "activeNeoBlockIds": [
+    "NB.CONTROLLER.INTAKE",
+    "NB.SERVICE.TRIAGE",
+    "NB.SERVICE.DRIVE_IN"
+  ],
+  "triggerState": {
+    "T.CTRL.DEFAULT": true,
+    "T.SVC.NORMAL": false,
+    "T.SVC.SAFETY": true,
+    "T.SVC.WARRANTY": false,
+    "T.DRIVE.DEFAULT": true
+  },
+  "activeOverlayIds": [],
+  "activeGovernanceRuleIds": [
+    "GOV.SAFETY.NO_DRIVE"
+  ],
+  "disabledNeoStackIds": [],
+  "disabledNeoBlockIds": []
+}

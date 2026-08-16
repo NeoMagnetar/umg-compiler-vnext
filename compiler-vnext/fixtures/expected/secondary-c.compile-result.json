@@ -1,0 +1,1055 @@
+{
+  "runtime": {
+    "schemaVersion": "umg.compiler-vnext.runtime.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+    "sleeveName": "Dealership Golden Fixture",
+    "controllerNeoStackId": "NS.CONTROLLER",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "activeNeoStackIds": [
+      "NS.CONTROLLER",
+      "NS.SERVICE"
+    ],
+    "resolvedNeoBlocks": [
+      {
+        "id": "NB.CONTROLLER.INTAKE",
+        "name": "Controller Intake",
+        "state": "active",
+        "postRunState": "ready",
+        "primeDirectiveId": "D.CTRL.PRIME",
+        "activeTriggerIds": [
+          "T.CTRL.DEFAULT"
+        ],
+        "lanes": [
+          {
+            "moltType": "trigger",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "T.CTRL.DEFAULT",
+                    "type": "trigger",
+                    "content": "The Controller NeoBlock is selected for a request.",
+                    "title": "Controller Default Trigger",
+                    "sourceMode": "local",
+                    "sourceId": "T.CTRL.DEFAULT"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "evaluated-trigger-lane"
+          },
+          {
+            "moltType": "directive",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "D.CTRL.PRIME",
+                    "type": "directive",
+                    "content": "Interpret the request and identify the smallest relevant path through the Sleeve.",
+                    "title": "Controller Prime Directive",
+                    "sourceMode": "local",
+                    "sourceId": "D.CTRL.PRIME"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "generated-directive-lane"
+          },
+          {
+            "moltType": "instruction",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "I.CTRL.INTERPRET",
+                    "type": "instruction",
+                    "content": "Use the explicit route proposal, tags, Use, Aim, and Need to identify relevant downstream domains.",
+                    "title": "Interpret and Route",
+                    "sourceMode": "local",
+                    "sourceId": "I.CTRL.INTERPRET"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "subject",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "S.CTRL.REQUEST",
+                    "type": "subject",
+                    "content": "Incoming dealership customer request.",
+                    "title": "Incoming Request",
+                    "sourceMode": "local",
+                    "sourceId": "S.CTRL.REQUEST"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "primary",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "P.CTRL.ROUTE",
+                    "type": "primary",
+                    "content": "Explicit selection of relevant NeoStacks and NeoBlocks.",
+                    "title": "Resolved Route",
+                    "sourceMode": "local",
+                    "sourceId": "P.CTRL.ROUTE"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "philosophy",
+            "scoped": [
+              {
+                "id": "PH.SLEEVE.PRAGMATISM",
+                "type": "philosophy",
+                "content": "Pragmatism",
+                "title": "Pragmatism",
+                "sourceMode": "scoped",
+                "sourceId": "ATT.SLEEVE.PH.PRAGMATISM",
+                "sourceScope": {
+                  "kind": "sleeve"
+                }
+              }
+            ],
+            "rows": [],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "blueprint",
+            "scoped": [
+              {
+                "id": "BP.SLEEVE.INTAKE_FLOW",
+                "type": "blueprint",
+                "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+                "title": "Dealership Intake Flow",
+                "sourceMode": "scoped",
+                "sourceId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+                "sourceScope": {
+                  "kind": "sleeve"
+                }
+              }
+            ],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "BP.CTRL.SUMMARY",
+                    "type": "blueprint",
+                    "content": "Request -> Relevant Domains -> Missing Information -> Proposed Route",
+                    "title": "Controller Route Summary",
+                    "sourceMode": "local",
+                    "sourceId": "BP.CTRL.SUMMARY"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          }
+        ]
+      },
+      {
+        "id": "NB.SERVICE.TRIAGE",
+        "name": "Service Triage",
+        "state": "active",
+        "postRunState": "ready",
+        "primeDirectiveId": "D.SVC.PRIME",
+        "secondaryDirectiveId": "SD.SVC.C",
+        "activeTriggerIds": [
+          "T.SVC.WARRANTY"
+        ],
+        "lanes": [
+          {
+            "moltType": "trigger",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "T.SVC.WARRANTY",
+                    "type": "trigger",
+                    "content": "The customer asks whether repair or defect coverage applies.",
+                    "title": "Warranty Trigger",
+                    "sourceMode": "local",
+                    "sourceId": "T.SVC.WARRANTY"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "evaluated-trigger-lane"
+          },
+          {
+            "moltType": "directive",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "D.SVC.PRIME",
+                    "type": "directive",
+                    "content": "Accurately triage the customer's existing-vehicle service need before routing further.",
+                    "title": "Service Prime Directive",
+                    "sourceMode": "local",
+                    "sourceId": "D.SVC.PRIME"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "blocks": [
+                  {
+                    "id": "D.SVC.C",
+                    "type": "directive",
+                    "content": "Use warranty-evaluation service mode while remaining subordinate to the Service Prime Directive.",
+                    "title": "Secondary Directive C — Warranty",
+                    "sourceMode": "local",
+                    "sourceId": "D.SVC.C"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "generated-directive-lane"
+          },
+          {
+            "moltType": "instruction",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "I.SVC.01",
+                    "type": "instruction",
+                    "content": "Identify the vehicle.",
+                    "title": "Service Instruction 01",
+                    "sourceMode": "local",
+                    "sourceId": "I.SVC.01"
+                  },
+                  {
+                    "id": "I.SVC.08",
+                    "type": "instruction",
+                    "content": "Obtain warranty-identifying information.",
+                    "title": "Service Instruction 08",
+                    "sourceMode": "local",
+                    "sourceId": "I.SVC.08"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "blocks": [
+                  {
+                    "id": "I.SVC.02",
+                    "type": "instruction",
+                    "content": "Identify the reported symptom.",
+                    "title": "Service Instruction 02",
+                    "sourceMode": "local",
+                    "sourceId": "I.SVC.02"
+                  },
+                  {
+                    "id": "I.SVC.09",
+                    "type": "instruction",
+                    "content": "Establish relevant repair and service history.",
+                    "title": "Service Instruction 09",
+                    "sourceMode": "local",
+                    "sourceId": "I.SVC.09"
+                  }
+                ]
+              },
+              {
+                "row": 3,
+                "blocks": [
+                  {
+                    "id": "I.SVC.10",
+                    "type": "instruction",
+                    "content": "Determine the explicit warranty-coverage path without inventing coverage facts.",
+                    "title": "Service Instruction 10",
+                    "sourceMode": "local",
+                    "sourceId": "I.SVC.10"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "bundle",
+            "bundleId": "BND.SVC.C.INSTRUCTION"
+          },
+          {
+            "moltType": "subject",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "S.SVC.REQUEST",
+                    "type": "subject",
+                    "content": "The customer's existing vehicle, reported condition, and requested service outcome.",
+                    "title": "Service Request Subject",
+                    "sourceMode": "local",
+                    "sourceId": "S.SVC.REQUEST"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "primary",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "P.SVC.TRIAGE",
+                    "type": "primary",
+                    "content": "The service triage determination and next valid service path.",
+                    "title": "Service Triage Primary",
+                    "sourceMode": "local",
+                    "sourceId": "P.SVC.TRIAGE"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "philosophy",
+            "scoped": [
+              {
+                "id": "PH.SLEEVE.PRAGMATISM",
+                "type": "philosophy",
+                "content": "Pragmatism",
+                "title": "Pragmatism",
+                "sourceMode": "scoped",
+                "sourceId": "ATT.SLEEVE.PH.PRAGMATISM",
+                "sourceScope": {
+                  "kind": "sleeve"
+                }
+              }
+            ],
+            "rows": [],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "blueprint",
+            "scoped": [
+              {
+                "id": "BP.SLEEVE.INTAKE_FLOW",
+                "type": "blueprint",
+                "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+                "title": "Dealership Intake Flow",
+                "sourceMode": "scoped",
+                "sourceId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+                "sourceScope": {
+                  "kind": "sleeve"
+                }
+              }
+            ],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "BP.SVC.WARRANTY",
+                    "type": "blueprint",
+                    "content": "Facts -> Coverage Basis -> Exclusions or Uncertainty -> Determination -> Next Action",
+                    "title": "Warranty Determination Form",
+                    "sourceMode": "local",
+                    "sourceId": "BP.SVC.WARRANTY"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "bundle",
+            "bundleId": "BND.SVC.C.BLUEPRINT"
+          }
+        ]
+      }
+    ],
+    "promptParts": [
+      {
+        "id": "T.CTRL.DEFAULT",
+        "type": "trigger",
+        "content": "The Controller NeoBlock is selected for a request.",
+        "title": "Controller Default Trigger",
+        "sourceMode": "local",
+        "sourceId": "T.CTRL.DEFAULT",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "D.CTRL.PRIME",
+        "type": "directive",
+        "content": "Interpret the request and identify the smallest relevant path through the Sleeve.",
+        "title": "Controller Prime Directive",
+        "sourceMode": "local",
+        "sourceId": "D.CTRL.PRIME",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "I.CTRL.INTERPRET",
+        "type": "instruction",
+        "content": "Use the explicit route proposal, tags, Use, Aim, and Need to identify relevant downstream domains.",
+        "title": "Interpret and Route",
+        "sourceMode": "local",
+        "sourceId": "I.CTRL.INTERPRET",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "S.CTRL.REQUEST",
+        "type": "subject",
+        "content": "Incoming dealership customer request.",
+        "title": "Incoming Request",
+        "sourceMode": "local",
+        "sourceId": "S.CTRL.REQUEST",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 4,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "P.CTRL.ROUTE",
+        "type": "primary",
+        "content": "Explicit selection of relevant NeoStacks and NeoBlocks.",
+        "title": "Resolved Route",
+        "sourceMode": "local",
+        "sourceId": "P.CTRL.ROUTE",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 5,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "PH.SLEEVE.PRAGMATISM",
+        "type": "philosophy",
+        "content": "Pragmatism",
+        "title": "Pragmatism",
+        "sourceMode": "scoped",
+        "sourceId": "ATT.SLEEVE.PH.PRAGMATISM",
+        "sourceScope": {
+          "kind": "sleeve"
+        },
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 6,
+        "scopeLayer": 0,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "BP.SLEEVE.INTAKE_FLOW",
+        "type": "blueprint",
+        "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+        "title": "Dealership Intake Flow",
+        "sourceMode": "scoped",
+        "sourceId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+        "sourceScope": {
+          "kind": "sleeve"
+        },
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 7,
+        "scopeLayer": 0,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "BP.CTRL.SUMMARY",
+        "type": "blueprint",
+        "content": "Request -> Relevant Domains -> Missing Information -> Proposed Route",
+        "title": "Controller Route Summary",
+        "sourceMode": "local",
+        "sourceId": "BP.CTRL.SUMMARY",
+        "neoStackId": "NS.CONTROLLER",
+        "neoBlockId": "NB.CONTROLLER.INTAKE",
+        "laneOrder": 7,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "T.SVC.WARRANTY",
+        "type": "trigger",
+        "content": "The customer asks whether repair or defect coverage applies.",
+        "title": "Warranty Trigger",
+        "sourceMode": "local",
+        "sourceId": "T.SVC.WARRANTY",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "D.SVC.PRIME",
+        "type": "directive",
+        "content": "Accurately triage the customer's existing-vehicle service need before routing further.",
+        "title": "Service Prime Directive",
+        "sourceMode": "local",
+        "sourceId": "D.SVC.PRIME",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "D.SVC.C",
+        "type": "directive",
+        "content": "Use warranty-evaluation service mode while remaining subordinate to the Service Prime Directive.",
+        "title": "Secondary Directive C — Warranty",
+        "sourceMode": "local",
+        "sourceId": "D.SVC.C",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "I.SVC.01",
+        "type": "instruction",
+        "content": "Identify the vehicle.",
+        "title": "Service Instruction 01",
+        "sourceMode": "local",
+        "sourceId": "I.SVC.01",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "I.SVC.08",
+        "type": "instruction",
+        "content": "Obtain warranty-identifying information.",
+        "title": "Service Instruction 08",
+        "sourceMode": "local",
+        "sourceId": "I.SVC.08",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 2
+      },
+      {
+        "id": "I.SVC.02",
+        "type": "instruction",
+        "content": "Identify the reported symptom.",
+        "title": "Service Instruction 02",
+        "sourceMode": "local",
+        "sourceId": "I.SVC.02",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "I.SVC.09",
+        "type": "instruction",
+        "content": "Establish relevant repair and service history.",
+        "title": "Service Instruction 09",
+        "sourceMode": "local",
+        "sourceId": "I.SVC.09",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 2
+      },
+      {
+        "id": "I.SVC.10",
+        "type": "instruction",
+        "content": "Determine the explicit warranty-coverage path without inventing coverage facts.",
+        "title": "Service Instruction 10",
+        "sourceMode": "local",
+        "sourceId": "I.SVC.10",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 3,
+        "column": 1
+      },
+      {
+        "id": "S.SVC.REQUEST",
+        "type": "subject",
+        "content": "The customer's existing vehicle, reported condition, and requested service outcome.",
+        "title": "Service Request Subject",
+        "sourceMode": "local",
+        "sourceId": "S.SVC.REQUEST",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 4,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "P.SVC.TRIAGE",
+        "type": "primary",
+        "content": "The service triage determination and next valid service path.",
+        "title": "Service Triage Primary",
+        "sourceMode": "local",
+        "sourceId": "P.SVC.TRIAGE",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 5,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "PH.SLEEVE.PRAGMATISM",
+        "type": "philosophy",
+        "content": "Pragmatism",
+        "title": "Pragmatism",
+        "sourceMode": "scoped",
+        "sourceId": "ATT.SLEEVE.PH.PRAGMATISM",
+        "sourceScope": {
+          "kind": "sleeve"
+        },
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 6,
+        "scopeLayer": 0,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "BP.SLEEVE.INTAKE_FLOW",
+        "type": "blueprint",
+        "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+        "title": "Dealership Intake Flow",
+        "sourceMode": "scoped",
+        "sourceId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+        "sourceScope": {
+          "kind": "sleeve"
+        },
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 7,
+        "scopeLayer": 0,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "BP.SVC.WARRANTY",
+        "type": "blueprint",
+        "content": "Facts -> Coverage Basis -> Exclusions or Uncertainty -> Determination -> Next Action",
+        "title": "Warranty Determination Form",
+        "sourceMode": "local",
+        "sourceId": "BP.SVC.WARRANTY",
+        "neoStackId": "NS.SERVICE",
+        "neoBlockId": "NB.SERVICE.TRIAGE",
+        "laneOrder": 7,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      }
+    ],
+    "diagnostics": [],
+    "resetPlan": {
+      "neoStackIds": [
+        "NS.CONTROLLER",
+        "NS.SERVICE"
+      ],
+      "neoBlockIds": [
+        "NB.CONTROLLER.INTAKE",
+        "NB.SERVICE.TRIAGE"
+      ],
+      "targetState": "ready"
+    },
+    "runtimeHash": "a6bcdcb1ad9449ecccf8443146685bb3c2e42048ba6e4975213308296490f55e"
+  },
+  "trace": {
+    "schemaVersion": "umg.compiler-vnext.trace.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "events": [
+      {
+        "seq": 1,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.CONTROLLER"
+      },
+      {
+        "seq": 2,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.SERVICE"
+      },
+      {
+        "seq": 3,
+        "type": "NEOSTACK_READY",
+        "subjectId": "NS.SALES"
+      },
+      {
+        "seq": 4,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "neoStackId": "NS.CONTROLLER"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.CTRL.DEFAULT",
+        "data": {
+          "active": true
+        }
+      },
+      {
+        "seq": 6,
+        "type": "PRIME_DIRECTIVE_APPLIED",
+        "subjectId": "D.CTRL.PRIME",
+        "data": {
+          "neoBlockId": "NB.CONTROLLER.INTAKE"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 8,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "PH.SLEEVE.PRAGMATISM",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.PH.PRAGMATISM",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 9,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "instruction"
+        }
+      },
+      {
+        "seq": 10,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "subject"
+        }
+      },
+      {
+        "seq": 11,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "primary"
+        }
+      },
+      {
+        "seq": 12,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "blueprint"
+        }
+      },
+      {
+        "seq": 13,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.SERVICE.TRIAGE",
+        "data": {
+          "neoStackId": "NS.SERVICE"
+        }
+      },
+      {
+        "seq": 14,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.SVC.NORMAL",
+        "data": {
+          "active": false
+        }
+      },
+      {
+        "seq": 15,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.SVC.SAFETY",
+        "data": {
+          "active": false
+        }
+      },
+      {
+        "seq": 16,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.SVC.WARRANTY",
+        "data": {
+          "active": true
+        }
+      },
+      {
+        "seq": 17,
+        "type": "PRIME_DIRECTIVE_APPLIED",
+        "subjectId": "D.SVC.PRIME",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE"
+        }
+      },
+      {
+        "seq": 18,
+        "type": "SECONDARY_DIRECTIVE_SELECTED",
+        "subjectId": "D.SVC.C",
+        "data": {
+          "relationId": "SD.SVC.C",
+          "triggerBlockId": "T.SVC.WARRANTY"
+        }
+      },
+      {
+        "seq": 19,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 20,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "PH.SLEEVE.PRAGMATISM",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.PH.PRAGMATISM",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 21,
+        "type": "BUNDLE_APPLIED",
+        "subjectId": "BND.SVC.C.INSTRUCTION",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "moltType": "instruction",
+          "secondaryDirectiveId": "SD.SVC.C"
+        }
+      },
+      {
+        "seq": 22,
+        "type": "MOLT_READY",
+        "subjectId": "I.SVC.03",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.INSTRUCTION"
+        }
+      },
+      {
+        "seq": 23,
+        "type": "MOLT_READY",
+        "subjectId": "I.SVC.04",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.INSTRUCTION"
+        }
+      },
+      {
+        "seq": 24,
+        "type": "MOLT_READY",
+        "subjectId": "I.SVC.05",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.INSTRUCTION"
+        }
+      },
+      {
+        "seq": 25,
+        "type": "MOLT_READY",
+        "subjectId": "I.SVC.06",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.INSTRUCTION"
+        }
+      },
+      {
+        "seq": 26,
+        "type": "MOLT_READY",
+        "subjectId": "I.SVC.07",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.INSTRUCTION"
+        }
+      },
+      {
+        "seq": 27,
+        "type": "MOLT_READY",
+        "subjectId": "I.SVC.MERGED.SAFE_STOP",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.INSTRUCTION"
+        }
+      },
+      {
+        "seq": 28,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.SERVICE.TRIAGE",
+        "data": {
+          "moltType": "subject"
+        }
+      },
+      {
+        "seq": 29,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.SERVICE.TRIAGE",
+        "data": {
+          "moltType": "primary"
+        }
+      },
+      {
+        "seq": 30,
+        "type": "BUNDLE_APPLIED",
+        "subjectId": "BND.SVC.C.BLUEPRINT",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "moltType": "blueprint",
+          "secondaryDirectiveId": "SD.SVC.C"
+        }
+      },
+      {
+        "seq": 31,
+        "type": "MOLT_READY",
+        "subjectId": "BP.SVC.BASE",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.BLUEPRINT"
+        }
+      },
+      {
+        "seq": 32,
+        "type": "MOLT_READY",
+        "subjectId": "BP.SVC.SAFETY",
+        "data": {
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "reason": "omitted_from_active_bundle",
+          "bundleId": "BND.SVC.C.BLUEPRINT"
+        }
+      },
+      {
+        "seq": 33,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SERVICE.DRIVE_IN"
+      },
+      {
+        "seq": 34,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SALES.TRADE_IN"
+      },
+      {
+        "seq": 35,
+        "type": "RUNTIME_COMPILED",
+        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "data": {
+          "runtimeHash": "a6bcdcb1ad9449ecccf8443146685bb3c2e42048ba6e4975213308296490f55e",
+          "promptPartCount": 21
+        }
+      },
+      {
+        "seq": 36,
+        "type": "POST_RUN_RESET_DECLARED",
+        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "data": {
+          "neoStackIds": [
+            "NS.CONTROLLER",
+            "NS.SERVICE"
+          ],
+          "neoBlockIds": [
+            "NB.CONTROLLER.INTAKE",
+            "NB.SERVICE.TRIAGE"
+          ],
+          "targetState": "ready"
+        }
+      }
+    ],
+    "diagnostics": [],
+    "finalNeoStackStates": {
+      "NS.CONTROLLER": "active",
+      "NS.SERVICE": "active",
+      "NS.SALES": "ready"
+    },
+    "finalNeoBlockStates": {
+      "NB.CONTROLLER.INTAKE": "active",
+      "NB.SERVICE.TRIAGE": "active",
+      "NB.SERVICE.DRIVE_IN": "ready",
+      "NB.SALES.TRADE_IN": "ready"
+    }
+  },
+  "hasErrors": false
+}

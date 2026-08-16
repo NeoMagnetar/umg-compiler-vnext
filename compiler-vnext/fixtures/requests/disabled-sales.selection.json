@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-16T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.CONTROLLER",
+    "NS.SALES"
+  ],
+  "activeNeoBlockIds": [
+    "NB.CONTROLLER.INTAKE",
+    "NB.SALES.TRADE_IN"
+  ],
+  "triggerState": {
+    "T.CTRL.DEFAULT": true,
+    "T.SALES.DEFAULT": true
+  },
+  "activeOverlayIds": [],
+  "activeGovernanceRuleIds": [],
+  "disabledNeoStackIds": [
+    "NS.SALES"
+  ],
+  "disabledNeoBlockIds": []
+}

@@ -1,0 +1,180 @@
+{
+  "trace": {
+    "schemaVersion": "umg.compiler-vnext.trace.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "events": [
+      {
+        "seq": 1,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.CONTROLLER"
+      },
+      {
+        "seq": 2,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.SERVICE"
+      },
+      {
+        "seq": 3,
+        "type": "NEOSTACK_READY",
+        "subjectId": "NS.SALES"
+      },
+      {
+        "seq": 4,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "neoStackId": "NS.CONTROLLER"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.CTRL.DEFAULT",
+        "data": {
+          "active": true
+        }
+      },
+      {
+        "seq": 6,
+        "type": "PRIME_DIRECTIVE_APPLIED",
+        "subjectId": "D.CTRL.PRIME",
+        "data": {
+          "neoBlockId": "NB.CONTROLLER.INTAKE"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 8,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "PH.SLEEVE.PRAGMATISM",
+        "data": {
+          "attachmentId": "ATT.SLEEVE.PH.PRAGMATISM",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      },
+      {
+        "seq": 9,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "instruction"
+        }
+      },
+      {
+        "seq": 10,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "subject"
+        }
+      },
+      {
+        "seq": 11,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "primary"
+        }
+      },
+      {
+        "seq": 12,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.CONTROLLER.INTAKE",
+        "data": {
+          "moltType": "blueprint"
+        }
+      },
+      {
+        "seq": 13,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.SERVICE.TRIAGE",
+        "data": {
+          "neoStackId": "NS.SERVICE"
+        }
+      },
+      {
+        "seq": 14,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.SVC.NORMAL",
+        "data": {
+          "active": false
+        }
+      },
+      {
+        "seq": 15,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.SVC.SAFETY",
+        "data": {
+          "active": true
+        }
+      },
+      {
+        "seq": 16,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.SVC.WARRANTY",
+        "data": {
+          "active": true
+        }
+      },
+      {
+        "seq": 17,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SERVICE.DRIVE_IN"
+      },
+      {
+        "seq": 18,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SALES.TRADE_IN"
+      },
+      {
+        "seq": 19,
+        "type": "VALIDATION_ERROR",
+        "data": {
+          "code": "MULTIPLE_SECONDARY_DIRECTIVE_MATCH",
+          "message": "NeoBlock NB.SERVICE.TRIAGE matched more than one Secondary Directive. vNext requires an explicit future coexistence rule.",
+          "path": "neoBlocks.NB.SERVICE.TRIAGE.secondaryDirectives"
+        }
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "MULTIPLE_SECONDARY_DIRECTIVE_MATCH",
+        "level": "error",
+        "message": "NeoBlock NB.SERVICE.TRIAGE matched more than one Secondary Directive. vNext requires an explicit future coexistence rule.",
+        "path": "neoBlocks.NB.SERVICE.TRIAGE.secondaryDirectives",
+        "details": {
+          "secondaryDirectiveIds": [
+            "SD.SVC.B",
+            "SD.SVC.C"
+          ]
+        }
+      }
+    ],
+    "finalNeoStackStates": {
+      "NS.CONTROLLER": "active",
+      "NS.SERVICE": "active",
+      "NS.SALES": "ready"
+    },
+    "finalNeoBlockStates": {
+      "NB.CONTROLLER.INTAKE": "active",
+      "NB.SERVICE.TRIAGE": "active",
+      "NB.SERVICE.DRIVE_IN": "ready",
+      "NB.SALES.TRADE_IN": "ready"
+    }
+  },
+  "hasErrors": true
+}
