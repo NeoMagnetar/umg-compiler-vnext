@@ -56,6 +56,9 @@ interface StateBlocker {
   blockingReason: string;
   blockingSource: BlockingSource;
   governanceRuleId?: string;
+  governanceRuleIds?: string[];
+  directGovernanceRuleIds?: string[];
+  inheritedGovernanceRuleIds?: string[];
   inheritedFromId?: string;
   path?: string;
 }
@@ -73,6 +76,50 @@ interface DirectDisable {
 interface SelectedStackBlockContext {
   diagnosticCode: string;
   details: Record<string, unknown>;
+}
+
+function firstGovernanceRuleId(ids: string[]): string | undefined {
+  return ids[0];
+}
+
+function appendGovernanceRuleId(targets: Map<string, string[]>, targetId: string, ruleId: string): void {
+  const current = targets.get(targetId) ?? [];
+  current.push(ruleId);
+  targets.set(targetId, current);
+}
+
+function orderedGovernanceRuleIds(ids: Iterable<string>, governanceOrder: Map<string, number>): string[] {
+  return [...new Set(ids)].sort(
+    (left, right) =>
+      (governanceOrder.get(left) ?? Number.MAX_SAFE_INTEGER) -
+      (governanceOrder.get(right) ?? Number.MAX_SAFE_INTEGER),
+  );
+}
+
+function governanceRuleIdsFromBlocker(blocker: StateBlocker | undefined): string[] {
+  if (!blocker) return [];
+  if (blocker.governanceRuleIds?.length) return blocker.governanceRuleIds;
+  return blocker.governanceRuleId ? [blocker.governanceRuleId] : [];
+}
+
+function blockerTraceData(blocker: StateBlocker | undefined): Record<string, unknown> {
+  if (!blocker) return {};
+
+  return {
+    blockingObjectId: blocker.blockingObjectId,
+    blockingReason: blocker.blockingReason,
+    blockingSource: blocker.blockingSource,
+    ...(blocker.governanceRuleId ? { governanceRuleId: blocker.governanceRuleId } : {}),
+    ...(blocker.governanceRuleIds?.length ? { governanceRuleIds: blocker.governanceRuleIds } : {}),
+    ...(blocker.directGovernanceRuleIds?.length
+      ? { directGovernanceRuleIds: blocker.directGovernanceRuleIds }
+      : {}),
+    ...(blocker.inheritedGovernanceRuleIds?.length
+      ? { inheritedGovernanceRuleIds: blocker.inheritedGovernanceRuleIds }
+      : {}),
+    ...(blocker.inheritedFromId ? { inheritedFromId: blocker.inheritedFromId } : {}),
+    ...(blocker.path ? { blockingPath: blocker.path } : {}),
+  };
 }
 
 function buildIndexes(sleeve: Sleeve): RuntimeIndexes {
@@ -365,6 +412,13 @@ function selectionTargetNotExecutableDiagnostic(
   path: string,
   extraDetails: Record<string, unknown> = {},
 ): CompilerDiagnostic {
+  const blockerData = availability.blocker
+    ? blockerTraceData(availability.blocker)
+    : {
+        blockingObjectId: targetId,
+        blockingReason: 'not_executable',
+        blockingSource: 'configuration',
+      };
   return errorDiagnostic(
     'SELECTION_TARGET_NOT_EXECUTABLE',
     `Selected ${targetKind === 'neostack' ? 'NeoStack' : 'NeoBlock'} ${targetId} has effective state ${availability.state} and cannot participate in this compile.`,
@@ -373,12 +427,7 @@ function selectionTargetNotExecutableDiagnostic(
       targetId,
       targetKind,
       effectiveState: availability.state,
-      blockingObjectId: availability.blocker?.blockingObjectId ?? targetId,
-      blockingReason: availability.blocker?.blockingReason ?? 'not_executable',
-      blockingSource: availability.blocker?.blockingSource ?? 'configuration',
-      ...(availability.blocker?.governanceRuleId ? { governanceRuleId: availability.blocker.governanceRuleId } : {}),
-      ...(availability.blocker?.inheritedFromId ? { inheritedFromId: availability.blocker.inheritedFromId } : {}),
-      ...(availability.blocker?.path ? { blockingPath: availability.blocker.path } : {}),
+      ...blockerData,
       ...extraDetails,
     },
   );
@@ -629,8 +678,9 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
 
   const directStackDisabled = new Map<string, DirectDisable>();
   const directBlockDisabled = new Map<string, DirectDisable>();
-  const directStackOffByRule = new Map<string, string>();
-  const directBlockOffByRule = new Map<string, string>();
+  const directStackOffByRule = new Map<string, string[]>();
+  const directBlockOffByRule = new Map<string, string[]>();
+  const governanceOrder = new Map((sleeve.governance ?? []).map((rule, index) => [rule.id, index]));
   const appliedGovernanceRules = (sleeve.governance ?? []).filter((rule) =>
     new Set(selection.activeGovernanceRuleIds ?? []).has(rule.id),
   );
@@ -667,10 +717,10 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
 
   for (const rule of appliedGovernanceRules) {
     for (const stackId of rule.offNeoStackIds ?? []) {
-      if (!directStackOffByRule.has(stackId)) directStackOffByRule.set(stackId, rule.id);
+      appendGovernanceRuleId(directStackOffByRule, stackId, rule.id);
     }
     for (const blockId of rule.offNeoBlockIds ?? []) {
-      if (!directBlockOffByRule.has(blockId)) directBlockOffByRule.set(blockId, rule.id);
+      appendGovernanceRuleId(directBlockOffByRule, blockId, rule.id);
     }
   }
 
@@ -681,36 +731,37 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
     const cached = stackAvailabilityCache.get(stackId);
     if (cached) return cached;
 
-    const directOffRuleId = directStackOffByRule.get(stackId);
-    if (directOffRuleId) {
-      const value: Availability = {
-        state: 'off',
-        blocker: {
-          effectiveState: 'off',
-          blockingObjectId: directOffRuleId,
-          blockingReason: 'governance_off',
-          blockingSource: 'governance',
-          governanceRuleId: directOffRuleId,
-        },
-      };
-      stackAvailabilityCache.set(stackId, value);
-      return value;
-    }
-
     const parentId = indexes.parentByStackId.get(stackId);
     const parentAvailability = parentId ? stackAvailability(parentId) : undefined;
-    if (parentId && parentAvailability?.state === 'off') {
+    const directGovernanceRuleIds = orderedGovernanceRuleIds(
+      directStackOffByRule.get(stackId) ?? [],
+      governanceOrder,
+    );
+    const inheritedGovernanceRuleIds =
+      parentId && parentAvailability?.state === 'off'
+        ? orderedGovernanceRuleIds(governanceRuleIdsFromBlocker(parentAvailability.blocker), governanceOrder)
+        : [];
+    const governanceRuleIds = orderedGovernanceRuleIds(
+      [...inheritedGovernanceRuleIds, ...directGovernanceRuleIds],
+      governanceOrder,
+    );
+    if (governanceRuleIds.length) {
+      const governanceRuleId = firstGovernanceRuleId(governanceRuleIds);
       const value: Availability = {
         state: 'off',
         blocker: {
           effectiveState: 'off',
-          blockingObjectId: parentId,
-          blockingReason: 'ancestor_governance_off',
-          blockingSource: 'ancestor',
-          inheritedFromId: parentId,
-          ...(parentAvailability.blocker?.governanceRuleId
-            ? { governanceRuleId: parentAvailability.blocker.governanceRuleId }
-            : {}),
+          blockingObjectId:
+            directGovernanceRuleIds.length > 0
+              ? firstGovernanceRuleId(directGovernanceRuleIds)!
+              : parentId ?? stackId,
+          blockingReason: directGovernanceRuleIds.length > 0 ? 'governance_off' : 'ancestor_governance_off',
+          blockingSource: directGovernanceRuleIds.length > 0 ? 'governance' : 'ancestor',
+          ...(governanceRuleId ? { governanceRuleId } : {}),
+          governanceRuleIds,
+          ...(directGovernanceRuleIds.length ? { directGovernanceRuleIds } : {}),
+          ...(inheritedGovernanceRuleIds.length ? { inheritedGovernanceRuleIds } : {}),
+          ...(parentId && inheritedGovernanceRuleIds.length ? { inheritedFromId: parentId } : {}),
         },
       };
       stackAvailabilityCache.set(stackId, value);
@@ -758,40 +809,42 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
     const cached = blockAvailabilityCache.get(blockId);
     if (cached) return cached;
 
-    const directOffRuleId = directBlockOffByRule.get(blockId);
-    if (directOffRuleId) {
-      const value: Availability = {
-        state: 'off',
-        blocker: {
-          effectiveState: 'off',
-          blockingObjectId: directOffRuleId,
-          blockingReason: 'governance_off',
-          blockingSource: 'governance',
-          governanceRuleId: directOffRuleId,
-        },
-      };
-      blockAvailabilityCache.set(blockId, value);
-      return value;
-    }
-
     const stackId = indexes.stackByNeoBlockId.get(blockId);
     const containingStackAvailability = stackId ? stackAvailability(stackId) : undefined;
-    if (stackId && containingStackAvailability?.state === 'off') {
+    const directGovernanceRuleIds = orderedGovernanceRuleIds(
+      directBlockOffByRule.get(blockId) ?? [],
+      governanceOrder,
+    );
+    const inheritedGovernanceRuleIds =
+      stackId && containingStackAvailability?.state === 'off'
+        ? orderedGovernanceRuleIds(governanceRuleIdsFromBlocker(containingStackAvailability.blocker), governanceOrder)
+        : [];
+    const governanceRuleIds = orderedGovernanceRuleIds(
+      [...inheritedGovernanceRuleIds, ...directGovernanceRuleIds],
+      governanceOrder,
+    );
+    if (governanceRuleIds.length) {
+      const governanceRuleId = firstGovernanceRuleId(governanceRuleIds);
       const value: Availability = {
         state: 'off',
         blocker: {
           effectiveState: 'off',
-          blockingObjectId: stackId,
-          blockingReason: 'container_neostack_off',
+          blockingObjectId:
+            directGovernanceRuleIds.length > 0
+              ? firstGovernanceRuleId(directGovernanceRuleIds)!
+              : stackId ?? blockId,
+          blockingReason: directGovernanceRuleIds.length > 0 ? 'governance_off' : 'container_neostack_off',
           blockingSource:
-            containingStackAvailability.blocker?.blockingSource === 'ancestor' ? 'ancestor' : 'governance',
-          inheritedFromId:
-            containingStackAvailability.blocker?.blockingSource === 'ancestor'
-              ? containingStackAvailability.blocker.inheritedFromId ?? stackId
-              : undefined,
-          ...(containingStackAvailability.blocker?.governanceRuleId
-            ? { governanceRuleId: containingStackAvailability.blocker.governanceRuleId }
-            : {}),
+            directGovernanceRuleIds.length > 0
+              ? 'governance'
+              : containingStackAvailability?.blocker?.blockingSource === 'ancestor'
+                ? 'ancestor'
+                : 'governance',
+          ...(governanceRuleId ? { governanceRuleId } : {}),
+          governanceRuleIds,
+          ...(directGovernanceRuleIds.length ? { directGovernanceRuleIds } : {}),
+          ...(inheritedGovernanceRuleIds.length ? { inheritedGovernanceRuleIds } : {}),
+          ...(stackId && inheritedGovernanceRuleIds.length ? { inheritedFromId: stackId } : {}),
         },
       };
       blockAvailabilityCache.set(blockId, value);
@@ -856,7 +909,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         seq: nextSeq(),
         type: 'NEOSTACK_OFF',
         subjectId: stack.id,
-        data: stackTraceData(stack.id, indexes),
+        data: { ...stackTraceData(stack.id, indexes), ...blockerTraceData(availability.blocker) },
       });
     }
   }
@@ -878,7 +931,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         seq: nextSeq(),
         type: 'NEOBLOCK_OFF',
         subjectId: block.id,
-        data: neoBlockTraceData(block.id, stackId, indexes),
+        data: { ...neoBlockTraceData(block.id, stackId, indexes), ...blockerTraceData(availability.blocker) },
       });
     }
   }

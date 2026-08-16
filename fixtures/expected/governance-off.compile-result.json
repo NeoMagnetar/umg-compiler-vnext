@@ -836,7 +836,17 @@
         "subjectId": "NB.SERVICE.DRIVE_IN",
         "data": {
           "neoStackId": "NS.SERVICE",
-          "rowInNeoStack": 2
+          "rowInNeoStack": 2,
+          "blockingObjectId": "GOV.SAFETY.NO_DRIVE",
+          "blockingReason": "governance_off",
+          "blockingSource": "governance",
+          "governanceRuleId": "GOV.SAFETY.NO_DRIVE",
+          "governanceRuleIds": [
+            "GOV.SAFETY.NO_DRIVE"
+          ],
+          "directGovernanceRuleIds": [
+            "GOV.SAFETY.NO_DRIVE"
+          ]
         }
       },
       {
