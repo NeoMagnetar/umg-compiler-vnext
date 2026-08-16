@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-16T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.MRG.ROOT"
+  ],
+  "activeNeoBlockIds": [
+    "NB.MRG.CONTRACT"
+  ],
+  "triggerState": {
+    "T.MRG.DEFAULT": false,
+    "T.MRG.BUNDLE": true
+  }
+}
