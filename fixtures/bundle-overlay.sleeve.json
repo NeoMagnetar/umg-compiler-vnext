@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.BUNDLE.OVERLAY.v0.1",
+  "name": "Bundle Overlay Fixture",
+  "description": "Focused fixture for freezing Bundle, scoped MOLT, and Overlay composition in compiler-vnext.",
+  "controllerNeoStackId": "NS.ROOT",
+  "moltBlocks": [
+    { "id": "PH.SLEEVE.BETA", "type": "philosophy", "content": "Sleeve beta philosophy." },
+    { "id": "PH.SLEEVE.ALPHA", "type": "philosophy", "content": "Sleeve alpha philosophy." },
+    { "id": "BP.SLEEVE.GLOBAL", "type": "blueprint", "content": "Sleeve global blueprint." },
+    { "id": "I.TARGET.GUIDE", "type": "instruction", "content": "Target-stack scoped instruction." },
+    { "id": "BP.TARGET.GUIDE.Z", "type": "blueprint", "content": "Target-stack blueprint Z." },
+    { "id": "BP.TARGET.GUIDE.A", "type": "blueprint", "content": "Target-stack blueprint A." },
+    { "id": "PH.OVERLAY.A", "type": "philosophy", "content": "Overlay A philosophy." },
+    { "id": "PH.OVERLAY.DUP", "type": "philosophy", "content": "Overlay duplicate philosophy." },
+    { "id": "BP.OVERLAY.DESC", "type": "blueprint", "content": "Overlay descendant blueprint." },
+    { "id": "PH.OVERLAY.SIBLING", "type": "philosophy", "content": "Sibling-only overlay philosophy." },
+
+    { "id": "T.ROOT.DEFAULT", "type": "trigger", "content": "Root selected." },
+    { "id": "D.ROOT.PRIME", "type": "directive", "content": "Route the request." },
+    { "id": "I.ROOT.STEP", "type": "instruction", "content": "Enter the target route." },
+    { "id": "S.ROOT.REQUEST", "type": "subject", "content": "Root request." },
+    { "id": "P.ROOT.OUTCOME", "type": "primary", "content": "Root outcome." },
+
+    { "id": "T.TARGET.DEFAULT", "type": "trigger", "content": "Target base mode." },
+    { "id": "T.TARGET.B", "type": "trigger", "content": "Target secondary B mode." },
+    { "id": "D.TARGET.PRIME", "type": "directive", "content": "Target prime directive." },
+    { "id": "D.TARGET.B", "type": "directive", "content": "Target secondary B directive." },
+    { "id": "I.TARGET.BASE.1", "type": "instruction", "content": "Target base instruction 1." },
+    { "id": "I.TARGET.BASE.2", "type": "instruction", "content": "Target base instruction 2." },
+    { "id": "I.TARGET.B.1", "type": "instruction", "content": "Target bundle instruction 1." },
+    { "id": "I.TARGET.B.2", "type": "instruction", "content": "Target bundle instruction 2." },
+    { "id": "S.TARGET.REQUEST", "type": "subject", "content": "Target request." },
+    { "id": "P.TARGET.OUTCOME", "type": "primary", "content": "Target outcome." },
+    { "id": "PH.TARGET.BASE", "type": "philosophy", "content": "Target base philosophy." },
+    { "id": "PH.TARGET.B", "type": "philosophy", "content": "Target bundle philosophy." },
+    { "id": "BP.TARGET.BASE", "type": "blueprint", "content": "Target base blueprint." },
+    { "id": "BP.TARGET.B", "type": "blueprint", "content": "Target bundle blueprint." },
+
+    { "id": "T.DESC.DEFAULT", "type": "trigger", "content": "Descendant selected." },
+    { "id": "D.DESC.PRIME", "type": "directive", "content": "Descendant prime directive." },
+    { "id": "I.DESC.BASE", "type": "instruction", "content": "Descendant base instruction." },
+    { "id": "S.DESC.REQUEST", "type": "subject", "content": "Descendant request." },
+    { "id": "P.DESC.OUTCOME", "type": "primary", "content": "Descendant outcome." },
+
+    { "id": "T.SIBLING.DEFAULT", "type": "trigger", "content": "Sibling selected." },
+    { "id": "D.SIBLING.PRIME", "type": "directive", "content": "Sibling prime directive." },
+    { "id": "I.SIBLING.BASE", "type": "instruction", "content": "Sibling base instruction." },
+    { "id": "S.SIBLING.REQUEST", "type": "subject", "content": "Sibling request." },
+    { "id": "P.SIBLING.OUTCOME", "type": "primary", "content": "Sibling outcome." }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.ROOT",
+      "name": "Root",
+      "moltBlockIds": [
+        "T.ROOT.DEFAULT",
+        "D.ROOT.PRIME",
+        "I.ROOT.STEP",
+        "S.ROOT.REQUEST",
+        "P.ROOT.OUTCOME"
+      ],
+      "primeDirectiveId": "D.ROOT.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.ROOT.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.ROOT.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.ROOT.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.ROOT.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.ROOT.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.TARGET",
+      "name": "Target",
+      "moltBlockIds": [
+        "T.TARGET.DEFAULT",
+        "T.TARGET.B",
+        "D.TARGET.PRIME",
+        "D.TARGET.B",
+        "I.TARGET.BASE.1",
+        "I.TARGET.BASE.2",
+        "I.TARGET.B.1",
+        "I.TARGET.B.2",
+        "S.TARGET.REQUEST",
+        "P.TARGET.OUTCOME",
+        "PH.TARGET.BASE",
+        "PH.TARGET.B",
+        "BP.TARGET.BASE",
+        "BP.TARGET.B"
+      ],
+      "primeDirectiveId": "D.TARGET.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.TARGET.B",
+          "directiveBlockId": "D.TARGET.B",
+          "triggerBlockId": "T.TARGET.B",
+          "bundles": {
+            "instruction": "BND.TARGET.B.I",
+            "philosophy": "BND.TARGET.B.PH",
+            "blueprint": "BND.TARGET.B.BP"
+          }
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.TARGET.DEFAULT", "T.TARGET.B"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.TARGET.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.TARGET.BASE.1", "I.TARGET.BASE.2"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.TARGET.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.TARGET.OUTCOME"] }],
+        "philosophy": [{ "row": 1, "blockIds": ["PH.TARGET.BASE"] }],
+        "blueprint": [{ "row": 1, "blockIds": ["BP.TARGET.BASE"] }]
+      },
+      "bundles": [
+        {
+          "id": "BND.TARGET.B.I",
+          "name": "Target Instruction Bundle B",
+          "moltType": "instruction",
+          "rows": [
+            { "row": 1, "blockIds": ["I.TARGET.B.1"] },
+            { "row": 2, "blockIds": ["I.TARGET.B.2"] }
+          ]
+        },
+        {
+          "id": "BND.TARGET.B.PH",
+          "name": "Target Philosophy Bundle B",
+          "moltType": "philosophy",
+          "rows": [
+            { "row": 1, "blockIds": ["PH.TARGET.B"] }
+          ]
+        },
+        {
+          "id": "BND.TARGET.B.BP",
+          "name": "Target Blueprint Bundle B",
+          "moltType": "blueprint",
+          "rows": [
+            { "row": 1, "blockIds": ["BP.TARGET.B"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NB.DESC",
+      "name": "Descendant",
+      "moltBlockIds": [
+        "T.DESC.DEFAULT",
+        "D.DESC.PRIME",
+        "I.DESC.BASE",
+        "S.DESC.REQUEST",
+        "P.DESC.OUTCOME"
+      ],
+      "primeDirectiveId": "D.DESC.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.DESC.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.DESC.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.DESC.BASE"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.DESC.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.DESC.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.SIBLING",
+      "name": "Sibling",
+      "moltBlockIds": [
+        "T.SIBLING.DEFAULT",
+        "D.SIBLING.PRIME",
+        "I.SIBLING.BASE",
+        "S.SIBLING.REQUEST",
+        "P.SIBLING.OUTCOME"
+      ],
+      "primeDirectiveId": "D.SIBLING.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.SIBLING.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.SIBLING.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.SIBLING.BASE"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.SIBLING.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.SIBLING.OUTCOME"] }]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.ROOT",
+      "name": "Root",
+      "skill": "Routes into the target topology.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.ROOT"] }],
+      "childStackRows": [
+        { "row": 1, "neoStackIds": ["NS.TARGET", "NS.SIBLING"] }
+      ]
+    },
+    {
+      "id": "NS.TARGET",
+      "name": "Target Stack",
+      "skill": "Owns the bundle-overlay composition target.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.TARGET"] }],
+      "childStackRows": [
+        { "row": 1, "neoStackIds": ["NS.DESC"] }
+      ]
+    },
+    {
+      "id": "NS.DESC",
+      "name": "Descendant Stack",
+      "skill": "Proves descendant scoped propagation.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.DESC"] }]
+    },
+    {
+      "id": "NS.SIBLING",
+      "name": "Sibling Stack",
+      "skill": "Remains READY unless explicitly selected.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.SIBLING"] }]
+    }
+  ],
+  "scopedMolt": [
+    {
+      "id": "ATT.SLEEVE.PH.BETA",
+      "blockId": "PH.SLEEVE.BETA",
+      "scope": { "kind": "sleeve" }
+    },
+    {
+      "id": "ATT.SLEEVE.PH.ALPHA",
+      "blockId": "PH.SLEEVE.ALPHA",
+      "scope": { "kind": "sleeve" }
+    },
+    {
+      "id": "ATT.SLEEVE.BP.GLOBAL",
+      "blockId": "BP.SLEEVE.GLOBAL",
+      "scope": { "kind": "sleeve" }
+    },
+    {
+      "id": "ATT.TARGET.BP.Z",
+      "blockId": "BP.TARGET.GUIDE.Z",
+      "scope": { "kind": "neostack", "neoStackId": "NS.TARGET" }
+    },
+    {
+      "id": "ATT.TARGET.BP.A",
+      "blockId": "BP.TARGET.GUIDE.A",
+      "scope": { "kind": "neostack", "neoStackId": "NS.TARGET" }
+    },
+    {
+      "id": "ATT.TARGET.I.GUIDE",
+      "blockId": "I.TARGET.GUIDE",
+      "scope": { "kind": "neostack", "neoStackId": "NS.TARGET" }
+    }
+  ],
+  "overlays": [
+    {
+      "id": "OV.A",
+      "name": "Overlay A",
+      "attachments": [
+        {
+          "id": "ATT.OV.A.PH",
+          "blockId": "PH.OVERLAY.A",
+          "scope": { "kind": "sleeve" }
+        },
+        {
+          "id": "ATT.OV.A.BP",
+          "blockId": "BP.OVERLAY.DESC",
+          "scope": { "kind": "neostack", "neoStackId": "NS.TARGET" }
+        }
+      ]
+    },
+    {
+      "id": "OV.B",
+      "name": "Overlay B",
+      "attachments": [
+        {
+          "id": "ATT.OV.B.PH.Z",
+          "blockId": "PH.OVERLAY.DUP",
+          "scope": { "kind": "sleeve" }
+        },
+        {
+          "id": "ATT.OV.B.PH.A",
+          "blockId": "PH.OVERLAY.DUP",
+          "scope": { "kind": "sleeve" }
+        }
+      ]
+    },
+    {
+      "id": "OV.SIBLING",
+      "name": "Sibling Overlay",
+      "attachments": [
+        {
+          "id": "ATT.OV.SIBLING.PH",
+          "blockId": "PH.OVERLAY.SIBLING",
+          "scope": { "kind": "neostack", "neoStackId": "NS.SIBLING" }
+        }
+      ]
+    }
+  ],
+  "governance": [
+    {
+      "id": "GOV.TARGET.OFF",
+      "name": "Target Off Rule",
+      "description": "Turns the target NeoBlock OFF when activated.",
+      "offNeoBlockIds": ["NB.TARGET"]
+    }
+  ]
+}

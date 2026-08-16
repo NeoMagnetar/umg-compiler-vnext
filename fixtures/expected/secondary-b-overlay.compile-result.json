@@ -949,21 +949,6 @@
       {
         "seq": 8,
         "type": "SCOPED_MOLT_APPLIED",
-        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
-        "data": {
-          "source": "scoped",
-          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
-          "scope": {
-            "kind": "sleeve"
-          },
-          "neoBlockId": "NB.CONTROLLER.INTAKE",
-          "neoStackId": "NS.CONTROLLER",
-          "moltType": "blueprint"
-        }
-      },
-      {
-        "seq": 9,
-        "type": "SCOPED_MOLT_APPLIED",
         "subjectId": "PH.SLEEVE.PRAGMATISM",
         "data": {
           "source": "scoped",
@@ -974,6 +959,21 @@
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "neoStackId": "NS.CONTROLLER",
           "moltType": "philosophy"
+        }
+      },
+      {
+        "seq": 9,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "data": {
+          "source": "scoped",
+          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+          "scope": {
+            "kind": "sleeve"
+          },
+          "neoBlockId": "NB.CONTROLLER.INTAKE",
+          "neoStackId": "NS.CONTROLLER",
+          "moltType": "blueprint"
         }
       },
       {
@@ -1215,21 +1215,6 @@
       {
         "seq": 29,
         "type": "SCOPED_MOLT_APPLIED",
-        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
-        "data": {
-          "source": "scoped",
-          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
-          "scope": {
-            "kind": "sleeve"
-          },
-          "neoBlockId": "NB.SERVICE.TRIAGE",
-          "neoStackId": "NS.SERVICE",
-          "moltType": "blueprint"
-        }
-      },
-      {
-        "seq": 30,
-        "type": "SCOPED_MOLT_APPLIED",
         "subjectId": "PH.SLEEVE.PRAGMATISM",
         "data": {
           "source": "scoped",
@@ -1240,6 +1225,21 @@
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "neoStackId": "NS.SERVICE",
           "moltType": "philosophy"
+        }
+      },
+      {
+        "seq": 30,
+        "type": "SCOPED_MOLT_APPLIED",
+        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "data": {
+          "source": "scoped",
+          "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
+          "scope": {
+            "kind": "sleeve"
+          },
+          "neoBlockId": "NB.SERVICE.TRIAGE",
+          "neoStackId": "NS.SERVICE",
+          "moltType": "blueprint"
         }
       },
       {
