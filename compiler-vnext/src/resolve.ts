@@ -1060,11 +1060,6 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         },
       );
       diagnostics.push(diagnostic);
-      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, attemptData);
-      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_BLOCKED', { kind: 'neoblock', id: blockId }, {
-        diagnosticCode: diagnostic.code,
-        ...(diagnostic.details ?? {}),
-      });
       continue;
     }
 
