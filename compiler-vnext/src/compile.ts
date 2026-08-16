@@ -1,11 +1,57 @@
-import { COMPILER_VERSION } from './constants.js';
+import { COMPILE_RESULT_SCHEMA_VERSION, COMPILER_VERSION } from './constants.js';
 import { sha256Canonical } from './canonicalize.js';
+import { internalCompilerErrorDiagnostic } from './errors.js';
 import { resolveSleeve } from './resolve.js';
-import { validateSelection } from './validate.js';
-import type { CompileResult, CompileSelection, RuntimeSpec, Sleeve, Trace, TraceEvent } from './types.js';
+import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
+import { validateCanonicalSelection } from './validate.js';
+import type {
+  CompileResult,
+  CompileSelection,
+  CompilerDiagnostic,
+  RuntimeSpec,
+  Sleeve,
+  Trace,
+  TraceEvent,
+} from './types.js';
 
-export function compileSleeve(sleeve: Sleeve, selection: CompileSelection): CompileResult {
-  const validation = validateSelection(sleeve, selection);
+function buildFailureCompileResult(
+  diagnostics: CompilerDiagnostic[],
+  trace: Trace | null,
+): CompileResult {
+  const safeDiagnostics =
+    diagnostics.some((diagnostic) => diagnostic.level === 'error')
+      ? diagnostics
+      : [...diagnostics, internalCompilerErrorDiagnostic()];
+
+  return {
+    schemaVersion: COMPILE_RESULT_SCHEMA_VERSION,
+    compilerVersion: COMPILER_VERSION,
+    status: 'failure',
+    runtime: null,
+    trace,
+    hasErrors: true,
+    diagnostics: safeDiagnostics,
+  };
+}
+
+function buildSuccessCompileResult(
+  runtime: RuntimeSpec,
+  trace: Trace,
+  diagnostics: CompilerDiagnostic[],
+): CompileResult {
+  return {
+    schemaVersion: COMPILE_RESULT_SCHEMA_VERSION,
+    compilerVersion: COMPILER_VERSION,
+    status: 'success',
+    runtime,
+    trace,
+    hasErrors: false,
+    diagnostics,
+  };
+}
+
+function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): CompileResult {
+  const validation = validateCanonicalSelection(sleeve, selection);
   const sourceEvents: TraceEvent[] = [
     {
       seq: 1,
@@ -70,7 +116,7 @@ export function compileSleeve(sleeve: Sleeve, selection: CompileSelection): Comp
         sleeve.neoBlocks.map((block) => [block.id, block.defaultState ?? 'ready']),
       ),
     };
-    return { trace, hasErrors: true };
+    return buildFailureCompileResult(validation.diagnostics, trace);
   }
 
   const resolution = resolveSleeve(sleeve, selection);
@@ -97,7 +143,7 @@ export function compileSleeve(sleeve: Sleeve, selection: CompileSelection): Comp
       finalNeoStackStates: resolution.finalNeoStackStates,
       finalNeoBlockStates: resolution.finalNeoBlockStates,
     };
-    return { trace, hasErrors: true };
+    return buildFailureCompileResult(diagnostics, trace);
   }
 
   const runtimeWithoutHash = {
@@ -158,5 +204,22 @@ export function compileSleeve(sleeve: Sleeve, selection: CompileSelection): Comp
     finalNeoBlockStates: resolution.finalNeoBlockStates,
   };
 
-  return { runtime, trace, hasErrors: false };
+  return buildSuccessCompileResult(runtime, trace, diagnostics);
+}
+
+export function compileSleeve(sleeve: unknown, selection: unknown): CompileResult {
+  try {
+    const structuralSleeve = structurallyValidateSleeve(sleeve);
+    const structuralSelection = structurallyValidateSelection(selection);
+    if (!structuralSleeve.ok || !structuralSelection.ok) {
+      const structuralDiagnostics: CompilerDiagnostic[] = [];
+      if (!structuralSleeve.ok) structuralDiagnostics.push(...structuralSleeve.diagnostics);
+      if (!structuralSelection.ok) structuralDiagnostics.push(...structuralSelection.diagnostics);
+      return buildFailureCompileResult(structuralDiagnostics, null);
+    }
+
+    return compileCanonicalSleeve(structuralSleeve.value, structuralSelection.value);
+  } catch {
+    return buildFailureCompileResult([internalCompilerErrorDiagnostic()], null);
+  }
 }

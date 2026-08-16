@@ -1,4 +1,7 @@
 {
+  "schemaVersion": "umg.compiler-vnext.compile-result.v0.1",
+  "compilerVersion": "0.1.0-experimental",
+  "status": "success",
   "runtime": {
     "schemaVersion": "umg.compiler-vnext.runtime.v0.1",
     "compilerVersion": "0.1.0-experimental",
@@ -599,5 +602,6 @@
       "NB.MERGE.DIRECTIVE": "active"
     }
   },
-  "hasErrors": false
+  "hasErrors": false,
+  "diagnostics": []
 }

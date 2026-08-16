@@ -1,4 +1,8 @@
 {
+  "schemaVersion": "umg.compiler-vnext.compile-result.v0.1",
+  "compilerVersion": "0.1.0-experimental",
+  "status": "failure",
+  "runtime": null,
   "trace": {
     "schemaVersion": "umg.compiler-vnext.trace.v0.1",
     "compilerVersion": "0.1.0-experimental",
@@ -418,5 +422,19 @@
       "NB.SALES.TRADE_IN": "ready"
     }
   },
-  "hasErrors": true
+  "hasErrors": true,
+  "diagnostics": [
+    {
+      "code": "MULTIPLE_SECONDARY_DIRECTIVE_MATCH",
+      "level": "error",
+      "message": "NeoBlock NB.SERVICE.TRIAGE matched more than one Secondary Directive. vNext requires an explicit future coexistence rule.",
+      "path": "neoBlocks.NB.SERVICE.TRIAGE.secondaryDirectives",
+      "details": {
+        "secondaryDirectiveIds": [
+          "SD.SVC.B",
+          "SD.SVC.C"
+        ]
+      }
+    }
+  ]
 }

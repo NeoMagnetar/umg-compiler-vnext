@@ -158,6 +158,7 @@ export interface CompileSelection {
 }
 
 export type DiagnosticLevel = 'error' | 'warning';
+export type CompileStatus = 'success' | 'failure';
 
 export interface CompilerDiagnostic {
   code: string;
@@ -281,9 +282,13 @@ export interface RuntimeSpec {
 }
 
 export interface CompileResult {
-  runtime?: RuntimeSpec;
-  trace: Trace;
+  schemaVersion: 'umg.compiler-vnext.compile-result.v0.1';
+  compilerVersion: string;
+  status: CompileStatus;
+  runtime: RuntimeSpec | null;
+  trace: Trace | null;
   hasErrors: boolean;
+  diagnostics: CompilerDiagnostic[];
 }
 
 export interface ValidationResult {

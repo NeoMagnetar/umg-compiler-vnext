@@ -1265,20 +1265,59 @@
     "CompileResult": {
       "type": "object",
       "properties": {
+        "schemaVersion": {
+          "const": "umg.compiler-vnext.compile-result.v0.1"
+        },
+        "compilerVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "success",
+            "failure"
+          ]
+        },
         "runtime": {
-          "$ref": "#/$defs/RuntimeSpec"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/RuntimeSpec"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "trace": {
-          "$ref": "#/$defs/Trace"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Trace"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "hasErrors": {
           "type": "boolean"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompilerDiagnostic"
+          },
+          "minItems": 0
         }
       },
       "additionalProperties": false,
       "required": [
+        "schemaVersion",
+        "compilerVersion",
+        "status",
+        "runtime",
         "trace",
-        "hasErrors"
+        "hasErrors",
+        "diagnostics"
       ]
     }
   }

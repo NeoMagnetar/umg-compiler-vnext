@@ -1,6 +1,7 @@
 import type { MoltType } from './types.js';
 
 export const COMPILER_VERSION = '0.1.0-experimental';
+export const COMPILE_RESULT_SCHEMA_VERSION = 'umg.compiler-vnext.compile-result.v0.1';
 
 export const MOLT_AUTHORITY_ORDER: readonly MoltType[] = [
   'trigger',
