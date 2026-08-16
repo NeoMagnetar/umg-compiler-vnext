@@ -1,4 +1,3 @@
-import { COMPILE_RESULT_SCHEMA_VERSION, COMPILER_VERSION } from './constants.js';
 import {
   internalCompilerErrorDiagnostic,
   internalOutputContractViolationDiagnostic,
@@ -9,6 +8,12 @@ import { computeRuntimeHash } from './runtime-hash.js';
 import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
 import { createTraceEvent } from './trace-event-registry.js';
 import { validateCanonicalSelection } from './validate.js';
+import {
+  COMPILE_RESULT_SCHEMA_VERSION,
+  COMPILER_VERSION,
+  RUNTIME_SCHEMA_VERSION,
+  TRACE_SCHEMA_VERSION,
+} from './version-contract.js';
 import type {
   CompileResult,
   CompileSelection,
@@ -320,7 +325,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
 
   if (validation.diagnostics.some((diagnostic) => diagnostic.level === 'error')) {
     const trace: Trace = {
-      schemaVersion: 'umg.compiler-vnext.trace.v0.1',
+      schemaVersion: TRACE_SCHEMA_VERSION,
       compilerVersion: COMPILER_VERSION,
       sleeveId: sleeve.id,
       compiledAt: selection.compiledAt,
@@ -352,7 +357,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
 
   if (hasErrors) {
     const trace: Trace = {
-      schemaVersion: 'umg.compiler-vnext.trace.v0.1',
+      schemaVersion: TRACE_SCHEMA_VERSION,
       compilerVersion: COMPILER_VERSION,
       sleeveId: sleeve.id,
       compiledAt: selection.compiledAt,
@@ -365,8 +370,8 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
     return finalizeCompileResult(buildFailureCompileResult(diagnostics, trace), sleeve, selection);
   }
 
-  const runtimeWithoutHash = {
-    schemaVersion: 'umg.compiler-vnext.runtime.v0.1' as const,
+  const runtimeWithoutHash: Omit<RuntimeSpec, 'runtimeHash'> = {
+    schemaVersion: RUNTIME_SCHEMA_VERSION,
     compilerVersion: COMPILER_VERSION,
     sleeveId: sleeve.id,
     sleeveName: sleeve.name,
@@ -417,7 +422,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
   };
 
   const trace: Trace = {
-    schemaVersion: 'umg.compiler-vnext.trace.v0.1',
+    schemaVersion: TRACE_SCHEMA_VERSION,
     compilerVersion: COMPILER_VERSION,
     sleeveId: sleeve.id,
     compiledAt: selection.compiledAt,

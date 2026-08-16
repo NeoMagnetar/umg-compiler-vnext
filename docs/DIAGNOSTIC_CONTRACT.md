@@ -2,6 +2,9 @@
 
 `CompilerDiagnostic` is a frozen public machine contract in `compiler-vnext v0.1`.
 
+Exact Diagnostic Registry version identity and compatibility policy are frozen
+in [VERSION_COMPATIBILITY_CONTRACT.md](VERSION_COMPATIBILITY_CONTRACT.md).
+
 ## Shape
 
 ```ts

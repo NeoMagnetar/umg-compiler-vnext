@@ -5,6 +5,9 @@ This document freezes the public `Trace` contract for `compiler-vnext` v0.1.
 rejected, resolved, and declared. It does not replace `RuntimeSpec` as
 executable authority.
 
+Exact Trace version identity and registry compatibility policy are frozen in
+[VERSION_COMPATIBILITY_CONTRACT.md](VERSION_COMPATIBILITY_CONTRACT.md).
+
 ## Trace Responsibility
 
 `Trace` exists to provide:

@@ -2,6 +2,9 @@
 
 This document freezes the B5A runtime-hash profile for `compiler-vnext`.
 
+Exact runtime-hash profile compatibility and compiler association are frozen in
+[VERSION_COMPATIBILITY_CONTRACT.md](VERSION_COMPATIBILITY_CONTRACT.md).
+
 `runtimeHash` is a deterministic fingerprint and integrity identifier for the
 semantic runtime projection.
 

@@ -5,6 +5,13 @@ import type {
   DiagnosticSubject,
 } from './diagnostic-registry.js';
 import type { TraceEventType, TraceStage } from './trace-event-registry.js';
+import {
+  COMPILE_RESULT_SCHEMA_VERSION,
+  RUNTIME_SCHEMA_VERSION,
+  SELECTION_SCHEMA_VERSION,
+  SLEEVE_SCHEMA_VERSION,
+  TRACE_SCHEMA_VERSION,
+} from './version-contract.js';
 
 export const MOLT_TYPES = [
   'trigger',
@@ -141,7 +148,7 @@ export interface GovernanceRule {
 }
 
 export interface Sleeve {
-  schemaVersion: 'umg.compiler-vnext.sleeve.v0.1';
+  schemaVersion: typeof SLEEVE_SCHEMA_VERSION;
   id: string;
   name: string;
   description?: string;
@@ -155,7 +162,7 @@ export interface Sleeve {
 }
 
 export interface CompileSelection {
-  schemaVersion: 'umg.compiler-vnext.selection.v0.1';
+  schemaVersion: typeof SELECTION_SCHEMA_VERSION;
   /** Fixed by caller so deterministic output does not depend on wall-clock time. */
   compiledAt: string;
   activeNeoStackIds: string[];
@@ -204,7 +211,7 @@ export interface TraceEvent {
 }
 
 export interface Trace {
-  schemaVersion: 'umg.compiler-vnext.trace.v0.1';
+  schemaVersion: typeof TRACE_SCHEMA_VERSION;
   compilerVersion: string;
   sleeveId: string;
   compiledAt: string;
@@ -263,7 +270,7 @@ export interface PromptPart extends ResolvedMoltBlock {
 }
 
 export interface RuntimeSpec {
-  schemaVersion: 'umg.compiler-vnext.runtime.v0.1';
+  schemaVersion: typeof RUNTIME_SCHEMA_VERSION;
   compilerVersion: string;
   sleeveId: string;
   sleeveName: string;
@@ -282,7 +289,7 @@ export interface RuntimeSpec {
 }
 
 export interface CompileResult {
-  schemaVersion: 'umg.compiler-vnext.compile-result.v0.1';
+  schemaVersion: typeof COMPILE_RESULT_SCHEMA_VERSION;
   compilerVersion: string;
   status: CompileStatus;
   runtime: RuntimeSpec | null;

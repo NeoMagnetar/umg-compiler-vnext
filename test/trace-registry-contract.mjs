@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  TRACE_EVENT_REGISTRY_VERSION,
   compileSleeve,
   TRACE_EVENT_REGISTRY,
   TRACE_STAGE_ORDER,
@@ -190,8 +191,11 @@ function assertSuccessActiveStateAgreement(result) {
 
 {
   const registryJson = json('schemas/TRACE_EVENT_REGISTRY.json');
+  assert.equal(registryJson.registryVersion, TRACE_EVENT_REGISTRY_VERSION);
   assert.deepEqual(registryJson, traceEventRegistryAsJson());
 }
+
+assert.equal(Object.keys(TRACE_EVENT_REGISTRY).length, 31);
 
 const normal = compileNamedCase('normal');
 const secondaryB = compileNamedCase('secondary-b');
