@@ -1,7 +1,13 @@
 export { canonicalize, sha256Canonical } from './canonicalize.js';
 export { compileSleeve } from './compile.js';
+export { buildRuntimeHashPayload, computeRuntimeHash } from './runtime-hash.js';
 export { validateSelection, validateSleeve } from './validate.js';
-export { COMPILER_VERSION, MERGE_AUTHORITY_ORDER, MOLT_AUTHORITY_ORDER } from './constants.js';
+export {
+  COMPILER_VERSION,
+  MERGE_AUTHORITY_ORDER,
+  MOLT_AUTHORITY_ORDER,
+  RUNTIME_HASH_PROFILE_VERSION,
+} from './constants.js';
 export { DIAGNOSTIC_REGISTRY, diagnosticRegistryAsJson } from './diagnostic-registry.js';
 export {
   TRACE_EVENT_REGISTRY,

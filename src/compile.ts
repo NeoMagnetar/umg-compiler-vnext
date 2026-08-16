@@ -1,11 +1,11 @@
 import { COMPILE_RESULT_SCHEMA_VERSION, COMPILER_VERSION } from './constants.js';
-import { sha256Canonical } from './canonicalize.js';
 import {
   internalCompilerErrorDiagnostic,
   internalOutputContractViolationDiagnostic,
 } from './errors.js';
 import { validateCompileResultContract } from './public-output-contract.js';
 import { resolveSleeve } from './resolve.js';
+import { computeRuntimeHash } from './runtime-hash.js';
 import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
 import { createTraceEvent } from './trace-event-registry.js';
 import { validateCanonicalSelection } from './validate.js';
@@ -181,15 +181,25 @@ function finalizeCompileResult(
       );
     }
 
-    const { runtimeHash: actualRuntimeHash, ...runtimeWithoutHash } = candidate.runtime;
-    const expectedRuntimeHash = sha256Canonical(runtimeWithoutHash);
-    if (actualRuntimeHash !== expectedRuntimeHash) {
+    try {
+      const expectedRuntimeHash = computeRuntimeHash(candidate.runtime);
+      const actualRuntimeHash = candidate.runtime.runtimeHash;
+      if (actualRuntimeHash !== expectedRuntimeHash) {
+        contractDiagnostics.push(
+          internalOutputContractViolationDiagnostic({
+            message: 'RuntimeSpec runtimeHash must equal computeRuntimeHash(runtime).',
+            path: 'runtime.runtimeHash',
+            expectedRuntimeHash,
+            actualRuntimeHash,
+          }),
+        );
+      }
+    } catch (error) {
       contractDiagnostics.push(
         internalOutputContractViolationDiagnostic({
-          message: 'RuntimeSpec runtimeHash must equal the canonical hash of the runtime payload.',
+          message: 'RuntimeSpec runtimeHash could not be computed from the frozen runtime-hash payload.',
           path: 'runtime.runtimeHash',
-          expectedRuntimeHash,
-          actualRuntimeHash,
+          error: error instanceof Error ? error.message : String(error),
         }),
       );
     }
@@ -375,7 +385,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
 
   const runtime: RuntimeSpec = {
     ...runtimeWithoutHash,
-    runtimeHash: sha256Canonical(runtimeWithoutHash),
+    runtimeHash: computeRuntimeHash(runtimeWithoutHash),
   };
 
   const effectiveMoltBlockCount = new Set(runtime.promptParts.map((part) => part.id)).size;

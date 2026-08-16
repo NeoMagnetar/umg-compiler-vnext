@@ -72,6 +72,8 @@ Field classification:
 - observability: `diagnostics`
 - integrity: `runtimeHash`
 
+The frozen `runtimeHash` contract is defined in [RUNTIME_HASH_CONTRACT.md](RUNTIME_HASH_CONTRACT.md).
+
 No additions or removals are in scope for B4A.
 
 ## ResolvedNeoBlock
@@ -202,9 +204,3 @@ compiler fails closed with:
 - diagnostic code `INTERNAL_OUTPUT_CONTRACT_VIOLATION`
 
 `trace` may be `null` in that safe failure.
-
-## Deferred Work
-
-Explicitly deferred beyond the current freeze:
-
-- B5: runtimeHash policy redesign

@@ -2,6 +2,7 @@ import { canonicalize } from './canonicalize.js';
 import { MOLT_AUTHORITY_ORDER } from './constants.js';
 import { validateDiagnosticAgainstRegistry } from './diagnostic-registry.js';
 import { internalOutputContractViolationDiagnostic } from './errors.js';
+import { computeRuntimeHash } from './runtime-hash.js';
 import {
   TRACE_STAGE_ORDER,
   validateTraceEventAgainstRegistry,
@@ -633,6 +634,30 @@ export function validateRuntimeSpecContract(input: unknown): ValidationResult {
       {
         expectedCount: expected.length,
         actualCount: runtime.promptParts.length,
+      },
+    );
+  }
+
+  try {
+    const expectedRuntimeHash = computeRuntimeHash(runtime);
+    if (runtime.runtimeHash !== expectedRuntimeHash) {
+      pushViolation(
+        diagnostics,
+        'RuntimeSpec runtimeHash must equal computeRuntimeHash(runtime).',
+        'runtimeHash',
+        {
+          expectedRuntimeHash,
+          actualRuntimeHash: runtime.runtimeHash,
+        },
+      );
+    }
+  } catch (error) {
+    pushViolation(
+      diagnostics,
+      'RuntimeSpec runtimeHash could not be computed from the frozen runtime-hash payload.',
+      'runtimeHash',
+      {
+        error: error instanceof Error ? error.message : String(error),
       },
     );
   }
