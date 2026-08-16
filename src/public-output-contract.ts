@@ -1,5 +1,6 @@
 import { canonicalize } from './canonicalize.js';
 import { MOLT_AUTHORITY_ORDER } from './constants.js';
+import { validateDiagnosticAgainstRegistry } from './diagnostic-registry.js';
 import { internalOutputContractViolationDiagnostic } from './errors.js';
 import {
   structurallyValidateCompileResult,
@@ -46,6 +47,22 @@ function pushPrefixedDiagnostics(
     target.push({
       ...diagnostic,
       path: prefixedPath(prefix, diagnostic.path),
+    });
+  });
+}
+
+function validateRegisteredDiagnostics(
+  input: CompilerDiagnostic[],
+  path: string,
+  diagnostics: CompilerDiagnostic[],
+): void {
+  input.forEach((diagnostic, index) => {
+    validateDiagnosticAgainstRegistry(diagnostic).forEach((issue) => {
+      pushViolation(
+        diagnostics,
+        issue.message,
+        `${path}[${index}]${issue.field ? `.${issue.field}` : ''}`,
+      );
     });
   });
 }
@@ -244,6 +261,8 @@ export function validateTraceContract(input: unknown): ValidationResult {
   const trace: Trace = structural.value;
   const diagnostics: CompilerDiagnostic[] = [];
 
+  validateRegisteredDiagnostics(trace.diagnostics, 'diagnostics', diagnostics);
+
   let previousSeq = 0;
   trace.events.forEach((event, index) => {
     if (event.seq <= previousSeq) {
@@ -264,6 +283,8 @@ export function validateRuntimeSpecContract(input: unknown): ValidationResult {
   if (!structural.ok) return { diagnostics: structural.diagnostics };
   const runtime: RuntimeSpec = structural.value;
   const diagnostics: CompilerDiagnostic[] = [];
+
+  validateRegisteredDiagnostics(runtime.diagnostics, 'diagnostics', diagnostics);
 
   if (runtime.diagnostics.some((diagnostic) => diagnostic.level === 'error')) {
     pushViolation(
@@ -350,6 +371,8 @@ export function validateCompileResultContract(input: unknown): ValidationResult 
   if (!structural.ok) return { diagnostics: structural.diagnostics };
   const result: CompileResult = structural.value;
   const diagnostics: CompilerDiagnostic[] = [];
+
+  validateRegisteredDiagnostics(result.diagnostics, 'diagnostics', diagnostics);
 
   if (result.trace) {
     pushPrefixedDiagnostics(diagnostics, validateTraceContract(result.trace).diagnostics, 'trace');
