@@ -34,6 +34,12 @@ function duplicates(values: string[]): string[] {
   return [...dupes].sort();
 }
 
+type ModuleRow = { row: number; neoBlockIds?: string[]; neoStackIds?: string[] };
+
+function moduleRowMemberIds(row: ModuleRow): string[] {
+  return row.neoBlockIds ?? row.neoStackIds ?? [];
+}
+
 function validateRows(
   rows: GeometryRow[] | undefined,
   path: string,
@@ -91,6 +97,72 @@ function validateRows(
         path,
         { duplicateBlockIds: blockDupes },
       ),
+    );
+  }
+}
+
+function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: CompilerDiagnostic[]): void {
+  if (!rows.length) return;
+
+  const rowNumbers = rows.map((row) => row.row);
+  const duplicateRows = duplicates(rowNumbers.map(String));
+  if (duplicateRows.length) {
+    diagnostics.push(
+      errorDiagnostic(
+        'DUPLICATE_MODULE_ROW',
+        'NeoBlock/NeoStack row numbers must be unique within one parent geometry.',
+        path,
+        { duplicateRows },
+      ),
+    );
+  }
+
+  const sorted = [...new Set(rowNumbers)].sort((a, b) => a - b);
+  const expected = Array.from({ length: sorted.length }, (_, index) => index + 1);
+  if (JSON.stringify(sorted) !== JSON.stringify(expected)) {
+    diagnostics.push(
+      errorDiagnostic(
+        'NONCONTIGUOUS_MODULE_ROWS',
+        'NeoBlock/NeoStack rows must be one-based and contiguous.',
+        path,
+        { actualRows: sorted, expectedRows: expected },
+      ),
+    );
+  }
+
+  const allIds: string[] = [];
+  rows.forEach((row, index) => {
+    if (!Number.isInteger(row.row) || row.row < 1) {
+      diagnostics.push(
+        errorDiagnostic(
+          'INVALID_MODULE_ROW',
+          'NeoBlock/NeoStack row must be a positive integer.',
+          `${path}[${index}].row`,
+        ),
+      );
+    }
+
+    const ids = moduleRowMemberIds(row);
+    if (!Array.isArray(ids) || ids.length === 0) {
+      diagnostics.push(
+        errorDiagnostic(
+          'EMPTY_MODULE_ROW',
+          'Every NeoBlock/NeoStack row requires at least one member.',
+          `${path}[${index}]`,
+        ),
+      );
+      return;
+    }
+
+    allIds.push(...ids);
+  });
+
+  const duplicateMembers = duplicates(allIds);
+  if (duplicateMembers.length) {
+    diagnostics.push(
+      errorDiagnostic('DUPLICATE_MODULE_ROW_MEMBER', 'A module may appear only once per parent geometry.', path, {
+        duplicateIds: duplicateMembers,
+      }),
     );
   }
 }
@@ -195,6 +267,21 @@ function validateNoStackCycles(indexes: Indexes, diagnostics: CompilerDiagnostic
       current = indexes.parentByStackId.get(current);
     }
   }
+}
+
+function reachableStacksFromController(controllerNeoStackId: string, indexes: Indexes): Set<string> {
+  const reachable = new Set<string>();
+
+  const visit = (stackId: string): void => {
+    if (reachable.has(stackId)) return;
+    reachable.add(stackId);
+    for (const childId of indexes.parentByStackId.keys()) {
+      if (indexes.parentByStackId.get(childId) === stackId) visit(childId);
+    }
+  };
+
+  if (indexes.neoStacks.has(controllerNeoStackId)) visit(controllerNeoStackId);
+  return reachable;
 }
 
 function validateGeometryMembers(
@@ -428,6 +515,38 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
     );
   }
 
+  const secondaryDirectiveIds = new Set((neoBlock.secondaryDirectives ?? []).map((secondary) => secondary.directiveBlockId));
+  const mergeDirectiveIds = new Set<string>();
+  for (const merge of neoBlock.merges ?? []) {
+    for (const sourceId of merge.sourceBlockIds) {
+      const source = indexes.moltBlocks.get(sourceId);
+      if (source?.type === 'directive' && localIds.has(sourceId)) mergeDirectiveIds.add(sourceId);
+    }
+    const result = indexes.moltBlocks.get(merge.resultBlockId);
+    if (result?.type === 'directive' && localIds.has(merge.resultBlockId)) mergeDirectiveIds.add(merge.resultBlockId);
+  }
+
+  const orphanLocalDirectives = localBlocks
+    .filter(
+      (block) =>
+        block.type === 'directive' &&
+        block.id !== neoBlock.primeDirectiveId &&
+        !secondaryDirectiveIds.has(block.id) &&
+        !mergeDirectiveIds.has(block.id),
+    )
+    .map((block) => block.id)
+    .sort();
+  if (orphanLocalDirectives.length) {
+    diagnostics.push(
+      errorDiagnostic(
+        'ORPHAN_LOCAL_DIRECTIVE',
+        'Every non-Prime local Directive must participate in a Secondary Directive relation or a Merge declaration.',
+        `${path}.moltBlockIds`,
+        { directiveBlockIds: orphanLocalDirectives },
+      ),
+    );
+  }
+
   const mergeIds = (neoBlock.merges ?? []).map((merge) => merge.id);
   const mergeDupes = duplicates(mergeIds);
   if (mergeDupes.length) {
@@ -589,37 +708,8 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
 }
 
 function validateNeoStackRows(stack: NeoStack, diagnostics: CompilerDiagnostic[]): void {
-  const validateOrdinalRows = (
-    rows: Array<{ row: number; neoBlockIds?: string[]; neoStackIds?: string[] }>,
-    path: string,
-  ): void => {
-    if (!rows.length) return;
-    const numbers = rows.map((row) => row.row);
-    const sorted = [...new Set(numbers)].sort((a, b) => a - b);
-    const expected = Array.from({ length: sorted.length }, (_, index) => index + 1);
-    if (JSON.stringify(sorted) !== JSON.stringify(expected)) {
-      diagnostics.push(
-        errorDiagnostic(
-          'NONCONTIGUOUS_MODULE_ROWS',
-          'NeoBlock/NeoStack rows must be one-based and contiguous.',
-          path,
-          { actualRows: sorted, expectedRows: expected },
-        ),
-      );
-    }
-    const ids = rows.flatMap((row) => row.neoBlockIds ?? row.neoStackIds ?? []);
-    const dupes = duplicates(ids);
-    if (dupes.length) {
-      diagnostics.push(
-        errorDiagnostic('DUPLICATE_MODULE_ROW_MEMBER', 'A module may appear only once per parent geometry.', path, {
-          duplicateIds: dupes,
-        }),
-      );
-    }
-  };
-
-  validateOrdinalRows(stack.neoBlockRows, `neoStacks.${stack.id}.neoBlockRows`);
-  validateOrdinalRows(stack.childStackRows ?? [], `neoStacks.${stack.id}.childStackRows`);
+  validateModuleRows(stack.neoBlockRows, `neoStacks.${stack.id}.neoBlockRows`, diagnostics);
+  validateModuleRows(stack.childStackRows ?? [], `neoStacks.${stack.id}.childStackRows`, diagnostics);
 }
 
 export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
@@ -657,6 +747,39 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
   }
 
   validateNoStackCycles(indexes, diagnostics);
+  const reachableStacks = reachableStacksFromController(sleeve.controllerNeoStackId, indexes);
+  sleeve.neoStacks
+    .filter((stack) => stack.id !== sleeve.controllerNeoStackId)
+    .forEach((stack) => {
+      if (!indexes.parentByStackId.has(stack.id)) {
+        diagnostics.push(
+          errorDiagnostic(
+            'ORPHAN_NEOSTACK',
+            `NeoStack ${stack.id} must have exactly one parent beneath the Controller NeoStack.`,
+            `neoStacks.${stack.id}`,
+            {
+              controllerNeoStackId: sleeve.controllerNeoStackId,
+              reason: 'no_parent',
+            },
+          ),
+        );
+        return;
+      }
+
+      if (indexes.neoStacks.has(sleeve.controllerNeoStackId) && !reachableStacks.has(stack.id)) {
+        diagnostics.push(
+          errorDiagnostic(
+            'ORPHAN_NEOSTACK',
+            `NeoStack ${stack.id} is not reachable from Controller NeoStack ${sleeve.controllerNeoStackId}.`,
+            `neoStacks.${stack.id}`,
+            {
+              controllerNeoStackId: sleeve.controllerNeoStackId,
+              reason: 'not_reachable_from_controller',
+            },
+          ),
+        );
+      }
+    });
   sleeve.neoStacks.forEach((stack) => validateNeoStackRows(stack, diagnostics));
   sleeve.neoBlocks.forEach((neoBlock) => validateNeoBlock(neoBlock, indexes, diagnostics));
   validateScopedAttachments(sleeve, indexes, diagnostics);
@@ -664,7 +787,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
   for (const neoBlock of sleeve.neoBlocks) {
     if (!indexes.stackByNeoBlockId.has(neoBlock.id)) {
       diagnostics.push(
-        warningDiagnostic(
+        errorDiagnostic(
           'NEOBLOCK_WITHOUT_NEOSTACK',
           `NeoBlock ${neoBlock.id} is not placed in any NeoStack.`,
           `neoBlocks.${neoBlock.id}`,

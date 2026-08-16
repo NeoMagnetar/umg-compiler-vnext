@@ -1,0 +1,229 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.DIRECTIVE.GEOMETRY.v0.1",
+  "name": "Directive Geometry Fixture",
+  "description": "Structural fixture for Phase B2 directive authorship, horizontal NeoStack peers, row ordering, and nested topology.",
+  "controllerNeoStackId": "NS.ROOT",
+  "moltBlocks": [
+    { "id": "T.ROOT.DEFAULT", "type": "trigger", "content": "Root route is active." },
+    { "id": "D.ROOT.PRIME", "type": "directive", "content": "Resolve the root route first." },
+    { "id": "I.ROOT.STEP", "type": "instruction", "content": "Route into the authored peer geometry." },
+    { "id": "S.ROOT.REQUEST", "type": "subject", "content": "Peer geometry request." },
+    { "id": "P.ROOT.ROUTE", "type": "primary", "content": "Open the authored peer route." },
+
+    { "id": "T.SALES.DEFAULT", "type": "trigger", "content": "Sales peer is active." },
+    { "id": "D.SALES.PRIME", "type": "directive", "content": "Handle the sales peer without hidden weighting." },
+    { "id": "I.SALES.STEP", "type": "instruction", "content": "Process the sales peer deterministically." },
+    { "id": "S.SALES.REQUEST", "type": "subject", "content": "Sales peer request." },
+    { "id": "P.SALES.OUTCOME", "type": "primary", "content": "Deliver the sales peer outcome." },
+
+    { "id": "T.SVC.INTAKE.DEFAULT", "type": "trigger", "content": "Service intake peer is active." },
+    { "id": "D.SVC.INTAKE.PRIME", "type": "directive", "content": "Handle the service intake peer first within the Service row." },
+    { "id": "I.SVC.INTAKE.STEP", "type": "instruction", "content": "Process the service intake peer deterministically." },
+    { "id": "S.SVC.INTAKE.REQUEST", "type": "subject", "content": "Service intake peer request." },
+    { "id": "P.SVC.INTAKE.OUTCOME", "type": "primary", "content": "Deliver the service intake peer outcome." },
+
+    { "id": "T.SVC.DISPATCH.DEFAULT", "type": "trigger", "content": "Service dispatch peer is active." },
+    { "id": "D.SVC.DISPATCH.PRIME", "type": "directive", "content": "Handle the service dispatch peer second within the Service row." },
+    { "id": "I.SVC.DISPATCH.STEP", "type": "instruction", "content": "Process the service dispatch peer deterministically." },
+    { "id": "S.SVC.DISPATCH.REQUEST", "type": "subject", "content": "Service dispatch peer request." },
+    { "id": "P.SVC.DISPATCH.OUTCOME", "type": "primary", "content": "Deliver the service dispatch peer outcome." },
+
+    { "id": "T.SUPPORT.DEFAULT", "type": "trigger", "content": "Support peer is active." },
+    { "id": "D.SUPPORT.PRIME", "type": "directive", "content": "Handle the support peer without hidden weighting." },
+    { "id": "I.SUPPORT.STEP", "type": "instruction", "content": "Process the support peer deterministically." },
+    { "id": "S.SUPPORT.REQUEST", "type": "subject", "content": "Support peer request." },
+    { "id": "P.SUPPORT.OUTCOME", "type": "primary", "content": "Deliver the support peer outcome." },
+
+    { "id": "T.BILLING.DEFAULT", "type": "trigger", "content": "Billing peer is active." },
+    { "id": "D.BILLING.PRIME", "type": "directive", "content": "Handle the billing peer on the second structural row." },
+    { "id": "I.BILLING.STEP", "type": "instruction", "content": "Process the billing peer deterministically." },
+    { "id": "S.BILLING.REQUEST", "type": "subject", "content": "Billing peer request." },
+    { "id": "P.BILLING.OUTCOME", "type": "primary", "content": "Deliver the billing peer outcome." },
+
+    { "id": "T.RETENTION.DEFAULT", "type": "trigger", "content": "Retention peer is active." },
+    { "id": "D.RETENTION.PRIME", "type": "directive", "content": "Handle the retention peer second on the second structural row." },
+    { "id": "I.RETENTION.STEP", "type": "instruction", "content": "Process the retention peer deterministically." },
+    { "id": "S.RETENTION.REQUEST", "type": "subject", "content": "Retention peer request." },
+    { "id": "P.RETENTION.OUTCOME", "type": "primary", "content": "Deliver the retention peer outcome." },
+
+    { "id": "T.WARRANTY.DEFAULT", "type": "trigger", "content": "Warranty child stack is active." },
+    { "id": "D.WARRANTY.PRIME", "type": "directive", "content": "Handle the nested warranty child route." },
+    { "id": "I.WARRANTY.STEP", "type": "instruction", "content": "Process the nested warranty child deterministically." },
+    { "id": "S.WARRANTY.REQUEST", "type": "subject", "content": "Warranty child request." },
+    { "id": "P.WARRANTY.OUTCOME", "type": "primary", "content": "Deliver the warranty child outcome." }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.ROOT.ROUTE",
+      "name": "Root Route",
+      "moltBlockIds": ["T.ROOT.DEFAULT", "D.ROOT.PRIME", "I.ROOT.STEP", "S.ROOT.REQUEST", "P.ROOT.ROUTE"],
+      "primeDirectiveId": "D.ROOT.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.ROOT.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.ROOT.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.ROOT.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.ROOT.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.ROOT.ROUTE"] }]
+      }
+    },
+    {
+      "id": "NB.SALES.LEAD",
+      "name": "Sales Lead",
+      "moltBlockIds": ["T.SALES.DEFAULT", "D.SALES.PRIME", "I.SALES.STEP", "S.SALES.REQUEST", "P.SALES.OUTCOME"],
+      "primeDirectiveId": "D.SALES.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.SALES.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.SALES.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.SALES.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.SALES.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.SALES.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.SERVICE.INTAKE",
+      "name": "Service Intake",
+      "moltBlockIds": [
+        "T.SVC.INTAKE.DEFAULT",
+        "D.SVC.INTAKE.PRIME",
+        "I.SVC.INTAKE.STEP",
+        "S.SVC.INTAKE.REQUEST",
+        "P.SVC.INTAKE.OUTCOME"
+      ],
+      "primeDirectiveId": "D.SVC.INTAKE.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.SVC.INTAKE.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.SVC.INTAKE.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.SVC.INTAKE.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.SVC.INTAKE.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.SVC.INTAKE.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.SERVICE.DISPATCH",
+      "name": "Service Dispatch",
+      "moltBlockIds": [
+        "T.SVC.DISPATCH.DEFAULT",
+        "D.SVC.DISPATCH.PRIME",
+        "I.SVC.DISPATCH.STEP",
+        "S.SVC.DISPATCH.REQUEST",
+        "P.SVC.DISPATCH.OUTCOME"
+      ],
+      "primeDirectiveId": "D.SVC.DISPATCH.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.SVC.DISPATCH.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.SVC.DISPATCH.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.SVC.DISPATCH.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.SVC.DISPATCH.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.SVC.DISPATCH.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.SUPPORT.REPLY",
+      "name": "Support Reply",
+      "moltBlockIds": ["T.SUPPORT.DEFAULT", "D.SUPPORT.PRIME", "I.SUPPORT.STEP", "S.SUPPORT.REQUEST", "P.SUPPORT.OUTCOME"],
+      "primeDirectiveId": "D.SUPPORT.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.SUPPORT.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.SUPPORT.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.SUPPORT.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.SUPPORT.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.SUPPORT.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.BILLING.COLLECT",
+      "name": "Billing Collect",
+      "moltBlockIds": ["T.BILLING.DEFAULT", "D.BILLING.PRIME", "I.BILLING.STEP", "S.BILLING.REQUEST", "P.BILLING.OUTCOME"],
+      "primeDirectiveId": "D.BILLING.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.BILLING.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.BILLING.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.BILLING.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.BILLING.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.BILLING.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.RETENTION.RENEW",
+      "name": "Retention Renew",
+      "moltBlockIds": [
+        "T.RETENTION.DEFAULT",
+        "D.RETENTION.PRIME",
+        "I.RETENTION.STEP",
+        "S.RETENTION.REQUEST",
+        "P.RETENTION.OUTCOME"
+      ],
+      "primeDirectiveId": "D.RETENTION.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.RETENTION.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.RETENTION.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.RETENTION.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.RETENTION.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.RETENTION.OUTCOME"] }]
+      }
+    },
+    {
+      "id": "NB.WARRANTY.CLAIM",
+      "name": "Warranty Claim",
+      "moltBlockIds": ["T.WARRANTY.DEFAULT", "D.WARRANTY.PRIME", "I.WARRANTY.STEP", "S.WARRANTY.REQUEST", "P.WARRANTY.OUTCOME"],
+      "primeDirectiveId": "D.WARRANTY.PRIME",
+      "baseGeometry": {
+        "trigger": [{ "row": 1, "blockIds": ["T.WARRANTY.DEFAULT"] }],
+        "directive": [{ "row": 1, "blockIds": ["D.WARRANTY.PRIME"] }],
+        "instruction": [{ "row": 1, "blockIds": ["I.WARRANTY.STEP"] }],
+        "subject": [{ "row": 1, "blockIds": ["S.WARRANTY.REQUEST"] }],
+        "primary": [{ "row": 1, "blockIds": ["P.WARRANTY.OUTCOME"] }]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.ROOT",
+      "name": "Root",
+      "skill": "Owns the controller entry into the authored peer geometry.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.ROOT.ROUTE"] }],
+      "childStackRows": [
+        { "row": 1, "neoStackIds": ["NS.SALES", "NS.SERVICE", "NS.SUPPORT"] },
+        { "row": 2, "neoStackIds": ["NS.BILLING", "NS.RETENTION"] }
+      ]
+    },
+    {
+      "id": "NS.SALES",
+      "name": "Sales",
+      "skill": "Horizontal peer under the Root stack.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.SALES.LEAD"] }]
+    },
+    {
+      "id": "NS.SERVICE",
+      "name": "Service",
+      "skill": "Horizontal peer under the Root stack with same-row NeoBlock peers and a nested child stack.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.SERVICE.INTAKE", "NB.SERVICE.DISPATCH"] }],
+      "childStackRows": [{ "row": 1, "neoStackIds": ["NS.WARRANTY"] }]
+    },
+    {
+      "id": "NS.SUPPORT",
+      "name": "Support",
+      "skill": "Horizontal peer under the Root stack.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.SUPPORT.REPLY"] }]
+    },
+    {
+      "id": "NS.BILLING",
+      "name": "Billing",
+      "skill": "Second-row peer under the Root stack.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.BILLING.COLLECT"] }]
+    },
+    {
+      "id": "NS.RETENTION",
+      "name": "Retention",
+      "skill": "Second-row peer under the Root stack.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.RETENTION.RENEW"] }]
+    },
+    {
+      "id": "NS.WARRANTY",
+      "name": "Warranty",
+      "skill": "Nested child stack under Service.",
+      "neoBlockRows": [{ "row": 1, "neoBlockIds": ["NB.WARRANTY.CLAIM"] }]
+    }
+  ]
+}

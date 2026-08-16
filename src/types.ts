@@ -34,7 +34,7 @@ export interface MoltBlock {
 }
 
 export interface GeometryRow {
-  /** One-based ordinal tier. Smaller row number means higher local precedence. */
+  /** One-based authored structural tier. Smaller row number means earlier read order only. */
   row: number;
   /** Left-to-right authored read order. All members are semantic peers on this tier. */
   blockIds: string[];
@@ -84,12 +84,16 @@ export interface NeoBlock {
 }
 
 export interface NeoBlockRow {
+  /** One-based authored structural tier inside the containing NeoStack. */
   row: number;
+  /** Left-to-right authored peer order only. This creates no numeric weighting. */
   neoBlockIds: string[];
 }
 
 export interface NeoStackRow {
+  /** One-based authored structural tier inside the containing NeoStack. */
   row: number;
+  /** Left-to-right authored peer order only. This creates no numeric weighting. */
   neoStackIds: string[];
 }
 
