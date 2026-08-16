@@ -274,6 +274,27 @@ function emitGeometryResolved(
   });
 }
 
+function orderScopedAttachmentsForBlock<T extends { scope: ScopeRef }>(
+  attachments: T[],
+  stackId: string,
+  indexes: RuntimeIndexes,
+): T[] {
+  const ancestorOrder = ancestorsRootToLeaf(stackId, indexes);
+  const depth = (scope: ScopeRef): number => {
+    if (scope.kind === 'sleeve') return 0;
+    const index = ancestorOrder.indexOf(scope.neoStackId);
+    return index < 0 ? Number.MAX_SAFE_INTEGER : index + 1;
+  };
+
+  return attachments
+    .map((attachment, authoredIndex) => ({ attachment, authoredIndex }))
+    .filter(({ attachment }) => scopeApplies(attachment.scope, stackId, indexes))
+    .sort(
+      (a, b) => depth(a.attachment.scope) - depth(b.attachment.scope) || a.authoredIndex - b.authoredIndex,
+    )
+    .map(({ attachment }) => attachment);
+}
+
 function scopedForBlock(
   sleeve: Sleeve,
   neoBlockId: string,
@@ -290,18 +311,7 @@ function scopedForBlock(
     result.set(entry.type, current);
   };
 
-  const attachments = sleeve.scopedMolt ?? [];
-  const ancestorOrder = ancestorsRootToLeaf(stackId, indexes);
-  const depth = (scope: ScopeRef): number => {
-    if (scope.kind === 'sleeve') return 0;
-    const index = ancestorOrder.indexOf(scope.neoStackId);
-    return index < 0 ? Number.MAX_SAFE_INTEGER : index + 1;
-  };
-
-  attachments
-    .filter((attachment) => scopeApplies(attachment.scope, stackId, indexes))
-    .slice()
-    .sort((a, b) => depth(a.scope) - depth(b.scope) || a.id.localeCompare(b.id))
+  orderScopedAttachmentsForBlock(sleeve.scopedMolt ?? [], stackId, indexes)
     .forEach((attachment) => {
       const block = indexes.moltBlocks.get(attachment.blockId)!;
       const resolved = scopedMolt(block, attachment.id, attachment.scope);
@@ -323,10 +333,7 @@ function scopedForBlock(
 
   for (const overlay of sleeve.overlays ?? []) {
     if (!activeOverlayIds.has(overlay.id)) continue;
-    overlay.attachments
-      .filter((attachment) => scopeApplies(attachment.scope, stackId, indexes))
-      .slice()
-      .sort((a, b) => depth(a.scope) - depth(b.scope) || a.id.localeCompare(b.id))
+    orderScopedAttachmentsForBlock(overlay.attachments, stackId, indexes)
       .forEach((attachment) => {
         const block = indexes.moltBlocks.get(attachment.blockId)!;
         const resolved = scopedMolt(block, attachment.id, attachment.scope, overlay.id);
