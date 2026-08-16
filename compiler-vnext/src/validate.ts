@@ -1017,6 +1017,15 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
   }
 
   for (const rule of sleeve.governance ?? []) {
+    if (((rule.offNeoStackIds?.length ?? 0) + (rule.offNeoBlockIds?.length ?? 0)) === 0) {
+      diagnostics.push(
+        errorDiagnostic(
+          'GOVERNANCE_RULE_NO_TARGETS',
+          `Governance rule ${rule.id} must target at least one NeoStack or NeoBlock.`,
+          `governance.${rule.id}`,
+        ),
+      );
+    }
     for (const id of rule.offNeoStackIds ?? []) {
       if (!indexes.neoStacks.has(id)) {
         diagnostics.push(
