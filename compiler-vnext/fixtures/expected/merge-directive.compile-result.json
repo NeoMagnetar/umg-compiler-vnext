@@ -286,11 +286,16 @@
     "compilerVersion": "0.1.0-experimental",
     "sleeveId": "SLV.MERGE.DIRECTIVE.v0.1",
     "compiledAt": "2026-08-16T00:00:00.000Z",
+    "terminalStage": "post_run",
     "events": [
       {
         "seq": 1,
         "type": "SOURCE_VALIDATED",
-        "subjectId": "SLV.MERGE.DIRECTIVE.v0.1",
+        "stage": "intake",
+        "subject": {
+          "kind": "sleeve",
+          "id": "SLV.MERGE.DIRECTIVE.v0.1"
+        },
         "data": {
           "sleeveSchemaVersion": "umg.compiler-vnext.sleeve.v0.1",
           "selectionSchemaVersion": "umg.compiler-vnext.selection.v0.1",
@@ -327,7 +332,11 @@
       {
         "seq": 2,
         "type": "NEOSTACK_ACTIVE",
-        "subjectId": "NS.MERGE.ROOT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neostack",
+          "id": "NS.MERGE.ROOT"
+        },
         "data": {
           "depth": 0,
           "selectionOrder": 1
@@ -336,7 +345,11 @@
       {
         "seq": 3,
         "type": "NEOBLOCK_SELECTION_ATTEMPTED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoStackId": "NS.MERGE.ROOT",
           "rowInNeoStack": 1
@@ -345,7 +358,11 @@
       {
         "seq": 4,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.MRG.DEFAULT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.MRG.DEFAULT"
+        },
         "data": {
           "active": true,
           "matched": true,
@@ -355,7 +372,11 @@
       {
         "seq": 5,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.MRG.ALT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.MRG.ALT"
+        },
         "data": {
           "active": true,
           "matched": true,
@@ -365,7 +386,11 @@
       {
         "seq": 6,
         "type": "PRIME_DIRECTIVE_APPLIED",
-        "subjectId": "D.MRG.PRIME",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "D.MRG.PRIME"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE"
         }
@@ -373,16 +398,25 @@
       {
         "seq": 7,
         "type": "SECONDARY_DIRECTIVE_SELECTED",
-        "subjectId": "D.MRG.SELECTED",
+        "stage": "resolution",
+        "subject": {
+          "kind": "secondary_directive",
+          "id": "SD.MRG.DIRECTIVE"
+        },
         "data": {
           "relationId": "SD.MRG.DIRECTIVE",
+          "directiveBlockId": "D.MRG.SELECTED",
           "triggerBlockId": "T.MRG.ALT"
         }
       },
       {
         "seq": 8,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "moltType": "trigger",
@@ -402,7 +436,11 @@
       {
         "seq": 9,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "moltType": "directive",
@@ -424,7 +462,11 @@
       {
         "seq": 10,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "moltType": "instruction"
         }
@@ -432,7 +474,11 @@
       {
         "seq": 11,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "moltType": "instruction",
@@ -450,7 +496,11 @@
       {
         "seq": 12,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "moltType": "subject"
         }
@@ -458,7 +508,11 @@
       {
         "seq": 13,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "moltType": "subject",
@@ -476,7 +530,11 @@
       {
         "seq": 14,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "moltType": "primary"
         }
@@ -484,7 +542,11 @@
       {
         "seq": 15,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "moltType": "primary",
@@ -502,7 +564,11 @@
       {
         "seq": 16,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "moltType": "philosophy"
         }
@@ -510,7 +576,11 @@
       {
         "seq": 17,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "moltType": "philosophy",
@@ -528,7 +598,11 @@
       {
         "seq": 18,
         "type": "MERGE_VALIDATED",
-        "subjectId": "D.MRG.SELECTED",
+        "stage": "resolution",
+        "subject": {
+          "kind": "merge",
+          "id": "MRG.DIRECTIVE.CONTEXT"
+        },
         "data": {
           "neoBlockId": "NB.MERGE.DIRECTIVE",
           "mergeId": "MRG.DIRECTIVE.CONTEXT",
@@ -553,7 +627,11 @@
       {
         "seq": 19,
         "type": "NEOBLOCK_ACTIVE",
-        "subjectId": "NB.MERGE.DIRECTIVE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.MERGE.DIRECTIVE"
+        },
         "data": {
           "neoStackId": "NS.MERGE.ROOT",
           "rowInNeoStack": 1,
@@ -567,7 +645,10 @@
       {
         "seq": 20,
         "type": "RUNTIME_COMPILED",
-        "subjectId": "SLV.MERGE.DIRECTIVE.v0.1",
+        "stage": "output",
+        "subject": {
+          "kind": "runtime"
+        },
         "data": {
           "runtimeHash": "a38ef55bed7730bb57a92add7d34cb496924c23c09318e508b1fe933b2449432",
           "promptPartCount": 8,
@@ -582,7 +663,10 @@
       {
         "seq": 21,
         "type": "POST_RUN_RESET_DECLARED",
-        "subjectId": "SLV.MERGE.DIRECTIVE.v0.1",
+        "stage": "post_run",
+        "subject": {
+          "kind": "runtime"
+        },
         "data": {
           "neoStackIds": [
             "NS.MERGE.ROOT"

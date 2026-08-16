@@ -86,6 +86,10 @@ function traceEvents(result, type, predicate = () => true) {
   return result.trace.events.filter((event) => event.type === type && predicate(event));
 }
 
+function traceSubjectId(event) {
+  return event.subject?.id;
+}
+
 function stripBundleMutationSurface(result) {
   const clone = JSON.parse(JSON.stringify(result));
   if (clone.runtime) {
@@ -292,7 +296,7 @@ assert.equal(mergedPart.mergeId, 'MRG.SVC.SAFE_STOP');
 assert.ok(secondaryB.trace.events.some((event) => event.type === 'MERGE_VALIDATED'));
 assert.ok(
   secondaryB.trace.events.some(
-    (event) => event.type === 'MOLT_READY' && event.subjectId === 'I.SVC.03',
+    (event) => event.type === 'MOLT_READY' && traceSubjectId(event) === 'I.SVC.03',
   ),
 );
 assert.deepEqual(
@@ -348,15 +352,15 @@ assert.equal(multi.hasErrors, true);
 assert.ok(multi.trace.diagnostics.some((item) => item.code === 'MULTIPLE_SECONDARY_DIRECTIVE_MATCH'));
 assert.equal(multi.trace.finalNeoBlockStates['NB.SERVICE.TRIAGE'], 'ready');
 assert.equal(multi.runtime, null);
-assert.ok(traceEvent(multi, 'NEOBLOCK_SELECTION_ATTEMPTED', (event) => event.subjectId === 'NB.SERVICE.TRIAGE'));
-assert.deepEqual(traceEvent(multi, 'NEOBLOCK_RESOLUTION_FAILED', (event) => event.subjectId === 'NB.SERVICE.TRIAGE').data, {
+assert.ok(traceEvent(multi, 'NEOBLOCK_SELECTION_ATTEMPTED', (event) => traceSubjectId(event) === 'NB.SERVICE.TRIAGE'));
+assert.deepEqual(traceEvent(multi, 'NEOBLOCK_RESOLUTION_FAILED', (event) => traceSubjectId(event) === 'NB.SERVICE.TRIAGE').data, {
   neoStackId: 'NS.SERVICE',
   rowInNeoStack: 1,
   activeTriggerIds: ['T.SVC.SAFETY', 'T.SVC.WARRANTY'],
   matchedSecondaryDirectiveIds: ['SD.SVC.B', 'SD.SVC.C'],
   diagnosticCodes: ['MULTIPLE_SECONDARY_DIRECTIVE_MATCH'],
 });
-assert.ok(traceEvent(multi, 'NEOBLOCK_READY', (event) => event.subjectId === 'NB.SERVICE.TRIAGE'));
+assert.ok(traceEvent(multi, 'NEOBLOCK_READY', (event) => traceSubjectId(event) === 'NB.SERVICE.TRIAGE'));
 
 const governance = assertGolden('governance-off');
 assertSuccessInvariant(governance);
@@ -408,16 +412,16 @@ assert.deepEqual(
   ['NB.ROOT.ROUTE', 'NB.PARENT.LEFT', 'NB.PARENT.RIGHT', 'NB.CHILD.DESCENDANT'],
 );
 assert.deepEqual(
-  traceEvents(structureRouting, 'NEOBLOCK_SELECTION_ATTEMPTED').map((event) => event.subjectId),
+  traceEvents(structureRouting, 'NEOBLOCK_SELECTION_ATTEMPTED').map(traceSubjectId),
   ['NB.ROOT.ROUTE', 'NB.PARENT.LEFT', 'NB.PARENT.RIGHT', 'NB.CHILD.DESCENDANT'],
 );
-assert.deepEqual(traceEvent(structureRouting, 'NEOSTACK_ACTIVE', (event) => event.subjectId === 'NS.PARENT').data, {
+assert.deepEqual(traceEvent(structureRouting, 'NEOSTACK_ACTIVE', (event) => traceSubjectId(event) === 'NS.PARENT').data, {
   depth: 1,
   parentNeoStackId: 'NS.ROOT',
   rowInParent: 1,
   selectionOrder: 2,
 });
-assert.deepEqual(traceEvent(structureRouting, 'NEOSTACK_ACTIVE', (event) => event.subjectId === 'NS.CHILD').data, {
+assert.deepEqual(traceEvent(structureRouting, 'NEOSTACK_ACTIVE', (event) => traceSubjectId(event) === 'NS.CHILD').data, {
   depth: 2,
   parentNeoStackId: 'NS.PARENT',
   rowInParent: 1,

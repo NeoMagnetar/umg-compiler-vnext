@@ -1,6 +1,7 @@
 import type { DiagnosticSubject } from './diagnostic-registry.js';
 import { MOLT_AUTHORITY_ORDER } from './constants.js';
 import { errorDiagnostic } from './errors.js';
+import { createTraceEvent } from './trace-event-registry.js';
 import type {
   CompileSelection,
   CompilerDiagnostic,
@@ -18,6 +19,7 @@ import type {
   ScopeRef,
   Sleeve,
   TraceEvent,
+  TraceEventType,
 } from './types.js';
 
 interface RuntimeIndexes {
@@ -299,6 +301,16 @@ function mergeAuthorityCeilingType(
   return MOLT_AUTHORITY_ORDER[ceiling];
 }
 
+function pushTraceEvent(
+  events: TraceEvent[],
+  nextSeq: () => number,
+  type: TraceEventType,
+  subject: DiagnosticSubject,
+  data: Record<string, unknown>,
+): void {
+  events.push(createTraceEvent(nextSeq(), type, subject, data));
+}
+
 function emitGeometryResolved(
   neoBlockId: string,
   moltType: MoltType,
@@ -307,18 +319,13 @@ function emitGeometryResolved(
   events: TraceEvent[],
   nextSeq: () => number,
 ): void {
-  events.push({
-    seq: nextSeq(),
-    type: 'GEOMETRY_RESOLVED',
-    subjectId: neoBlockId,
-    data: {
+  pushTraceEvent(events, nextSeq, 'GEOMETRY_RESOLVED', { kind: 'neoblock', id: neoBlockId }, {
       neoBlockId,
       moltType,
       source: bundleId ? 'bundle' : 'base',
       bundleId,
       rows: geometryRowsAsIds(rows),
       readOrder: geometryReadOrder(rows),
-    },
   });
 }
 
@@ -364,18 +371,14 @@ function scopedForBlock(
       const block = indexes.moltBlocks.get(attachment.blockId)!;
       const resolved = scopedMolt(block, attachment.id, attachment.scope);
       append(resolved);
-      events.push({
-        seq: nextSeq(),
-        type: 'SCOPED_MOLT_APPLIED',
-        subjectId: block.id,
-        data: {
+      pushTraceEvent(events, nextSeq, 'SCOPED_MOLT_APPLIED', { kind: 'scoped_attachment', id: attachment.id }, {
+          blockId: block.id,
           source: 'scoped',
           attachmentId: attachment.id,
           scope: attachment.scope,
           neoBlockId,
           neoStackId: stackId,
           moltType: block.type,
-        },
       });
     });
 
@@ -386,11 +389,8 @@ function scopedForBlock(
         const block = indexes.moltBlocks.get(attachment.blockId)!;
         const resolved = scopedMolt(block, attachment.id, attachment.scope, overlay.id);
         append(resolved);
-        events.push({
-          seq: nextSeq(),
-          type: 'OVERLAY_APPLIED',
-          subjectId: block.id,
-          data: {
+        pushTraceEvent(events, nextSeq, 'OVERLAY_APPLIED', { kind: 'scoped_attachment', id: attachment.id }, {
+            blockId: block.id,
             source: 'overlay',
             overlayId: overlay.id,
             attachmentId: attachment.id,
@@ -398,7 +398,6 @@ function scopedForBlock(
             neoBlockId,
             neoStackId: stackId,
             moltType: block.type,
-          },
         });
       });
   }
@@ -453,11 +452,10 @@ function resolveNeoBlock(
   for (const trigger of triggerBlocks) {
     const active = selection.triggerState[trigger.id] === true;
     if (active) activeTriggerIds.push(trigger.id);
-    events.push({
-      seq: nextSeq(),
-      type: 'TRIGGER_EVALUATED',
-      subjectId: trigger.id,
-      data: { active, matched: active, neoBlockId: neoBlock.id },
+    pushTraceEvent(events, nextSeq, 'TRIGGER_EVALUATED', { kind: 'molt_block', id: trigger.id }, {
+      active,
+      matched: active,
+      neoBlockId: neoBlock.id,
     });
   }
 
@@ -492,19 +490,25 @@ function resolveNeoBlock(
   }
 
   const secondary = matchedSecondaries[0];
-  events.push({
-    seq: nextSeq(),
-    type: 'PRIME_DIRECTIVE_APPLIED',
-    subjectId: neoBlock.primeDirectiveId,
-    data: { neoBlockId: neoBlock.id },
-  });
+  pushTraceEvent(
+    events,
+    nextSeq,
+    'PRIME_DIRECTIVE_APPLIED',
+    { kind: 'molt_block', id: neoBlock.primeDirectiveId },
+    { neoBlockId: neoBlock.id },
+  );
   if (secondary) {
-    events.push({
-      seq: nextSeq(),
-      type: 'SECONDARY_DIRECTIVE_SELECTED',
-      subjectId: secondary.directiveBlockId,
-      data: { relationId: secondary.id, triggerBlockId: secondary.triggerBlockId },
-    });
+    pushTraceEvent(
+      events,
+      nextSeq,
+      'SECONDARY_DIRECTIVE_SELECTED',
+      { kind: 'secondary_directive', id: secondary.id },
+      {
+        relationId: secondary.id,
+        directiveBlockId: secondary.directiveBlockId,
+        triggerBlockId: secondary.triggerBlockId,
+      },
+    );
   }
 
   const mergeByResult = new Map<string, string>();
@@ -547,33 +551,28 @@ function resolveNeoBlock(
         rows = resolveRows(bundle.rows, indexes, mergeByResult);
         geometrySource = 'bundle';
         bundleId = bundle.id;
-        events.push({
-          seq: nextSeq(),
-          type: 'BUNDLE_APPLIED',
-          subjectId: bundle.id,
-          data: { neoBlockId: neoBlock.id, moltType: bundle.moltType, secondaryDirectiveId: secondary?.id },
+        pushTraceEvent(events, nextSeq, 'BUNDLE_APPLIED', { kind: 'bundle', id: bundle.id }, {
+          neoBlockId: neoBlock.id,
+          moltType: bundle.moltType,
+          secondaryDirectiveId: secondary?.id,
         });
 
         const activeIds = new Set(bundle.rows.flatMap((row) => row.blockIds));
         localBlocks
           .filter((block) => block.type === moltType && !activeIds.has(block.id))
           .forEach((block) => {
-            events.push({
-              seq: nextSeq(),
-              type: 'MOLT_READY',
-              subjectId: block.id,
-              data: { neoBlockId: neoBlock.id, reason: 'omitted_from_active_bundle', bundleId: bundle.id },
+            pushTraceEvent(events, nextSeq, 'MOLT_READY', { kind: 'molt_block', id: block.id }, {
+              neoBlockId: neoBlock.id,
+              reason: 'omitted_from_active_bundle',
+              bundleId: bundle.id,
             });
           });
       } else {
         rows = resolveRows(neoBlock.baseGeometry[moltType] ?? [], indexes, mergeByResult);
         geometrySource = 'base';
         if (rows.length > 0) {
-          events.push({
-            seq: nextSeq(),
-            type: 'BASE_GEOMETRY_APPLIED',
-            subjectId: neoBlock.id,
-            data: { moltType },
+          pushTraceEvent(events, nextSeq, 'BASE_GEOMETRY_APPLIED', { kind: 'neoblock', id: neoBlock.id }, {
+            moltType,
           });
         }
       }
@@ -590,11 +589,7 @@ function resolveNeoBlock(
   for (const merge of neoBlock.merges ?? []) {
     if (activeIds.has(merge.resultBlockId)) {
       const resultBlock = indexes.moltBlocks.get(merge.resultBlockId)!;
-      events.push({
-        seq: nextSeq(),
-        type: 'MERGE_VALIDATED',
-        subjectId: merge.resultBlockId,
-        data: {
+      pushTraceEvent(events, nextSeq, 'MERGE_VALIDATED', { kind: 'merge', id: merge.id }, {
           neoBlockId: neoBlock.id,
           mergeId: merge.id,
           sources: merge.sourceBlockIds.map((sourceBlockId) => ({
@@ -607,7 +602,6 @@ function resolveNeoBlock(
           },
           authorityCeiling: mergeAuthorityCeilingType(merge, indexes),
           authorityCheck: 'pass',
-        },
       });
     }
   }
@@ -903,18 +897,11 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
     const availability = stackAvailability(stack.id);
     finalNeoStackStates[stack.id] = availability.state;
     if (availability.state === 'disabled') {
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOSTACK_DISABLED',
-        subjectId: stack.id,
-        data: stackTraceData(stack.id, indexes),
-      });
+      pushTraceEvent(events, nextSeq, 'NEOSTACK_DISABLED', { kind: 'neostack', id: stack.id }, stackTraceData(stack.id, indexes));
     } else if (availability.state === 'off') {
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOSTACK_OFF',
-        subjectId: stack.id,
-        data: { ...stackTraceData(stack.id, indexes), ...blockerTraceData(availability.blocker) },
+      pushTraceEvent(events, nextSeq, 'NEOSTACK_OFF', { kind: 'neostack', id: stack.id }, {
+        ...stackTraceData(stack.id, indexes),
+        ...blockerTraceData(availability.blocker),
       });
     }
   }
@@ -925,28 +912,18 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
     const stackId = indexes.stackByNeoBlockId.get(block.id);
     if (!stackId) continue;
     if (availability.state === 'disabled') {
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_DISABLED',
-        subjectId: block.id,
-        data: neoBlockTraceData(block.id, stackId, indexes),
-      });
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_DISABLED', { kind: 'neoblock', id: block.id }, neoBlockTraceData(block.id, stackId, indexes));
     } else if (availability.state === 'off') {
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_OFF',
-        subjectId: block.id,
-        data: { ...neoBlockTraceData(block.id, stackId, indexes), ...blockerTraceData(availability.blocker) },
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_OFF', { kind: 'neoblock', id: block.id }, {
+        ...neoBlockTraceData(block.id, stackId, indexes),
+        ...blockerTraceData(availability.blocker),
       });
     }
   }
 
   for (const rule of appliedGovernanceRules) {
-    events.push({
-      seq: nextSeq(),
-      type: 'GOVERNANCE_RULE_APPLIED',
-      subjectId: rule.id,
-      data: { name: rule.name },
+    pushTraceEvent(events, nextSeq, 'GOVERNANCE_RULE_APPLIED', { kind: 'governance', id: rule.id }, {
+      name: rule.name,
     });
   }
 
@@ -982,15 +959,10 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         diagnosticCode: diagnostic.code,
         details: diagnostic.details ?? {},
       });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOSTACK_SELECTION_BLOCKED',
-        subjectId: stackId,
-        data: {
-          ...stackTraceData(stackId, indexes),
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOSTACK_SELECTION_BLOCKED', { kind: 'neostack', id: stackId }, {
+        ...stackTraceData(stackId, indexes),
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1015,15 +987,10 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         diagnosticCode: diagnostic.code,
         details: diagnostic.details ?? {},
       });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOSTACK_SELECTION_BLOCKED',
-        subjectId: stackId,
-        data: {
-          ...stackTraceData(stackId, indexes),
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOSTACK_SELECTION_BLOCKED', { kind: 'neostack', id: stackId }, {
+        ...stackTraceData(stackId, indexes),
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1041,15 +1008,10 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         diagnosticCode: diagnostic.code,
         details: diagnostic.details ?? {},
       });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOSTACK_SELECTION_BLOCKED',
-        subjectId: stackId,
-        data: {
-          ...stackTraceData(stackId, indexes),
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOSTACK_SELECTION_BLOCKED', { kind: 'neostack', id: stackId }, {
+        ...stackTraceData(stackId, indexes),
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1062,23 +1024,16 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
 
   activeNeoStackIds.forEach((stackId, index) => {
     finalNeoStackStates[stackId] = 'active';
-    events.push({
-      seq: nextSeq(),
-      type: 'NEOSTACK_ACTIVE',
-      subjectId: stackId,
-      data: { ...stackTraceData(stackId, indexes), selectionOrder: index + 1 },
+    pushTraceEvent(events, nextSeq, 'NEOSTACK_ACTIVE', { kind: 'neostack', id: stackId }, {
+      ...stackTraceData(stackId, indexes),
+      selectionOrder: index + 1,
     });
   });
 
   sleeve.neoStacks
     .filter((stack) => finalNeoStackStates[stack.id] === 'ready')
     .forEach((stack) => {
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOSTACK_READY',
-        subjectId: stack.id,
-        data: stackTraceData(stack.id, indexes),
-      });
+      pushTraceEvent(events, nextSeq, 'NEOSTACK_READY', { kind: 'neostack', id: stack.id }, stackTraceData(stack.id, indexes));
     });
 
   const executableSelectedBlocks = new Set<string>();
@@ -1105,20 +1060,10 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         },
       );
       diagnostics.push(diagnostic);
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_ATTEMPTED',
-        subjectId: blockId,
-        data: attemptData,
-      });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_BLOCKED',
-        subjectId: blockId,
-        data: {
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, attemptData);
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_BLOCKED', { kind: 'neoblock', id: blockId }, {
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1139,21 +1084,11 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         },
       );
       diagnostics.push(diagnostic);
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_ATTEMPTED',
-        subjectId: blockId,
-        data: attemptData,
-      });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_BLOCKED',
-        subjectId: blockId,
-        data: {
-          ...attemptData,
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, attemptData);
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_BLOCKED', { kind: 'neoblock', id: blockId }, {
+        ...attemptData,
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1169,21 +1104,11 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
           { containerNeoStackId: stackId },
         );
         diagnostics.push(diagnostic);
-        events.push({
-          seq: nextSeq(),
-          type: 'NEOBLOCK_SELECTION_ATTEMPTED',
-          subjectId: blockId,
-          data: attemptData,
-        });
-        events.push({
-          seq: nextSeq(),
-          type: 'NEOBLOCK_SELECTION_BLOCKED',
-          subjectId: blockId,
-          data: {
-            ...attemptData,
-            diagnosticCode: diagnostic.code,
-            ...(diagnostic.details ?? {}),
-          },
+        pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, attemptData);
+        pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_BLOCKED', { kind: 'neoblock', id: blockId }, {
+          ...attemptData,
+          diagnosticCode: diagnostic.code,
+          ...(diagnostic.details ?? {}),
         });
         continue;
       }
@@ -1206,21 +1131,11 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         },
       );
       diagnostics.push(diagnostic);
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_ATTEMPTED',
-        subjectId: blockId,
-        data: attemptData,
-      });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_BLOCKED',
-        subjectId: blockId,
-        data: {
-          ...attemptData,
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, attemptData);
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_BLOCKED', { kind: 'neoblock', id: blockId }, {
+        ...attemptData,
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1235,21 +1150,11 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
         { containerNeoStackId: stackId },
       );
       diagnostics.push(diagnostic);
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_ATTEMPTED',
-        subjectId: blockId,
-        data: attemptData,
-      });
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_SELECTION_BLOCKED',
-        subjectId: blockId,
-        data: {
-          ...attemptData,
-          diagnosticCode: diagnostic.code,
-          ...(diagnostic.details ?? {}),
-        },
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, attemptData);
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_BLOCKED', { kind: 'neoblock', id: blockId }, {
+        ...attemptData,
+        diagnosticCode: diagnostic.code,
+        ...(diagnostic.details ?? {}),
       });
       continue;
     }
@@ -1273,12 +1178,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
     const neoBlock = indexes.neoBlocks.get(blockId)!;
     const stackId = indexes.stackByNeoBlockId.get(blockId)!;
     const blockData = neoBlockTraceData(blockId, stackId, indexes);
-    events.push({
-      seq: nextSeq(),
-      type: 'NEOBLOCK_SELECTION_ATTEMPTED',
-      subjectId: blockId,
-      data: blockData,
-    });
+    pushTraceEvent(events, nextSeq, 'NEOBLOCK_SELECTION_ATTEMPTED', { kind: 'neoblock', id: blockId }, blockData);
     const diagnosticOffset = diagnostics.length;
     const outcome = resolveNeoBlock(
       sleeve,
@@ -1294,15 +1194,10 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       finalNeoBlockStates[blockId] = 'active';
       resolvedNeoBlocks.push(outcome.resolved);
       resolvedNeoBlockIds.add(blockId);
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_ACTIVE',
-        subjectId: blockId,
-        data: {
-          ...blockData,
-          activeTriggerIds: outcome.activeTriggerIds,
-          secondaryDirectiveId: outcome.resolved.secondaryDirectiveId,
-        },
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_ACTIVE', { kind: 'neoblock', id: blockId }, {
+        ...blockData,
+        activeTriggerIds: outcome.activeTriggerIds,
+        secondaryDirectiveId: outcome.resolved.secondaryDirectiveId,
       });
       continue;
     }
@@ -1312,28 +1207,19 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       .slice(diagnosticOffset)
       .filter((diagnostic) => diagnostic.level === 'error')
       .map((diagnostic) => diagnostic.code);
-    events.push({
-      seq: nextSeq(),
-      type: 'NEOBLOCK_RESOLUTION_FAILED',
-      subjectId: blockId,
-      data: {
-        ...blockData,
-        activeTriggerIds: outcome.activeTriggerIds,
-        matchedSecondaryDirectiveIds: outcome.matchedSecondaryDirectiveIds,
-        diagnosticCodes: resolutionDiagnostics,
-      },
+    pushTraceEvent(events, nextSeq, 'NEOBLOCK_RESOLUTION_FAILED', { kind: 'neoblock', id: blockId }, {
+      ...blockData,
+      activeTriggerIds: outcome.activeTriggerIds,
+      matchedSecondaryDirectiveIds: outcome.matchedSecondaryDirectiveIds,
+      diagnosticCodes: resolutionDiagnostics,
     });
   }
 
   for (const block of sleeve.neoBlocks) {
     if (!resolvedNeoBlockIds.has(block.id) && finalNeoBlockStates[block.id] === 'ready') {
       const stackId = indexes.stackByNeoBlockId.get(block.id);
-      events.push({
-        seq: nextSeq(),
-        type: 'NEOBLOCK_READY',
-        subjectId: block.id,
-        data: stackId ? neoBlockTraceData(block.id, stackId, indexes) : undefined,
-      });
+      if (!stackId) continue;
+      pushTraceEvent(events, nextSeq, 'NEOBLOCK_READY', { kind: 'neoblock', id: block.id }, neoBlockTraceData(block.id, stackId, indexes));
     }
   }
 

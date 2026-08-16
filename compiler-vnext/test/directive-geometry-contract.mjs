@@ -60,7 +60,7 @@ function traceEvents(result, type, predicate = () => true) {
 }
 
 function traceEvent(result, type, subjectId) {
-  const match = result.trace?.events.find((event) => event.type === type && event.subjectId === subjectId);
+  const match = result.trace?.events.find((event) => event.type === type && event.subject?.id === subjectId);
   assert.ok(match, `missing trace event ${type} for ${subjectId}`);
   return match;
 }
@@ -169,7 +169,7 @@ const rootPeers = traceEvents(
   (event) => event.data?.parentNeoStackId === 'NS.ROOT',
 );
 assert.deepEqual(
-  rootPeers.map((event) => event.subjectId),
+  rootPeers.map((event) => event.subject?.id),
   ['NS.SALES', 'NS.SERVICE', 'NS.SUPPORT', 'NS.BILLING', 'NS.RETENTION'],
 );
 assert.deepEqual(
@@ -189,7 +189,7 @@ const servicePeers = traceEvents(
   (event) => event.data?.neoStackId === 'NS.SERVICE',
 );
 assert.deepEqual(
-  servicePeers.map((event) => event.subjectId),
+  servicePeers.map((event) => event.subject?.id),
   ['NB.SERVICE.INTAKE', 'NB.SERVICE.DISPATCH'],
 );
 assert.deepEqual(

@@ -7,6 +7,7 @@ import {
 import { validateCompileResultContract } from './public-output-contract.js';
 import { resolveSleeve } from './resolve.js';
 import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
+import { createTraceEvent } from './trace-event-registry.js';
 import { validateCanonicalSelection } from './validate.js';
 import type {
   CompileResult,
@@ -16,7 +17,50 @@ import type {
   Sleeve,
   Trace,
   TraceEvent,
+  TraceEventType,
 } from './types.js';
+
+function sortedKeys(input: Record<string, unknown>): string[] {
+  return Object.keys(input).sort();
+}
+
+function pushTraceCoverageViolation(
+  contractDiagnostics: CompilerDiagnostic[],
+  message: string,
+  path: string,
+  details?: Record<string, unknown>,
+): void {
+  contractDiagnostics.push(
+    internalOutputContractViolationDiagnostic({
+      message,
+      path,
+      ...details,
+    }),
+  );
+}
+
+function diagnosticTraceEventType(diagnostic: CompilerDiagnostic): TraceEventType {
+  if (diagnostic.stage === 'semantic') {
+    return diagnostic.level === 'error' ? 'VALIDATION_ERROR' : 'VALIDATION_WARNING';
+  }
+  if (diagnostic.stage === 'resolution') {
+    return diagnostic.level === 'error' ? 'RESOLUTION_ERROR' : 'RESOLUTION_WARNING';
+  }
+  throw new Error(`Trace does not expose ${diagnostic.stage} diagnostics.`);
+}
+
+function diagnosticTraceEvent(
+  diagnostic: CompilerDiagnostic,
+  diagnosticIndex: number,
+  seq: number,
+): TraceEvent {
+  return createTraceEvent(seq, diagnosticTraceEventType(diagnostic), diagnostic.subject, {
+    diagnosticIndex,
+    code: diagnostic.code,
+    message: diagnostic.message,
+    ...(diagnostic.path ? { path: diagnostic.path } : {}),
+  });
+}
 
 function finalizeCompileResult(
   candidate: CompileResult,
@@ -49,6 +93,57 @@ function finalizeCompileResult(
           path: 'trace.compiledAt',
         }),
       );
+    }
+
+    const expectedNeoStackIds = sleeve.neoStacks.map((stack) => stack.id).sort();
+    const actualNeoStackIds = sortedKeys(candidate.trace.finalNeoStackStates);
+    if (JSON.stringify(actualNeoStackIds) !== JSON.stringify(expectedNeoStackIds)) {
+      pushTraceCoverageViolation(
+        contractDiagnostics,
+        'Trace finalNeoStackStates must contain exactly the canonical Sleeve.neoStacks ids.',
+        'trace.finalNeoStackStates',
+        {
+          expectedNeoStackIds,
+          actualNeoStackIds,
+        },
+      );
+    }
+
+    const expectedNeoBlockIds = sleeve.neoBlocks.map((block) => block.id).sort();
+    const actualNeoBlockIds = sortedKeys(candidate.trace.finalNeoBlockStates);
+    if (JSON.stringify(actualNeoBlockIds) !== JSON.stringify(expectedNeoBlockIds)) {
+      pushTraceCoverageViolation(
+        contractDiagnostics,
+        'Trace finalNeoBlockStates must contain exactly the canonical Sleeve.neoBlocks ids.',
+        'trace.finalNeoBlockStates',
+        {
+          expectedNeoBlockIds,
+          actualNeoBlockIds,
+        },
+      );
+    }
+
+    if (candidate.status === 'failure' && candidate.trace.terminalStage === 'semantic') {
+      for (const [stackId, state] of Object.entries(candidate.trace.finalNeoStackStates)) {
+        if (state !== 'ready' && state !== 'disabled') {
+          pushTraceCoverageViolation(
+            contractDiagnostics,
+            'Semantic failure Trace finalNeoStackStates may only contain ready or disabled states.',
+            `trace.finalNeoStackStates.${stackId}`,
+            { state },
+          );
+        }
+      }
+      for (const [blockId, state] of Object.entries(candidate.trace.finalNeoBlockStates)) {
+        if (state !== 'ready' && state !== 'disabled') {
+          pushTraceCoverageViolation(
+            contractDiagnostics,
+            'Semantic failure Trace finalNeoBlockStates may only contain ready or disabled states.',
+            `trace.finalNeoBlockStates.${blockId}`,
+            { state },
+          );
+        }
+      }
     }
   }
 
@@ -97,6 +192,30 @@ function finalizeCompileResult(
           actualRuntimeHash,
         }),
       );
+    }
+
+    if (candidate.trace) {
+      candidate.runtime.activeNeoStackIds.forEach((stackId, index) => {
+        if (candidate.trace?.finalNeoStackStates[stackId] !== 'active') {
+          pushTraceCoverageViolation(
+            contractDiagnostics,
+            'RuntimeSpec activeNeoStackIds must be active in Trace finalNeoStackStates.',
+            `trace.finalNeoStackStates.${stackId}`,
+            { runtimeIndex: index, traceState: candidate.trace?.finalNeoStackStates[stackId] },
+          );
+        }
+      });
+
+      candidate.runtime.resolvedNeoBlocks.forEach((neoBlock, index) => {
+        if (candidate.trace?.finalNeoBlockStates[neoBlock.id] !== 'active') {
+          pushTraceCoverageViolation(
+            contractDiagnostics,
+            'RuntimeSpec resolvedNeoBlocks ids must be active in Trace finalNeoBlockStates.',
+            `trace.finalNeoBlockStates.${neoBlock.id}`,
+            { runtimeIndex: index, traceState: candidate.trace?.finalNeoBlockStates[neoBlock.id] },
+          );
+        }
+      });
     }
   }
 
@@ -149,11 +268,7 @@ function buildSuccessCompileResult(
 function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): CompileResult {
   const validation = validateCanonicalSelection(sleeve, selection);
   const sourceEvents: TraceEvent[] = [
-    {
-      seq: 1,
-      type: 'SOURCE_VALIDATED',
-      subjectId: sleeve.id,
-      data: {
+    createTraceEvent(1, 'SOURCE_VALIDATED', { kind: 'sleeve', id: sleeve.id }, {
         sleeveSchemaVersion: sleeve.schemaVersion,
         selectionSchemaVersion: selection.schemaVersion,
         controllerNeoStackId: sleeve.controllerNeoStackId,
@@ -177,25 +292,21 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
           overlays: sleeve.overlays?.length ?? 0,
           governanceRules: sleeve.governance?.length ?? 0,
           validationErrors: validation.diagnostics.filter((diagnostic) => diagnostic.level === 'error').length,
-          validationWarnings: validation.diagnostics.filter((diagnostic) => diagnostic.level === 'warning').length,
-        },
-      },
-    },
+            validationWarnings: validation.diagnostics.filter((diagnostic) => diagnostic.level === 'warning').length,
+          },
+    }),
   ];
   if (selection.routeRationale !== undefined) {
-    sourceEvents.push({
-      seq: sourceEvents.length + 1,
-      type: 'ROUTE_SELECTION_RECEIVED',
-      subjectId: sleeve.id,
-      data: { routeRationale: selection.routeRationale },
-    });
+    sourceEvents.push(
+      createTraceEvent(sourceEvents.length + 1, 'ROUTE_SELECTION_RECEIVED', { kind: 'selection' }, {
+        routeRationale: selection.routeRationale,
+      }),
+    );
   }
 
-  const validationEvents: TraceEvent[] = validation.diagnostics.map((diagnostic, index) => ({
-    seq: sourceEvents.length + index + 1,
-    type: diagnostic.level === 'error' ? 'VALIDATION_ERROR' : 'VALIDATION_WARNING',
-    data: { code: diagnostic.code, message: diagnostic.message, path: diagnostic.path },
-  }));
+  const validationEvents: TraceEvent[] = validation.diagnostics.map((diagnostic, index) =>
+    diagnosticTraceEvent(diagnostic, index, sourceEvents.length + index + 1),
+  );
 
   if (validation.diagnostics.some((diagnostic) => diagnostic.level === 'error')) {
     const trace: Trace = {
@@ -203,6 +314,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
       compilerVersion: COMPILER_VERSION,
       sleeveId: sleeve.id,
       compiledAt: selection.compiledAt,
+      terminalStage: 'semantic',
       events: [...sourceEvents, ...validationEvents],
       diagnostics: validation.diagnostics,
       finalNeoStackStates: Object.fromEntries(
@@ -220,21 +332,22 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
   const hasErrors = diagnostics.some((diagnostic) => diagnostic.level === 'error');
   const offset = sourceEvents.length + validationEvents.length;
   const resolutionEvents = resolution.events.map((event) => ({ ...event, seq: event.seq + offset }));
+  const resolutionDiagnosticEvents = resolution.diagnostics.map((diagnostic, index) =>
+    diagnosticTraceEvent(
+      diagnostic,
+      validation.diagnostics.length + index,
+      offset + resolutionEvents.length + index + 1,
+    ),
+  );
 
   if (hasErrors) {
-    const errorEvents: TraceEvent[] = resolution.diagnostics
-      .filter((diagnostic) => diagnostic.level === 'error')
-      .map((diagnostic, index) => ({
-        seq: offset + resolutionEvents.length + index + 1,
-        type: 'VALIDATION_ERROR',
-        data: { code: diagnostic.code, message: diagnostic.message, path: diagnostic.path },
-      }));
     const trace: Trace = {
       schemaVersion: 'umg.compiler-vnext.trace.v0.1',
       compilerVersion: COMPILER_VERSION,
       sleeveId: sleeve.id,
       compiledAt: selection.compiledAt,
-      events: [...sourceEvents, ...validationEvents, ...resolutionEvents, ...errorEvents],
+      terminalStage: 'resolution',
+      events: [...sourceEvents, ...validationEvents, ...resolutionEvents, ...resolutionDiagnosticEvents],
       diagnostics,
       finalNeoStackStates: resolution.finalNeoStackStates,
       finalNeoBlockStates: resolution.finalNeoBlockStates,
@@ -268,10 +381,11 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
   const effectiveMoltBlockCount = new Set(runtime.promptParts.map((part) => part.id)).size;
 
   const runtimeCompiledEvent: TraceEvent = {
-    seq: offset + resolutionEvents.length + 1,
-    type: 'RUNTIME_COMPILED',
-    subjectId: sleeve.id,
-    data: {
+    ...createTraceEvent(
+      offset + resolutionEvents.length + resolutionDiagnosticEvents.length + 1,
+      'RUNTIME_COMPILED',
+      { kind: 'runtime' },
+      {
       runtimeHash: runtime.runtimeHash,
       promptPartCount: runtime.promptParts.length,
       totalNeoStacks: sleeve.neoStacks.length,
@@ -280,13 +394,16 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
       activeNeoStacks: resolution.activeNeoStackIds.length,
       activeNeoBlocks: resolution.resolvedNeoBlocks.length,
       effectiveMoltBlocks: effectiveMoltBlockCount,
-    },
+      },
+    ),
   };
   const resetEvent: TraceEvent = {
-    seq: runtimeCompiledEvent.seq + 1,
-    type: 'POST_RUN_RESET_DECLARED',
-    subjectId: sleeve.id,
-    data: runtime.resetPlan,
+    ...createTraceEvent(
+      runtimeCompiledEvent.seq + 1,
+      'POST_RUN_RESET_DECLARED',
+      { kind: 'runtime' },
+      runtime.resetPlan,
+    ),
   };
 
   const trace: Trace = {
@@ -294,7 +411,15 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
     compilerVersion: COMPILER_VERSION,
     sleeveId: sleeve.id,
     compiledAt: selection.compiledAt,
-    events: [...sourceEvents, ...validationEvents, ...resolutionEvents, runtimeCompiledEvent, resetEvent],
+    terminalStage: 'post_run',
+    events: [
+      ...sourceEvents,
+      ...validationEvents,
+      ...resolutionEvents,
+      ...resolutionDiagnosticEvents,
+      runtimeCompiledEvent,
+      resetEvent,
+    ],
     diagnostics,
     finalNeoStackStates: resolution.finalNeoStackStates,
     finalNeoBlockStates: resolution.finalNeoBlockStates,

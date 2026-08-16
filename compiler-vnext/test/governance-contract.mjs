@@ -80,6 +80,10 @@ function traceEvents(result, type, predicate = () => true) {
   return result.trace?.events.filter((event) => event.type === type && predicate(event)) ?? [];
 }
 
+function traceSubjectId(event) {
+  return event.subject?.id;
+}
+
 function assertGovernanceProvenance(
   data,
   governanceRuleIds,
@@ -188,7 +192,7 @@ const mergeBaseSelection = json('fixtures/requests/merge-contract-base.selection
   assert.equal(result.trace.finalNeoBlockStates['NB.PARENT.RIGHT'], 'off');
   assert.ok(!result.runtime.resolvedNeoBlocks.some((neoBlock) => neoBlock.id === 'NB.PARENT.RIGHT'));
   assertGovernanceProvenance(
-    traceEvent(result, 'NEOBLOCK_OFF', (event) => event.subjectId === 'NB.PARENT.RIGHT').data,
+    traceEvent(result, 'NEOBLOCK_OFF', (event) => traceSubjectId(event) === 'NB.PARENT.RIGHT').data,
     ['GOV.PARENT.RIGHT.OFF', 'GOV.PARENT.RIGHT.OFF.2'],
     {
       directGovernanceRuleIds: ['GOV.PARENT.RIGHT.OFF', 'GOV.PARENT.RIGHT.OFF.2'],
@@ -231,10 +235,10 @@ const mergeBaseSelection = json('fixtures/requests/merge-contract-base.selection
   assert.equal(resultA.runtime.runtimeHash, resultB.runtime.runtimeHash);
   assert.equal(canonicalize(resultA.runtime), canonicalize(resultB.runtime));
   const expectedAppliedOrder = ['GOV.SIBLING.BLOCK.A', 'GOV.SIBLING.STACK.B', 'GOV.SIBLING.BLOCK.C'];
-  assert.deepEqual(traceEvents(resultA, 'GOVERNANCE_RULE_APPLIED').map((event) => event.subjectId), expectedAppliedOrder);
-  assert.deepEqual(traceEvents(resultB, 'GOVERNANCE_RULE_APPLIED').map((event) => event.subjectId), expectedAppliedOrder);
+  assert.deepEqual(traceEvents(resultA, 'GOVERNANCE_RULE_APPLIED').map(traceSubjectId), expectedAppliedOrder);
+  assert.deepEqual(traceEvents(resultB, 'GOVERNANCE_RULE_APPLIED').map(traceSubjectId), expectedAppliedOrder);
   assertGovernanceProvenance(
-    traceEvent(resultA, 'NEOBLOCK_OFF', (event) => event.subjectId === 'NB.SIBLING').data,
+    traceEvent(resultA, 'NEOBLOCK_OFF', (event) => traceSubjectId(event) === 'NB.SIBLING').data,
     expectedAppliedOrder,
     {
       directGovernanceRuleIds: ['GOV.SIBLING.BLOCK.A', 'GOV.SIBLING.BLOCK.C'],
@@ -245,7 +249,7 @@ const mergeBaseSelection = json('fixtures/requests/merge-contract-base.selection
     },
   );
   assertGovernanceProvenance(
-    traceEvent(resultB, 'NEOBLOCK_OFF', (event) => event.subjectId === 'NB.SIBLING').data,
+    traceEvent(resultB, 'NEOBLOCK_OFF', (event) => traceSubjectId(event) === 'NB.SIBLING').data,
     expectedAppliedOrder,
     {
       directGovernanceRuleIds: ['GOV.SIBLING.BLOCK.A', 'GOV.SIBLING.BLOCK.C'],
@@ -348,7 +352,7 @@ const mergeBaseSelection = json('fixtures/requests/merge-contract-base.selection
     blockingSource: 'governance',
   });
   assertGovernanceProvenance(
-    traceEvent(result, 'NEOSTACK_OFF', (event) => event.subjectId === 'NS.CHILD').data,
+    traceEvent(result, 'NEOSTACK_OFF', (event) => traceSubjectId(event) === 'NS.CHILD').data,
     ['GOV.PARENT.OFF', 'GOV.CHILD.OFF'],
     {
       directGovernanceRuleIds: ['GOV.CHILD.OFF'],

@@ -56,7 +56,7 @@ function diagnostic(result, code, predicate = () => true) {
 }
 
 function traceEvent(result, type, subjectId) {
-  const match = result.trace?.events.find((event) => event.type === type && event.subjectId === subjectId);
+  const match = result.trace?.events.find((event) => event.type === type && event.subject?.id === subjectId);
   assert.ok(match, `missing trace event ${type} for ${subjectId}`);
   return match;
 }
