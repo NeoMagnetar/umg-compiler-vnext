@@ -7,6 +7,7 @@ It implements the current pre-ratification working model:
 - `MOLT Block -> NeoBlock -> NeoStack -> Sleeve`
 - fixed MOLT lanes
 - one Prime Directive per NeoBlock
+- `baseGeometry.directive` authors the Prime Directive row only
 - optional Secondary Directives selected by externally supplied Trigger state
 - same-MOLT-only Bundles
 - vertical tiers and horizontal peers
@@ -45,4 +46,4 @@ node dist/cli.js compile \
 
 ## Important boundary
 
-The compiler does not interpret natural language and does not invent Trigger state. The caller supplies explicit `triggerState`, active NeoStacks, active NeoBlocks, Overlays, Governance rules, and human-disabled modules.
+The compiler does not interpret natural language and does not invent Trigger state or route rationale. The caller supplies explicit `triggerState`, active NeoStacks, active NeoBlocks, optional `routeRationale`, Overlays, Governance rules, and human-disabled modules.

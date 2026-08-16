@@ -18,6 +18,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.json",
+    "update:expected": "npm run build && node test/update-expected.mjs",
     "test": "npm run build && node test/run-fixtures.mjs",
     "validate:sample": "npm run build && node dist/cli.js validate fixtures/dealership.sleeve.json",
     "compile:normal": "npm run build && node dist/cli.js compile fixtures/dealership.sleeve.json fixtures/requests/normal.selection.json"

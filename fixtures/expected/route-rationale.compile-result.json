@@ -800,22 +800,18 @@
             ],
             "neoBlockIds": [
               "NB.CONTROLLER.INTAKE",
-              "NB.SERVICE.TRIAGE",
-              "NB.SERVICE.DRIVE_IN"
+              "NB.SERVICE.TRIAGE"
             ]
           },
           "triggerStateTrueIds": [
             "T.CTRL.DEFAULT",
-            "T.DRIVE.DEFAULT",
             "T.SVC.SAFETY"
           ],
           "activeOverlayIds": [],
-          "activeGovernanceRuleIds": [
-            "GOV.SAFETY.NO_DRIVE"
-          ],
+          "activeGovernanceRuleIds": [],
           "disabledNeoStackIds": [],
           "disabledNeoBlockIds": [],
-          "routeRationale": "not_supplied",
+          "routeRationale": "supplied",
           "counts": {
             "neoStacks": 3,
             "neoBlocks": 4,
@@ -830,23 +826,24 @@
       },
       {
         "seq": 2,
-        "type": "GOVERNANCE_RULE_APPLIED",
-        "subjectId": "GOV.SAFETY.NO_DRIVE",
+        "type": "ROUTE_SELECTION_RECEIVED",
+        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
         "data": {
-          "name": "Unsafe Vehicle No-Drive Rule"
+          "routeRationale": {
+            "strategy": "controller-supplied",
+            "signals": [
+              "service-stack",
+              "safety-trigger"
+            ],
+            "notes": {
+              "origin": "external-router",
+              "reason": "preserve triage path selection without compiler inference"
+            }
+          }
         }
       },
       {
         "seq": 3,
-        "type": "NEOBLOCK_OFF",
-        "subjectId": "NB.SERVICE.DRIVE_IN",
-        "data": {
-          "neoStackId": "NS.SERVICE",
-          "rowInNeoStack": 2
-        }
-      },
-      {
-        "seq": 4,
         "type": "NEOSTACK_ACTIVE",
         "subjectId": "NS.CONTROLLER",
         "data": {
@@ -855,7 +852,7 @@
         }
       },
       {
-        "seq": 5,
+        "seq": 4,
         "type": "NEOSTACK_ACTIVE",
         "subjectId": "NS.SERVICE",
         "data": {
@@ -866,7 +863,7 @@
         }
       },
       {
-        "seq": 6,
+        "seq": 5,
         "type": "NEOSTACK_READY",
         "subjectId": "NS.SALES",
         "data": {
@@ -876,7 +873,7 @@
         }
       },
       {
-        "seq": 7,
+        "seq": 6,
         "type": "NEOBLOCK_SELECTION_ATTEMPTED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -885,7 +882,7 @@
         }
       },
       {
-        "seq": 8,
+        "seq": 7,
         "type": "TRIGGER_EVALUATED",
         "subjectId": "T.CTRL.DEFAULT",
         "data": {
@@ -895,7 +892,7 @@
         }
       },
       {
-        "seq": 9,
+        "seq": 8,
         "type": "PRIME_DIRECTIVE_APPLIED",
         "subjectId": "D.CTRL.PRIME",
         "data": {
@@ -903,7 +900,7 @@
         }
       },
       {
-        "seq": 10,
+        "seq": 9,
         "type": "SCOPED_MOLT_APPLIED",
         "subjectId": "BP.SLEEVE.INTAKE_FLOW",
         "data": {
@@ -918,7 +915,7 @@
         }
       },
       {
-        "seq": 11,
+        "seq": 10,
         "type": "SCOPED_MOLT_APPLIED",
         "subjectId": "PH.SLEEVE.PRAGMATISM",
         "data": {
@@ -933,7 +930,7 @@
         }
       },
       {
-        "seq": 12,
+        "seq": 11,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -951,7 +948,7 @@
         }
       },
       {
-        "seq": 13,
+        "seq": 12,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -969,7 +966,7 @@
         }
       },
       {
-        "seq": 14,
+        "seq": 13,
         "type": "BASE_GEOMETRY_APPLIED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -977,7 +974,7 @@
         }
       },
       {
-        "seq": 15,
+        "seq": 14,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -995,7 +992,7 @@
         }
       },
       {
-        "seq": 16,
+        "seq": 15,
         "type": "BASE_GEOMETRY_APPLIED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1003,7 +1000,7 @@
         }
       },
       {
-        "seq": 17,
+        "seq": 16,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1021,7 +1018,7 @@
         }
       },
       {
-        "seq": 18,
+        "seq": 17,
         "type": "BASE_GEOMETRY_APPLIED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1029,7 +1026,7 @@
         }
       },
       {
-        "seq": 19,
+        "seq": 18,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1047,7 +1044,7 @@
         }
       },
       {
-        "seq": 20,
+        "seq": 19,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1059,7 +1056,7 @@
         }
       },
       {
-        "seq": 21,
+        "seq": 20,
         "type": "BASE_GEOMETRY_APPLIED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1067,7 +1064,7 @@
         }
       },
       {
-        "seq": 22,
+        "seq": 21,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1085,7 +1082,7 @@
         }
       },
       {
-        "seq": 23,
+        "seq": 22,
         "type": "NEOBLOCK_ACTIVE",
         "subjectId": "NB.CONTROLLER.INTAKE",
         "data": {
@@ -1097,7 +1094,7 @@
         }
       },
       {
-        "seq": 24,
+        "seq": 23,
         "type": "NEOBLOCK_SELECTION_ATTEMPTED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1106,7 +1103,7 @@
         }
       },
       {
-        "seq": 25,
+        "seq": 24,
         "type": "TRIGGER_EVALUATED",
         "subjectId": "T.SVC.NORMAL",
         "data": {
@@ -1116,7 +1113,7 @@
         }
       },
       {
-        "seq": 26,
+        "seq": 25,
         "type": "TRIGGER_EVALUATED",
         "subjectId": "T.SVC.SAFETY",
         "data": {
@@ -1126,7 +1123,7 @@
         }
       },
       {
-        "seq": 27,
+        "seq": 26,
         "type": "TRIGGER_EVALUATED",
         "subjectId": "T.SVC.WARRANTY",
         "data": {
@@ -1136,7 +1133,7 @@
         }
       },
       {
-        "seq": 28,
+        "seq": 27,
         "type": "PRIME_DIRECTIVE_APPLIED",
         "subjectId": "D.SVC.PRIME",
         "data": {
@@ -1144,7 +1141,7 @@
         }
       },
       {
-        "seq": 29,
+        "seq": 28,
         "type": "SECONDARY_DIRECTIVE_SELECTED",
         "subjectId": "D.SVC.B",
         "data": {
@@ -1153,7 +1150,7 @@
         }
       },
       {
-        "seq": 30,
+        "seq": 29,
         "type": "SCOPED_MOLT_APPLIED",
         "subjectId": "BP.SLEEVE.INTAKE_FLOW",
         "data": {
@@ -1168,7 +1165,7 @@
         }
       },
       {
-        "seq": 31,
+        "seq": 30,
         "type": "SCOPED_MOLT_APPLIED",
         "subjectId": "PH.SLEEVE.PRAGMATISM",
         "data": {
@@ -1183,7 +1180,7 @@
         }
       },
       {
-        "seq": 32,
+        "seq": 31,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1201,7 +1198,7 @@
         }
       },
       {
-        "seq": 33,
+        "seq": 32,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1223,7 +1220,7 @@
         }
       },
       {
-        "seq": 34,
+        "seq": 33,
         "type": "BUNDLE_APPLIED",
         "subjectId": "BND.SVC.B.INSTRUCTION",
         "data": {
@@ -1233,7 +1230,7 @@
         }
       },
       {
-        "seq": 35,
+        "seq": 34,
         "type": "MOLT_READY",
         "subjectId": "I.SVC.03",
         "data": {
@@ -1243,7 +1240,7 @@
         }
       },
       {
-        "seq": 36,
+        "seq": 35,
         "type": "MOLT_READY",
         "subjectId": "I.SVC.04",
         "data": {
@@ -1253,7 +1250,7 @@
         }
       },
       {
-        "seq": 37,
+        "seq": 36,
         "type": "MOLT_READY",
         "subjectId": "I.SVC.08",
         "data": {
@@ -1263,7 +1260,7 @@
         }
       },
       {
-        "seq": 38,
+        "seq": 37,
         "type": "MOLT_READY",
         "subjectId": "I.SVC.09",
         "data": {
@@ -1273,7 +1270,7 @@
         }
       },
       {
-        "seq": 39,
+        "seq": 38,
         "type": "MOLT_READY",
         "subjectId": "I.SVC.10",
         "data": {
@@ -1283,7 +1280,7 @@
         }
       },
       {
-        "seq": 40,
+        "seq": 39,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1320,7 +1317,7 @@
         }
       },
       {
-        "seq": 41,
+        "seq": 40,
         "type": "BASE_GEOMETRY_APPLIED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1328,7 +1325,7 @@
         }
       },
       {
-        "seq": 42,
+        "seq": 41,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1346,7 +1343,7 @@
         }
       },
       {
-        "seq": 43,
+        "seq": 42,
         "type": "BASE_GEOMETRY_APPLIED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1354,7 +1351,7 @@
         }
       },
       {
-        "seq": 44,
+        "seq": 43,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1372,7 +1369,7 @@
         }
       },
       {
-        "seq": 45,
+        "seq": 44,
         "type": "BUNDLE_APPLIED",
         "subjectId": "BND.SVC.B.PHILOSOPHY",
         "data": {
@@ -1382,7 +1379,7 @@
         }
       },
       {
-        "seq": 46,
+        "seq": 45,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1401,7 +1398,7 @@
         }
       },
       {
-        "seq": 47,
+        "seq": 46,
         "type": "BUNDLE_APPLIED",
         "subjectId": "BND.SVC.B.BLUEPRINT",
         "data": {
@@ -1411,7 +1408,7 @@
         }
       },
       {
-        "seq": 48,
+        "seq": 47,
         "type": "MOLT_READY",
         "subjectId": "BP.SVC.BASE",
         "data": {
@@ -1421,7 +1418,7 @@
         }
       },
       {
-        "seq": 49,
+        "seq": 48,
         "type": "MOLT_READY",
         "subjectId": "BP.SVC.WARRANTY",
         "data": {
@@ -1431,7 +1428,7 @@
         }
       },
       {
-        "seq": 50,
+        "seq": 49,
         "type": "GEOMETRY_RESOLVED",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1450,7 +1447,7 @@
         }
       },
       {
-        "seq": 51,
+        "seq": 50,
         "type": "MERGE_VALIDATED",
         "subjectId": "I.SVC.MERGED.SAFE_STOP",
         "data": {
@@ -1475,7 +1472,7 @@
         }
       },
       {
-        "seq": 52,
+        "seq": 51,
         "type": "NEOBLOCK_ACTIVE",
         "subjectId": "NB.SERVICE.TRIAGE",
         "data": {
@@ -1485,6 +1482,15 @@
             "T.SVC.SAFETY"
           ],
           "secondaryDirectiveId": "SD.SVC.B"
+        }
+      },
+      {
+        "seq": 52,
+        "type": "NEOBLOCK_READY",
+        "subjectId": "NB.SERVICE.DRIVE_IN",
+        "data": {
+          "neoStackId": "NS.SERVICE",
+          "rowInNeoStack": 2
         }
       },
       {
@@ -1537,7 +1543,7 @@
     "finalNeoBlockStates": {
       "NB.CONTROLLER.INTAKE": "active",
       "NB.SERVICE.TRIAGE": "active",
-      "NB.SERVICE.DRIVE_IN": "off",
+      "NB.SERVICE.DRIVE_IN": "ready",
       "NB.SALES.TRADE_IN": "ready"
     }
   },

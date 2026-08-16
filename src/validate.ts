@@ -316,14 +316,22 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
   }
 
   const directiveRows = neoBlock.baseGeometry.directive ?? [];
-  const firstDirective = directiveRows[0]?.blockIds[0];
-  if (firstDirective !== neoBlock.primeDirectiveId) {
+  if (
+    directiveRows.length > 0 &&
+    (directiveRows.length !== 1 ||
+      directiveRows[0]?.row !== 1 ||
+      directiveRows[0]?.blockIds.length !== 1 ||
+      directiveRows[0]?.blockIds[0] !== neoBlock.primeDirectiveId)
+  ) {
     diagnostics.push(
       errorDiagnostic(
-        'PRIME_DIRECTIVE_POSITION_VIOLATION',
-        'Prime Directive must be the first block in Directive row 1.',
+        'DIRECTIVE_BASE_GEOMETRY_CANON_VIOLATION',
+        'baseGeometry.directive must contain exactly one row with only the Prime Directive. Secondary Directives must be declared in secondaryDirectives.',
         `${path}.baseGeometry.directive`,
-        { expected: neoBlock.primeDirectiveId, actual: firstDirective },
+        {
+          primeDirectiveId: neoBlock.primeDirectiveId,
+          authoredRows: directiveRows.map((row) => ({ row: row.row, blockIds: [...row.blockIds] })),
+        },
       ),
     );
   }
@@ -704,6 +712,20 @@ export function validateSelection(sleeve: Sleeve, selection: CompileSelection): 
         'INVALID_COMPILED_AT',
         'Selection compiledAt must be an explicit ISO-8601 timestamp supplied by the caller.',
         'selection.compiledAt',
+      ),
+    );
+  }
+  if (
+    selection.routeRationale !== undefined &&
+    (selection.routeRationale === null ||
+      Array.isArray(selection.routeRationale) ||
+      typeof selection.routeRationale !== 'object')
+  ) {
+    diagnostics.push(
+      errorDiagnostic(
+        'INVALID_ROUTE_RATIONALE',
+        'Selection routeRationale must be a JSON object when supplied.',
+        'selection.routeRationale',
       ),
     );
   }

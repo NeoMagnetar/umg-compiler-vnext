@@ -38,6 +38,15 @@ export interface ResolutionResult {
   finalNeoBlockStates: Record<string, RuntimeState>;
 }
 
+interface NeoBlockResolutionBase {
+  activeTriggerIds: string[];
+  matchedSecondaryDirectiveIds: string[];
+}
+
+type NeoBlockResolutionOutcome =
+  | (NeoBlockResolutionBase & { ok: true; resolved: ResolvedNeoBlock })
+  | (NeoBlockResolutionBase & { ok: false });
+
 function buildIndexes(sleeve: Sleeve): RuntimeIndexes {
   const moltBlocks = new Map(sleeve.moltBlocks.map((block) => [block.id, block]));
   const neoBlocks = new Map(sleeve.neoBlocks.map((block) => [block.id, block]));
@@ -74,6 +83,33 @@ function descendantsOf(stackId: string, indexes: RuntimeIndexes): string[] {
   };
   visit(stackId);
   return result;
+}
+
+function neoBlockRowInStack(stack: NeoStack, neoBlockId: string): number | undefined {
+  return stack.neoBlockRows.find((row) => row.neoBlockIds.includes(neoBlockId))?.row;
+}
+
+function childStackRowInParent(parentStack: NeoStack, childStackId: string): number | undefined {
+  return parentStack.childStackRows?.find((row) => row.neoStackIds.includes(childStackId))?.row;
+}
+
+function stackTraceData(stackId: string, indexes: RuntimeIndexes): Record<string, unknown> {
+  const parentNeoStackId = indexes.parentByStackId.get(stackId);
+  const data: Record<string, unknown> = {
+    depth: ancestorsRootToLeaf(stackId, indexes).length - 1,
+  };
+  if (parentNeoStackId) {
+    data.parentNeoStackId = parentNeoStackId;
+    data.rowInParent = childStackRowInParent(indexes.neoStacks.get(parentNeoStackId)!, stackId);
+  }
+  return data;
+}
+
+function neoBlockTraceData(neoBlockId: string, stackId: string, indexes: RuntimeIndexes): Record<string, unknown> {
+  return {
+    neoStackId: stackId,
+    rowInNeoStack: neoBlockRowInStack(indexes.neoStacks.get(stackId)!, neoBlockId),
+  };
 }
 
 function ancestorsRootToLeaf(stackId: string, indexes: RuntimeIndexes): string[] {
@@ -185,8 +221,50 @@ function resolveRows(
     }));
 }
 
+function geometryRowsAsIds(rows: ResolvedGeometryRow[]): string[][] {
+  return rows.map((row) => row.blocks.map((block) => block.id));
+}
+
+function geometryReadOrder(rows: ResolvedGeometryRow[]): string[] {
+  return rows.flatMap((row) => row.blocks.map((block) => block.id));
+}
+
+function mergeAuthorityCeilingType(merge: NonNullable<NeoBlock['merges']>[number], indexes: RuntimeIndexes): MoltType | undefined {
+  const authorityIndex = new Map<string, number>(MOLT_AUTHORITY_ORDER.map((type, index) => [type, index]));
+  const sourceTypes = merge.sourceBlockIds
+    .map((sourceId) => indexes.moltBlocks.get(sourceId)?.type)
+    .filter((value): value is MoltType => value !== undefined);
+  if (sourceTypes.length === 0) return undefined;
+  const ceiling = Math.min(...sourceTypes.map((type) => authorityIndex.get(type) ?? Number.MAX_SAFE_INTEGER));
+  return MOLT_AUTHORITY_ORDER[ceiling];
+}
+
+function emitGeometryResolved(
+  neoBlockId: string,
+  moltType: MoltType,
+  rows: ResolvedGeometryRow[],
+  bundleId: string | undefined,
+  events: TraceEvent[],
+  nextSeq: () => number,
+): void {
+  events.push({
+    seq: nextSeq(),
+    type: 'GEOMETRY_RESOLVED',
+    subjectId: neoBlockId,
+    data: {
+      neoBlockId,
+      moltType,
+      source: bundleId ? 'bundle' : 'base',
+      bundleId,
+      rows: geometryRowsAsIds(rows),
+      readOrder: geometryReadOrder(rows),
+    },
+  });
+}
+
 function scopedForBlock(
   sleeve: Sleeve,
+  neoBlockId: string,
   stackId: string,
   activeOverlayIds: Set<string>,
   indexes: RuntimeIndexes,
@@ -220,7 +298,14 @@ function scopedForBlock(
         seq: nextSeq(),
         type: 'SCOPED_MOLT_APPLIED',
         subjectId: block.id,
-        data: { attachmentId: attachment.id, scope: attachment.scope },
+        data: {
+          source: 'scoped',
+          attachmentId: attachment.id,
+          scope: attachment.scope,
+          neoBlockId,
+          neoStackId: stackId,
+          moltType: block.type,
+        },
       });
     });
 
@@ -238,7 +323,15 @@ function scopedForBlock(
           seq: nextSeq(),
           type: 'OVERLAY_APPLIED',
           subjectId: block.id,
-          data: { overlayId: overlay.id, attachmentId: attachment.id, scope: attachment.scope },
+          data: {
+            source: 'overlay',
+            overlayId: overlay.id,
+            attachmentId: attachment.id,
+            scope: attachment.scope,
+            neoBlockId,
+            neoStackId: stackId,
+            moltType: block.type,
+          },
         });
       });
   }
@@ -255,7 +348,7 @@ function resolveNeoBlock(
   events: TraceEvent[],
   diagnostics: CompilerDiagnostic[],
   nextSeq: () => number,
-): ResolvedNeoBlock | undefined {
+): NeoBlockResolutionOutcome {
   const localBlocks = neoBlock.moltBlockIds.map((id) => indexes.moltBlocks.get(id)!).filter(Boolean);
   const triggerBlocks = localBlocks.filter((block) => block.type === 'trigger');
   const activeTriggerIds: string[] = [];
@@ -267,9 +360,14 @@ function resolveNeoBlock(
       seq: nextSeq(),
       type: 'TRIGGER_EVALUATED',
       subjectId: trigger.id,
-      data: { active },
+      data: { active, matched: active, neoBlockId: neoBlock.id },
     });
   }
+
+  const matchedSecondaries = (neoBlock.secondaryDirectives ?? []).filter(
+    (secondary) => selection.triggerState[secondary.triggerBlockId] === true,
+  );
+  const matchedSecondaryDirectiveIds = matchedSecondaries.map((secondary) => secondary.id);
 
   if (activeTriggerIds.length === 0) {
     diagnostics.push(
@@ -280,12 +378,8 @@ function resolveNeoBlock(
         { neoBlockId: neoBlock.id, triggerBlockIds: triggerBlocks.map((block) => block.id) },
       ),
     );
-    return undefined;
+    return { ok: false, activeTriggerIds, matchedSecondaryDirectiveIds };
   }
-
-  const matchedSecondaries = (neoBlock.secondaryDirectives ?? []).filter(
-    (secondary) => selection.triggerState[secondary.triggerBlockId] === true,
-  );
   if (matchedSecondaries.length > 1) {
     diagnostics.push(
       errorDiagnostic(
@@ -295,7 +389,7 @@ function resolveNeoBlock(
         { secondaryDirectiveIds: matchedSecondaries.map((secondary) => secondary.id) },
       ),
     );
-    return undefined;
+    return { ok: false, activeTriggerIds, matchedSecondaryDirectiveIds };
   }
 
   const secondary = matchedSecondaries[0];
@@ -321,6 +415,7 @@ function resolveNeoBlock(
 
   const scoped = scopedForBlock(
     sleeve,
+    neoBlock.id,
     stackId,
     new Set(selection.activeOverlayIds ?? []),
     indexes,
@@ -388,30 +483,50 @@ function resolveNeoBlock(
     const laneScoped = scoped.get(moltType) ?? [];
     if (rows.length > 0 || laneScoped.length > 0) {
       lanes.push({ moltType, scoped: laneScoped, rows, geometrySource, bundleId });
+      emitGeometryResolved(neoBlock.id, moltType, rows, bundleId, events, nextSeq);
     }
   }
 
   const activeIds = new Set(lanes.flatMap((lane) => lane.rows.flatMap((row) => row.blocks.map((block) => block.id))));
   for (const merge of neoBlock.merges ?? []) {
     if (activeIds.has(merge.resultBlockId)) {
+      const resultBlock = indexes.moltBlocks.get(merge.resultBlockId)!;
       events.push({
         seq: nextSeq(),
         type: 'MERGE_VALIDATED',
         subjectId: merge.resultBlockId,
-        data: { mergeId: merge.id, sourceBlockIds: merge.sourceBlockIds },
+        data: {
+          neoBlockId: neoBlock.id,
+          mergeId: merge.id,
+          sources: merge.sourceBlockIds.map((sourceBlockId) => ({
+            blockId: sourceBlockId,
+            moltType: indexes.moltBlocks.get(sourceBlockId)!.type,
+          })),
+          result: {
+            blockId: resultBlock.id,
+            moltType: resultBlock.type,
+          },
+          authorityCeiling: mergeAuthorityCeilingType(merge, indexes),
+          authorityCheck: 'pass',
+        },
       });
     }
   }
 
   return {
-    id: neoBlock.id,
-    name: neoBlock.name,
-    state: 'active',
-    postRunState: 'ready',
-    primeDirectiveId: neoBlock.primeDirectiveId,
-    secondaryDirectiveId: secondary?.id,
+    ok: true,
     activeTriggerIds,
-    lanes,
+    matchedSecondaryDirectiveIds,
+    resolved: {
+      id: neoBlock.id,
+      name: neoBlock.name,
+      state: 'active',
+      postRunState: 'ready',
+      primeDirectiveId: neoBlock.primeDirectiveId,
+      secondaryDirectiveId: secondary?.id,
+      activeTriggerIds,
+      lanes,
+    },
   };
 }
 
@@ -479,13 +594,23 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
   for (const stackId of [...disabledStacks]) descendantsOf(stackId, indexes).forEach((id) => disabledStacks.add(id));
   for (const stackId of disabledStacks) {
     finalNeoStackStates[stackId] = 'disabled';
-    events.push({ seq: nextSeq(), type: 'NEOSTACK_DISABLED', subjectId: stackId });
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOSTACK_DISABLED',
+      subjectId: stackId,
+      data: stackTraceData(stackId, indexes),
+    });
     const stack = indexes.neoStacks.get(stackId);
     stack?.neoBlockRows.flatMap((row) => row.neoBlockIds).forEach((id) => disabledBlocks.add(id));
   }
   for (const blockId of disabledBlocks) {
     finalNeoBlockStates[blockId] = 'disabled';
-    events.push({ seq: nextSeq(), type: 'NEOBLOCK_DISABLED', subjectId: blockId });
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOBLOCK_DISABLED',
+      subjectId: blockId,
+      data: neoBlockTraceData(blockId, indexes.stackByNeoBlockId.get(blockId)!, indexes),
+    });
   }
 
   const offStacks = new Set<string>();
@@ -507,13 +632,23 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
   }
   for (const stackId of offStacks) {
     finalNeoStackStates[stackId] = 'off';
-    events.push({ seq: nextSeq(), type: 'NEOSTACK_OFF', subjectId: stackId });
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOSTACK_OFF',
+      subjectId: stackId,
+      data: stackTraceData(stackId, indexes),
+    });
     const stack = indexes.neoStacks.get(stackId);
     stack?.neoBlockRows.flatMap((row) => row.neoBlockIds).forEach((id) => offBlocks.add(id));
   }
   for (const blockId of offBlocks) {
     finalNeoBlockStates[blockId] = 'off';
-    events.push({ seq: nextSeq(), type: 'NEOBLOCK_OFF', subjectId: blockId });
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOBLOCK_OFF',
+      subjectId: blockId,
+      data: neoBlockTraceData(blockId, indexes.stackByNeoBlockId.get(blockId)!, indexes),
+    });
   }
 
   const unavailableStacks = new Set([...disabledStacks, ...offStacks]);
@@ -523,15 +658,26 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
   const activeNeoStackIds = orderedActiveStacks(sleeve, requestedStacks, unavailableStacks, indexes, diagnostics);
   const activeStackSet = new Set(activeNeoStackIds);
 
-  for (const stack of sleeve.neoStacks) {
-    if (activeStackSet.has(stack.id)) {
-      finalNeoStackStates[stack.id] = 'active';
-      events.push({ seq: nextSeq(), type: 'NEOSTACK_ACTIVE', subjectId: stack.id });
-    } else if (!unavailableStacks.has(stack.id)) {
+  activeNeoStackIds.forEach((stackId, index) => {
+    finalNeoStackStates[stackId] = 'active';
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOSTACK_ACTIVE',
+      subjectId: stackId,
+      data: { ...stackTraceData(stackId, indexes), selectionOrder: index + 1 },
+    });
+  });
+  sleeve.neoStacks
+    .filter((stack) => !activeStackSet.has(stack.id) && !unavailableStacks.has(stack.id))
+    .forEach((stack) => {
       finalNeoStackStates[stack.id] = 'ready';
-      events.push({ seq: nextSeq(), type: 'NEOSTACK_READY', subjectId: stack.id });
-    }
-  }
+      events.push({
+        seq: nextSeq(),
+        type: 'NEOSTACK_READY',
+        subjectId: stack.id,
+        data: stackTraceData(stack.id, indexes),
+      });
+    });
 
   if (unavailableStacks.has(sleeve.controllerNeoStackId)) {
     diagnostics.push(
@@ -567,12 +713,19 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
   }
 
   const resolvedNeoBlocks: ResolvedNeoBlock[] = [];
+  const resolvedNeoBlockIds = new Set<string>();
   for (const blockId of orderedSelectedBlocks) {
     const neoBlock = indexes.neoBlocks.get(blockId)!;
     const stackId = indexes.stackByNeoBlockId.get(blockId)!;
-    finalNeoBlockStates[blockId] = 'active';
-    events.push({ seq: nextSeq(), type: 'NEOBLOCK_ACTIVE', subjectId: blockId, data: { neoStackId: stackId } });
-    const resolved = resolveNeoBlock(
+    const blockData = neoBlockTraceData(blockId, stackId, indexes);
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOBLOCK_SELECTION_ATTEMPTED',
+      subjectId: blockId,
+      data: blockData,
+    });
+    const diagnosticOffset = diagnostics.length;
+    const outcome = resolveNeoBlock(
       sleeve,
       neoBlock,
       stackId,
@@ -582,13 +735,47 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       diagnostics,
       nextSeq,
     );
-    if (resolved) resolvedNeoBlocks.push(resolved);
+    if (outcome.ok) {
+      finalNeoBlockStates[blockId] = 'active';
+      resolvedNeoBlocks.push(outcome.resolved);
+      resolvedNeoBlockIds.add(blockId);
+      events.push({
+        seq: nextSeq(),
+        type: 'NEOBLOCK_ACTIVE',
+        subjectId: blockId,
+        data: { ...blockData, activeTriggerIds: outcome.activeTriggerIds, secondaryDirectiveId: outcome.resolved.secondaryDirectiveId },
+      });
+      continue;
+    }
+
+    finalNeoBlockStates[blockId] = 'ready';
+    const resolutionDiagnostics = diagnostics
+      .slice(diagnosticOffset)
+      .filter((diagnostic) => diagnostic.level === 'error')
+      .map((diagnostic) => diagnostic.code);
+    events.push({
+      seq: nextSeq(),
+      type: 'NEOBLOCK_RESOLUTION_FAILED',
+      subjectId: blockId,
+      data: {
+        ...blockData,
+        activeTriggerIds: outcome.activeTriggerIds,
+        matchedSecondaryDirectiveIds: outcome.matchedSecondaryDirectiveIds,
+        diagnosticCodes: resolutionDiagnostics,
+      },
+    });
   }
 
   for (const block of sleeve.neoBlocks) {
-    if (!requestedBlocks.has(block.id) && !unavailableBlocks.has(block.id)) {
+    if (!resolvedNeoBlockIds.has(block.id) && !unavailableBlocks.has(block.id)) {
       finalNeoBlockStates[block.id] = 'ready';
-      events.push({ seq: nextSeq(), type: 'NEOBLOCK_READY', subjectId: block.id });
+      const stackId = indexes.stackByNeoBlockId.get(block.id);
+      events.push({
+        seq: nextSeq(),
+        type: 'NEOBLOCK_READY',
+        subjectId: block.id,
+        data: stackId ? neoBlockTraceData(block.id, stackId, indexes) : undefined,
+      });
     }
   }
 

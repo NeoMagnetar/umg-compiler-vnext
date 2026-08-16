@@ -15,6 +15,7 @@ export type ScopedMoltType = 'instruction' | 'philosophy' | 'blueprint';
 export type AuthoredState = 'ready' | 'disabled';
 export type RuntimeState = 'ready' | 'active' | 'off' | 'disabled';
 export type SourceMode = 'local' | 'scoped' | 'overlay' | 'merge';
+export type RouteRationale = Record<string, unknown>;
 
 export interface SourceProvenance {
   sourceId?: string;
@@ -153,6 +154,7 @@ export interface CompileSelection {
   activeGovernanceRuleIds?: string[];
   disabledNeoStackIds?: string[];
   disabledNeoBlockIds?: string[];
+  routeRationale?: RouteRationale;
 }
 
 export type DiagnosticLevel = 'error' | 'warning';
@@ -167,21 +169,25 @@ export interface CompilerDiagnostic {
 
 export type TraceEventType =
   | 'SOURCE_VALIDATED'
+  | 'ROUTE_SELECTION_RECEIVED'
   | 'VALIDATION_ERROR'
   | 'VALIDATION_WARNING'
   | 'NEOSTACK_ACTIVE'
   | 'NEOSTACK_READY'
   | 'NEOSTACK_DISABLED'
   | 'NEOSTACK_OFF'
+  | 'NEOBLOCK_SELECTION_ATTEMPTED'
   | 'NEOBLOCK_ACTIVE'
   | 'NEOBLOCK_READY'
   | 'NEOBLOCK_DISABLED'
   | 'NEOBLOCK_OFF'
+  | 'NEOBLOCK_RESOLUTION_FAILED'
   | 'TRIGGER_EVALUATED'
   | 'PRIME_DIRECTIVE_APPLIED'
   | 'SECONDARY_DIRECTIVE_SELECTED'
   | 'BASE_GEOMETRY_APPLIED'
   | 'BUNDLE_APPLIED'
+  | 'GEOMETRY_RESOLVED'
   | 'MOLT_READY'
   | 'SCOPED_MOLT_APPLIED'
   | 'OVERLAY_APPLIED'

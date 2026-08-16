@@ -1,0 +1,573 @@
+{
+  "runtime": {
+    "schemaVersion": "umg.compiler-vnext.runtime.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.BUNDLE.REORDER.v0.1",
+    "sleeveName": "Bundle Reorder Fixture",
+    "controllerNeoStackId": "NS.BUNDLE.ROOT",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "activeNeoStackIds": [
+      "NS.BUNDLE.ROOT"
+    ],
+    "resolvedNeoBlocks": [
+      {
+        "id": "NB.BUNDLE.ORDER",
+        "name": "Bundle Order",
+        "state": "active",
+        "postRunState": "ready",
+        "primeDirectiveId": "D.BND.PRIME",
+        "secondaryDirectiveId": "SD.BND.ALT",
+        "activeTriggerIds": [
+          "T.BND.DEFAULT",
+          "T.BND.ALT"
+        ],
+        "lanes": [
+          {
+            "moltType": "trigger",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "T.BND.DEFAULT",
+                    "type": "trigger",
+                    "content": "Default route remains available.",
+                    "sourceMode": "local",
+                    "sourceId": "T.BND.DEFAULT"
+                  },
+                  {
+                    "id": "T.BND.ALT",
+                    "type": "trigger",
+                    "content": "Bundle reorder route is externally selected.",
+                    "sourceMode": "local",
+                    "sourceId": "T.BND.ALT"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "evaluated-trigger-lane"
+          },
+          {
+            "moltType": "directive",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "D.BND.PRIME",
+                    "type": "directive",
+                    "content": "Apply the prime directive first.",
+                    "sourceMode": "local",
+                    "sourceId": "D.BND.PRIME"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "blocks": [
+                  {
+                    "id": "D.BND.SEC",
+                    "type": "directive",
+                    "content": "Select the alternate bundle row ordering.",
+                    "sourceMode": "local",
+                    "sourceId": "D.BND.SEC"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "generated-directive-lane"
+          },
+          {
+            "moltType": "instruction",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "I.BND.01",
+                    "type": "instruction",
+                    "content": "Instruction one.",
+                    "sourceMode": "local",
+                    "sourceId": "I.BND.01"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "blocks": [
+                  {
+                    "id": "I.BND.02",
+                    "type": "instruction",
+                    "content": "Instruction two.",
+                    "sourceMode": "local",
+                    "sourceId": "I.BND.02"
+                  },
+                  {
+                    "id": "I.BND.03",
+                    "type": "instruction",
+                    "content": "Instruction three.",
+                    "sourceMode": "local",
+                    "sourceId": "I.BND.03"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "bundle",
+            "bundleId": "BND.BND.ALT"
+          },
+          {
+            "moltType": "subject",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "S.BND.REQUEST",
+                    "type": "subject",
+                    "content": "Bundle reorder request.",
+                    "sourceMode": "local",
+                    "sourceId": "S.BND.REQUEST"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "primary",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "P.BND.GOAL",
+                    "type": "primary",
+                    "content": "Observe deterministic bundle geometry changes only.",
+                    "sourceMode": "local",
+                    "sourceId": "P.BND.GOAL"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          }
+        ]
+      }
+    ],
+    "promptParts": [
+      {
+        "id": "T.BND.DEFAULT",
+        "type": "trigger",
+        "content": "Default route remains available.",
+        "sourceMode": "local",
+        "sourceId": "T.BND.DEFAULT",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "T.BND.ALT",
+        "type": "trigger",
+        "content": "Bundle reorder route is externally selected.",
+        "sourceMode": "local",
+        "sourceId": "T.BND.ALT",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 2
+      },
+      {
+        "id": "D.BND.PRIME",
+        "type": "directive",
+        "content": "Apply the prime directive first.",
+        "sourceMode": "local",
+        "sourceId": "D.BND.PRIME",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "D.BND.SEC",
+        "type": "directive",
+        "content": "Select the alternate bundle row ordering.",
+        "sourceMode": "local",
+        "sourceId": "D.BND.SEC",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "I.BND.01",
+        "type": "instruction",
+        "content": "Instruction one.",
+        "sourceMode": "local",
+        "sourceId": "I.BND.01",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "I.BND.02",
+        "type": "instruction",
+        "content": "Instruction two.",
+        "sourceMode": "local",
+        "sourceId": "I.BND.02",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "I.BND.03",
+        "type": "instruction",
+        "content": "Instruction three.",
+        "sourceMode": "local",
+        "sourceId": "I.BND.03",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 2
+      },
+      {
+        "id": "S.BND.REQUEST",
+        "type": "subject",
+        "content": "Bundle reorder request.",
+        "sourceMode": "local",
+        "sourceId": "S.BND.REQUEST",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 4,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "P.BND.GOAL",
+        "type": "primary",
+        "content": "Observe deterministic bundle geometry changes only.",
+        "sourceMode": "local",
+        "sourceId": "P.BND.GOAL",
+        "neoStackId": "NS.BUNDLE.ROOT",
+        "neoBlockId": "NB.BUNDLE.ORDER",
+        "laneOrder": 5,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      }
+    ],
+    "diagnostics": [],
+    "resetPlan": {
+      "neoStackIds": [
+        "NS.BUNDLE.ROOT"
+      ],
+      "neoBlockIds": [
+        "NB.BUNDLE.ORDER"
+      ],
+      "targetState": "ready"
+    },
+    "runtimeHash": "7429fe22e28a9dc012bfd350e946432529252204981075b91b453a2039110d68"
+  },
+  "trace": {
+    "schemaVersion": "umg.compiler-vnext.trace.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.BUNDLE.REORDER.v0.1",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "events": [
+      {
+        "seq": 1,
+        "type": "SOURCE_VALIDATED",
+        "subjectId": "SLV.BUNDLE.REORDER.v0.1",
+        "data": {
+          "sleeveSchemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+          "selectionSchemaVersion": "umg.compiler-vnext.selection.v0.1",
+          "controllerNeoStackId": "NS.BUNDLE.ROOT",
+          "route": {
+            "neoStackIds": [
+              "NS.BUNDLE.ROOT"
+            ],
+            "neoBlockIds": [
+              "NB.BUNDLE.ORDER"
+            ]
+          },
+          "triggerStateTrueIds": [
+            "T.BND.ALT",
+            "T.BND.DEFAULT"
+          ],
+          "activeOverlayIds": [],
+          "activeGovernanceRuleIds": [],
+          "disabledNeoStackIds": [],
+          "disabledNeoBlockIds": [],
+          "routeRationale": "not_supplied",
+          "counts": {
+            "neoStacks": 1,
+            "neoBlocks": 1,
+            "moltBlocks": 9,
+            "scopedMoltAttachments": 0,
+            "overlays": 0,
+            "governanceRules": 0,
+            "validationErrors": 0,
+            "validationWarnings": 0
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.BUNDLE.ROOT",
+        "data": {
+          "depth": 0,
+          "selectionOrder": 1
+        }
+      },
+      {
+        "seq": 3,
+        "type": "NEOBLOCK_SELECTION_ATTEMPTED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoStackId": "NS.BUNDLE.ROOT",
+          "rowInNeoStack": 1
+        }
+      },
+      {
+        "seq": 4,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.BND.DEFAULT",
+        "data": {
+          "active": true,
+          "matched": true,
+          "neoBlockId": "NB.BUNDLE.ORDER"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.BND.ALT",
+        "data": {
+          "active": true,
+          "matched": true,
+          "neoBlockId": "NB.BUNDLE.ORDER"
+        }
+      },
+      {
+        "seq": 6,
+        "type": "PRIME_DIRECTIVE_APPLIED",
+        "subjectId": "D.BND.PRIME",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "SECONDARY_DIRECTIVE_SELECTED",
+        "subjectId": "D.BND.SEC",
+        "data": {
+          "relationId": "SD.BND.ALT",
+          "triggerBlockId": "T.BND.ALT"
+        }
+      },
+      {
+        "seq": 8,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER",
+          "moltType": "trigger",
+          "source": "base",
+          "rows": [
+            [
+              "T.BND.DEFAULT",
+              "T.BND.ALT"
+            ]
+          ],
+          "readOrder": [
+            "T.BND.DEFAULT",
+            "T.BND.ALT"
+          ]
+        }
+      },
+      {
+        "seq": 9,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER",
+          "moltType": "directive",
+          "source": "base",
+          "rows": [
+            [
+              "D.BND.PRIME"
+            ],
+            [
+              "D.BND.SEC"
+            ]
+          ],
+          "readOrder": [
+            "D.BND.PRIME",
+            "D.BND.SEC"
+          ]
+        }
+      },
+      {
+        "seq": 10,
+        "type": "BUNDLE_APPLIED",
+        "subjectId": "BND.BND.ALT",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER",
+          "moltType": "instruction",
+          "secondaryDirectiveId": "SD.BND.ALT"
+        }
+      },
+      {
+        "seq": 11,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER",
+          "moltType": "instruction",
+          "source": "bundle",
+          "bundleId": "BND.BND.ALT",
+          "rows": [
+            [
+              "I.BND.01"
+            ],
+            [
+              "I.BND.02",
+              "I.BND.03"
+            ]
+          ],
+          "readOrder": [
+            "I.BND.01",
+            "I.BND.02",
+            "I.BND.03"
+          ]
+        }
+      },
+      {
+        "seq": 12,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "moltType": "subject"
+        }
+      },
+      {
+        "seq": 13,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER",
+          "moltType": "subject",
+          "source": "base",
+          "rows": [
+            [
+              "S.BND.REQUEST"
+            ]
+          ],
+          "readOrder": [
+            "S.BND.REQUEST"
+          ]
+        }
+      },
+      {
+        "seq": 14,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "moltType": "primary"
+        }
+      },
+      {
+        "seq": 15,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoBlockId": "NB.BUNDLE.ORDER",
+          "moltType": "primary",
+          "source": "base",
+          "rows": [
+            [
+              "P.BND.GOAL"
+            ]
+          ],
+          "readOrder": [
+            "P.BND.GOAL"
+          ]
+        }
+      },
+      {
+        "seq": 16,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.BUNDLE.ORDER",
+        "data": {
+          "neoStackId": "NS.BUNDLE.ROOT",
+          "rowInNeoStack": 1,
+          "activeTriggerIds": [
+            "T.BND.DEFAULT",
+            "T.BND.ALT"
+          ],
+          "secondaryDirectiveId": "SD.BND.ALT"
+        }
+      },
+      {
+        "seq": 17,
+        "type": "RUNTIME_COMPILED",
+        "subjectId": "SLV.BUNDLE.REORDER.v0.1",
+        "data": {
+          "runtimeHash": "7429fe22e28a9dc012bfd350e946432529252204981075b91b453a2039110d68",
+          "promptPartCount": 9,
+          "totalNeoStacks": 1,
+          "totalNeoBlocks": 1,
+          "totalMoltBlocks": 9,
+          "activeNeoStacks": 1,
+          "activeNeoBlocks": 1,
+          "effectiveMoltBlocks": 9
+        }
+      },
+      {
+        "seq": 18,
+        "type": "POST_RUN_RESET_DECLARED",
+        "subjectId": "SLV.BUNDLE.REORDER.v0.1",
+        "data": {
+          "neoStackIds": [
+            "NS.BUNDLE.ROOT"
+          ],
+          "neoBlockIds": [
+            "NB.BUNDLE.ORDER"
+          ],
+          "targetState": "ready"
+        }
+      }
+    ],
+    "diagnostics": [],
+    "finalNeoStackStates": {
+      "NS.BUNDLE.ROOT": "active"
+    },
+    "finalNeoBlockStates": {
+      "NB.BUNDLE.ORDER": "active"
+    }
+  },
+  "hasErrors": false
+}

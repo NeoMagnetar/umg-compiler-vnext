@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-16T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.MERGE.ROOT"
+  ],
+  "activeNeoBlockIds": [
+    "NB.MERGE.DIRECTIVE"
+  ],
+  "triggerState": {
+    "T.MRG.DEFAULT": true,
+    "T.MRG.ALT": true
+  }
+}
