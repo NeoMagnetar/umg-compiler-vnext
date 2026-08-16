@@ -3,6 +3,10 @@ import { MOLT_AUTHORITY_ORDER } from './constants.js';
 import { validateDiagnosticAgainstRegistry } from './diagnostic-registry.js';
 import { internalOutputContractViolationDiagnostic } from './errors.js';
 import {
+  TRACE_STAGE_ORDER,
+  validateTraceEventAgainstRegistry,
+} from './trace-event-registry.js';
+import {
   structurallyValidateCompileResult,
   structurallyValidateRuntimeSpec,
   structurallyValidateTrace,
@@ -15,6 +19,7 @@ import type {
   ResolvedMoltBlock,
   RuntimeSpec,
   Trace,
+  TraceEventType,
   ValidationResult,
 } from './types.js';
 
@@ -255,6 +260,43 @@ function expectedPromptParts(runtime: RuntimeSpec, diagnostics: CompilerDiagnost
   return result;
 }
 
+function diagnosticEventType(diagnostic: CompilerDiagnostic): TraceEventType | null {
+  if (diagnostic.stage === 'semantic') {
+    return diagnostic.level === 'error' ? 'VALIDATION_ERROR' : 'VALIDATION_WARNING';
+  }
+  if (diagnostic.stage === 'resolution') {
+    return diagnostic.level === 'error' ? 'RESOLUTION_ERROR' : 'RESOLUTION_WARNING';
+  }
+  return null;
+}
+
+function validateTraceStateMapStates(
+  trace: Trace,
+  diagnostics: CompilerDiagnostic[],
+): void {
+  if (trace.terminalStage !== 'semantic') return;
+
+  for (const [stackId, state] of Object.entries(trace.finalNeoStackStates)) {
+    if (state !== 'ready' && state !== 'disabled') {
+      pushViolation(
+        diagnostics,
+        'Semantic failure Trace finalNeoStackStates may only contain ready or disabled states.',
+        `finalNeoStackStates.${stackId}`,
+      );
+    }
+  }
+
+  for (const [blockId, state] of Object.entries(trace.finalNeoBlockStates)) {
+    if (state !== 'ready' && state !== 'disabled') {
+      pushViolation(
+        diagnostics,
+        'Semantic failure Trace finalNeoBlockStates may only contain ready or disabled states.',
+        `finalNeoBlockStates.${blockId}`,
+      );
+    }
+  }
+}
+
 export function validateTraceContract(input: unknown): ValidationResult {
   const structural = structurallyValidateTrace(input);
   if (!structural.ok) return { diagnostics: structural.diagnostics };
@@ -262,18 +304,250 @@ export function validateTraceContract(input: unknown): ValidationResult {
   const diagnostics: CompilerDiagnostic[] = [];
 
   validateRegisteredDiagnostics(trace.diagnostics, 'diagnostics', diagnostics);
+  const semanticDiagnosticIndexes: number[] = [];
+  const resolutionDiagnosticIndexes: number[] = [];
+  const semanticEventIndexes: number[] = [];
+  const resolutionEventIndexes: number[] = [];
+  let previousStageOrder = -1;
+  let runtimeCompiledCount = 0;
+  let resetDeclaredCount = 0;
 
-  let previousSeq = 0;
-  trace.events.forEach((event, index) => {
-    if (event.seq <= previousSeq) {
+  trace.diagnostics.forEach((diagnostic, index) => {
+    if (diagnostic.stage !== 'semantic' && diagnostic.stage !== 'resolution') {
       pushViolation(
         diagnostics,
-        'Trace events must use a strictly increasing seq order.',
+        'Trace diagnostics may only contain semantic or resolution diagnostics.',
+        `diagnostics[${index}].stage`,
+      );
+      return;
+    }
+
+    if (diagnostic.stage === 'semantic') {
+      semanticDiagnosticIndexes.push(index);
+    } else {
+      resolutionDiagnosticIndexes.push(index);
+    }
+  });
+
+  trace.events.forEach((event, index) => {
+    if (event.seq !== index + 1) {
+      pushViolation(
+        diagnostics,
+        'Trace events must use contiguous seq values starting at 1.',
         `events[${index}].seq`,
       );
     }
-    previousSeq = event.seq;
+
+    const stageOrder = TRACE_STAGE_ORDER[event.stage];
+    if (stageOrder < previousStageOrder) {
+      pushViolation(
+        diagnostics,
+        'Trace event stages must be monotonic: intake -> semantic -> resolution -> output -> post_run.',
+        `events[${index}].stage`,
+      );
+    }
+    previousStageOrder = Math.max(previousStageOrder, stageOrder);
+
+    validateTraceEventAgainstRegistry(event).forEach((issue) => {
+      pushViolation(
+        diagnostics,
+        issue.message,
+        `events[${index}]${issue.field ? `.${issue.field}` : ''}`,
+      );
+    });
+
+    if (event.type === 'RUNTIME_COMPILED') runtimeCompiledCount += 1;
+    if (event.type === 'POST_RUN_RESET_DECLARED') resetDeclaredCount += 1;
+
+    if (
+      event.type !== 'VALIDATION_ERROR' &&
+      event.type !== 'VALIDATION_WARNING' &&
+      event.type !== 'RESOLUTION_ERROR' &&
+      event.type !== 'RESOLUTION_WARNING'
+    ) {
+      return;
+    }
+
+    const diagnosticIndex = event.data.diagnosticIndex;
+    if (typeof diagnosticIndex !== 'number' || !Number.isInteger(diagnosticIndex)) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace events must use an integer diagnosticIndex.',
+        `events[${index}].data.diagnosticIndex`,
+      );
+      return;
+    }
+    if (diagnosticIndex < 0 || diagnosticIndex >= trace.diagnostics.length) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace events must reference an in-range Trace.diagnostics index.',
+        `events[${index}].data.diagnosticIndex`,
+      );
+      return;
+    }
+
+    const linkedDiagnostic = trace.diagnostics[diagnosticIndex];
+    const expectedType = diagnosticEventType(linkedDiagnostic);
+    if (!expectedType) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace events may only link semantic or resolution diagnostics.',
+        `events[${index}].data.diagnosticIndex`,
+      );
+      return;
+    }
+
+    if (event.data.code !== linkedDiagnostic.code) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace event data.code must equal the linked Trace.diagnostics code.',
+        `events[${index}].data.code`,
+      );
+    }
+    if (event.stage !== linkedDiagnostic.stage) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace event stage must equal the linked Trace.diagnostics stage.',
+        `events[${index}].stage`,
+      );
+    }
+    if (!sameValue(event.subject, linkedDiagnostic.subject)) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace event subject must equal the linked Trace.diagnostics subject.',
+        `events[${index}].subject`,
+      );
+    }
+    if (event.type !== expectedType) {
+      pushViolation(
+        diagnostics,
+        'Diagnostic Trace event type must match the linked Trace.diagnostics stage and level.',
+        `events[${index}].type`,
+      );
+    }
+
+    if (linkedDiagnostic.stage === 'semantic') {
+      semanticEventIndexes.push(diagnosticIndex);
+    } else {
+      resolutionEventIndexes.push(diagnosticIndex);
+    }
   });
+
+  if (!sameValue(semanticEventIndexes, semanticDiagnosticIndexes)) {
+    pushViolation(
+      diagnostics,
+      'All semantic Trace diagnostics must map 1:1 to ordered VALIDATION events.',
+      'events',
+    );
+  }
+
+  if (!sameValue(resolutionEventIndexes, resolutionDiagnosticIndexes)) {
+    pushViolation(
+      diagnostics,
+      'All resolution Trace diagnostics must map 1:1 to ordered RESOLUTION events.',
+      'events',
+    );
+  }
+
+  switch (trace.terminalStage) {
+    case 'semantic':
+      if (trace.events.some((event) => TRACE_STAGE_ORDER[event.stage] > TRACE_STAGE_ORDER.semantic)) {
+        pushViolation(
+          diagnostics,
+          'Semantic failure Trace must not contain resolution, output, or post_run events.',
+          'events',
+        );
+      }
+      if (runtimeCompiledCount !== 0) {
+        pushViolation(
+          diagnostics,
+          'Semantic failure Trace must not contain RUNTIME_COMPILED.',
+          'events',
+        );
+      }
+      if (resetDeclaredCount !== 0) {
+        pushViolation(
+          diagnostics,
+          'Semantic failure Trace must not contain POST_RUN_RESET_DECLARED.',
+          'events',
+        );
+      }
+      validateTraceStateMapStates(trace, diagnostics);
+      break;
+
+    case 'resolution':
+      if (trace.events.some((event) => TRACE_STAGE_ORDER[event.stage] > TRACE_STAGE_ORDER.resolution)) {
+        pushViolation(
+          diagnostics,
+          'Resolution failure Trace must not contain output or post_run events.',
+          'events',
+        );
+      }
+      if (runtimeCompiledCount !== 0) {
+        pushViolation(
+          diagnostics,
+          'Resolution failure Trace must not contain RUNTIME_COMPILED.',
+          'events',
+        );
+      }
+      if (resetDeclaredCount !== 0) {
+        pushViolation(
+          diagnostics,
+          'Resolution failure Trace must not contain POST_RUN_RESET_DECLARED.',
+          'events',
+        );
+      }
+      break;
+
+    case 'post_run':
+      if (runtimeCompiledCount !== 1) {
+        pushViolation(
+          diagnostics,
+          'Successful Trace must contain exactly one RUNTIME_COMPILED event.',
+          'events',
+        );
+      }
+      if (resetDeclaredCount !== 1) {
+        pushViolation(
+          diagnostics,
+          'Successful Trace must contain exactly one POST_RUN_RESET_DECLARED event.',
+          'events',
+        );
+      }
+      if (trace.events.length < 2) {
+        pushViolation(
+          diagnostics,
+          'Successful Trace must end with RUNTIME_COMPILED and POST_RUN_RESET_DECLARED.',
+          'events',
+        );
+      } else {
+        const runtimeEvent = trace.events[trace.events.length - 2];
+        const resetEvent = trace.events[trace.events.length - 1];
+        if (runtimeEvent.type !== 'RUNTIME_COMPILED') {
+          pushViolation(
+            diagnostics,
+            'Successful Trace must use RUNTIME_COMPILED as the penultimate event.',
+            `events[${trace.events.length - 2}].type`,
+          );
+        }
+        if (resetEvent.type !== 'POST_RUN_RESET_DECLARED') {
+          pushViolation(
+            diagnostics,
+            'Successful Trace must use POST_RUN_RESET_DECLARED as the final event.',
+            `events[${trace.events.length - 1}].type`,
+          );
+        }
+      }
+      break;
+
+    default:
+      pushViolation(
+        diagnostics,
+        'Trace terminalStage must be semantic, resolution, or post_run.',
+        'terminalStage',
+      );
+      break;
+  }
 
   return { diagnostics };
 }
@@ -390,6 +664,24 @@ export function validateCompileResultContract(input: unknown): ValidationResult 
         'trace.compilerVersion',
       );
     }
+    if (result.status === 'success' && result.trace.terminalStage !== 'post_run') {
+      pushViolation(
+        diagnostics,
+        'Successful CompileResult Trace must terminate at post_run.',
+        'trace.terminalStage',
+      );
+    }
+    if (
+      result.status === 'failure' &&
+      result.trace.terminalStage !== 'semantic' &&
+      result.trace.terminalStage !== 'resolution'
+    ) {
+      pushViolation(
+        diagnostics,
+        'Failed CompileResult Trace must terminate at semantic or resolution.',
+        'trace.terminalStage',
+      );
+    }
   }
 
   if (result.runtime) {
@@ -423,6 +715,58 @@ export function validateCompileResultContract(input: unknown): ValidationResult 
         diagnostics,
         'RuntimeSpec compiledAt must equal Trace compiledAt.',
         'runtime.compiledAt',
+      );
+    }
+
+    result.runtime.activeNeoStackIds.forEach((stackId, index) => {
+      if (result.trace?.finalNeoStackStates[stackId] !== 'active') {
+        pushViolation(
+          diagnostics,
+          'RuntimeSpec activeNeoStackIds must be active in Trace finalNeoStackStates.',
+          `trace.finalNeoStackStates.${stackId}`,
+          { runtimeIndex: index },
+        );
+      }
+    });
+
+    result.runtime.resolvedNeoBlocks.forEach((neoBlock, index) => {
+      if (result.trace?.finalNeoBlockStates[neoBlock.id] !== 'active') {
+        pushViolation(
+          diagnostics,
+          'RuntimeSpec resolvedNeoBlocks must be active in Trace finalNeoBlockStates.',
+          `trace.finalNeoBlockStates.${neoBlock.id}`,
+          { runtimeIndex: index },
+        );
+      }
+    });
+
+    const runtimeCompiledEvent = result.trace.events.find((event) => event.type === 'RUNTIME_COMPILED');
+    if (!runtimeCompiledEvent) {
+      pushViolation(
+        diagnostics,
+        'Successful CompileResult Trace must contain RUNTIME_COMPILED.',
+        'trace.events',
+      );
+    } else if (runtimeCompiledEvent.data.runtimeHash !== result.runtime.runtimeHash) {
+      pushViolation(
+        diagnostics,
+        'RUNTIME_COMPILED runtimeHash must equal RuntimeSpec runtimeHash.',
+        'trace.events',
+      );
+    }
+
+    const resetEvent = result.trace.events.find((event) => event.type === 'POST_RUN_RESET_DECLARED');
+    if (!resetEvent) {
+      pushViolation(
+        diagnostics,
+        'Successful CompileResult Trace must contain POST_RUN_RESET_DECLARED.',
+        'trace.events',
+      );
+    } else if (!sameValue(resetEvent.data, result.runtime.resetPlan)) {
+      pushViolation(
+        diagnostics,
+        'POST_RUN_RESET_DECLARED data must equal RuntimeSpec.resetPlan.',
+        'trace.events',
       );
     }
   }

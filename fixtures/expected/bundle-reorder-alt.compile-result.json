@@ -298,11 +298,16 @@
     "compilerVersion": "0.1.0-experimental",
     "sleeveId": "SLV.BUNDLE.REORDER.v0.1",
     "compiledAt": "2026-08-16T00:00:00.000Z",
+    "terminalStage": "post_run",
     "events": [
       {
         "seq": 1,
         "type": "SOURCE_VALIDATED",
-        "subjectId": "SLV.BUNDLE.REORDER.v0.1",
+        "stage": "intake",
+        "subject": {
+          "kind": "sleeve",
+          "id": "SLV.BUNDLE.REORDER.v0.1"
+        },
         "data": {
           "sleeveSchemaVersion": "umg.compiler-vnext.sleeve.v0.1",
           "selectionSchemaVersion": "umg.compiler-vnext.selection.v0.1",
@@ -339,7 +344,11 @@
       {
         "seq": 2,
         "type": "NEOSTACK_ACTIVE",
-        "subjectId": "NS.BUNDLE.ROOT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neostack",
+          "id": "NS.BUNDLE.ROOT"
+        },
         "data": {
           "depth": 0,
           "selectionOrder": 1
@@ -348,7 +357,11 @@
       {
         "seq": 3,
         "type": "NEOBLOCK_SELECTION_ATTEMPTED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoStackId": "NS.BUNDLE.ROOT",
           "rowInNeoStack": 1
@@ -357,7 +370,11 @@
       {
         "seq": 4,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.BND.DEFAULT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.BND.DEFAULT"
+        },
         "data": {
           "active": true,
           "matched": true,
@@ -367,7 +384,11 @@
       {
         "seq": 5,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.BND.ALT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.BND.ALT"
+        },
         "data": {
           "active": true,
           "matched": true,
@@ -377,7 +398,11 @@
       {
         "seq": 6,
         "type": "PRIME_DIRECTIVE_APPLIED",
-        "subjectId": "D.BND.PRIME",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "D.BND.PRIME"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER"
         }
@@ -385,16 +410,25 @@
       {
         "seq": 7,
         "type": "SECONDARY_DIRECTIVE_SELECTED",
-        "subjectId": "D.BND.SEC",
+        "stage": "resolution",
+        "subject": {
+          "kind": "secondary_directive",
+          "id": "SD.BND.ALT"
+        },
         "data": {
           "relationId": "SD.BND.ALT",
+          "directiveBlockId": "D.BND.SEC",
           "triggerBlockId": "T.BND.ALT"
         }
       },
       {
         "seq": 8,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER",
           "moltType": "trigger",
@@ -414,7 +448,11 @@
       {
         "seq": 9,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER",
           "moltType": "directive",
@@ -436,7 +474,11 @@
       {
         "seq": 10,
         "type": "BUNDLE_APPLIED",
-        "subjectId": "BND.BND.ALT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "bundle",
+          "id": "BND.BND.ALT"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER",
           "moltType": "instruction",
@@ -446,7 +488,11 @@
       {
         "seq": 11,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER",
           "moltType": "instruction",
@@ -471,7 +517,11 @@
       {
         "seq": 12,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "moltType": "subject"
         }
@@ -479,7 +529,11 @@
       {
         "seq": 13,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER",
           "moltType": "subject",
@@ -497,7 +551,11 @@
       {
         "seq": 14,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "moltType": "primary"
         }
@@ -505,7 +563,11 @@
       {
         "seq": 15,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoBlockId": "NB.BUNDLE.ORDER",
           "moltType": "primary",
@@ -523,7 +585,11 @@
       {
         "seq": 16,
         "type": "NEOBLOCK_ACTIVE",
-        "subjectId": "NB.BUNDLE.ORDER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.BUNDLE.ORDER"
+        },
         "data": {
           "neoStackId": "NS.BUNDLE.ROOT",
           "rowInNeoStack": 1,
@@ -537,7 +603,10 @@
       {
         "seq": 17,
         "type": "RUNTIME_COMPILED",
-        "subjectId": "SLV.BUNDLE.REORDER.v0.1",
+        "stage": "output",
+        "subject": {
+          "kind": "runtime"
+        },
         "data": {
           "runtimeHash": "eb4d3452939b6a21f006d4a818cfebe8c93e5352bbc4f97b0bd595b16de5b31f",
           "promptPartCount": 9,
@@ -552,7 +621,10 @@
       {
         "seq": 18,
         "type": "POST_RUN_RESET_DECLARED",
-        "subjectId": "SLV.BUNDLE.REORDER.v0.1",
+        "stage": "post_run",
+        "subject": {
+          "kind": "runtime"
+        },
         "data": {
           "neoStackIds": [
             "NS.BUNDLE.ROOT"

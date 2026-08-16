@@ -4,6 +4,7 @@ import type {
   DiagnosticStage,
   DiagnosticSubject,
 } from './diagnostic-registry.js';
+import type { TraceEventType, TraceStage } from './trace-event-registry.js';
 
 export const MOLT_TYPES = [
   'trigger',
@@ -177,6 +178,12 @@ export type {
   DiagnosticSubject,
   DiagnosticSubjectKind,
 } from './diagnostic-registry.js';
+export type {
+  TraceEventType,
+  TraceStage,
+  TraceSubjectIdPolicy,
+  TraceEventRegistryEntry,
+} from './trace-event-registry.js';
 
 export interface CompilerDiagnostic {
   code: DiagnosticCode;
@@ -188,42 +195,12 @@ export interface CompilerDiagnostic {
   details?: Record<string, unknown>;
 }
 
-export type TraceEventType =
-  | 'SOURCE_VALIDATED'
-  | 'ROUTE_SELECTION_RECEIVED'
-  | 'VALIDATION_ERROR'
-  | 'VALIDATION_WARNING'
-  | 'NEOSTACK_SELECTION_BLOCKED'
-  | 'NEOSTACK_ACTIVE'
-  | 'NEOSTACK_READY'
-  | 'NEOSTACK_DISABLED'
-  | 'NEOSTACK_OFF'
-  | 'NEOBLOCK_SELECTION_ATTEMPTED'
-  | 'NEOBLOCK_SELECTION_BLOCKED'
-  | 'NEOBLOCK_ACTIVE'
-  | 'NEOBLOCK_READY'
-  | 'NEOBLOCK_DISABLED'
-  | 'NEOBLOCK_OFF'
-  | 'NEOBLOCK_RESOLUTION_FAILED'
-  | 'TRIGGER_EVALUATED'
-  | 'PRIME_DIRECTIVE_APPLIED'
-  | 'SECONDARY_DIRECTIVE_SELECTED'
-  | 'BASE_GEOMETRY_APPLIED'
-  | 'BUNDLE_APPLIED'
-  | 'GEOMETRY_RESOLVED'
-  | 'MOLT_READY'
-  | 'SCOPED_MOLT_APPLIED'
-  | 'OVERLAY_APPLIED'
-  | 'MERGE_VALIDATED'
-  | 'GOVERNANCE_RULE_APPLIED'
-  | 'RUNTIME_COMPILED'
-  | 'POST_RUN_RESET_DECLARED';
-
 export interface TraceEvent {
   seq: number;
   type: TraceEventType;
-  subjectId?: string;
-  data?: Record<string, unknown>;
+  stage: TraceStage;
+  subject: DiagnosticSubject;
+  data: Record<string, unknown>;
 }
 
 export interface Trace {
@@ -231,6 +208,7 @@ export interface Trace {
   compilerVersion: string;
   sleeveId: string;
   compiledAt: string;
+  terminalStage: TraceStage;
   events: TraceEvent[];
   diagnostics: CompilerDiagnostic[];
   finalNeoStackStates: Record<string, RuntimeState>;

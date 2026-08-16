@@ -177,6 +177,8 @@ Frozen contract:
 post-run reset declaration. It does not replace `RuntimeSpec` as executable
 authority.
 
+The frozen public Trace surface is defined in [TRACE_CONTRACT.md](TRACE_CONTRACT.md).
+
 ## Internal Output Validation
 
 The schema registry already defines:
@@ -203,7 +205,6 @@ compiler fails closed with:
 
 ## Deferred Work
 
-Explicitly deferred beyond B4A:
+Explicitly deferred beyond the current freeze:
 
-- B4B: Trace and Diagnostic registry redesign
 - B5: runtimeHash policy redesign

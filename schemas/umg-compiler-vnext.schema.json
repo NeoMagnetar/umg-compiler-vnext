@@ -827,6 +827,8 @@
             "ROUTE_SELECTION_RECEIVED",
             "VALIDATION_ERROR",
             "VALIDATION_WARNING",
+            "RESOLUTION_ERROR",
+            "RESOLUTION_WARNING",
             "NEOSTACK_SELECTION_BLOCKED",
             "NEOSTACK_ACTIVE",
             "NEOSTACK_READY",
@@ -854,9 +856,17 @@
             "POST_RUN_RESET_DECLARED"
           ]
         },
-        "subjectId": {
-          "type": "string",
-          "minLength": 1
+        "stage": {
+          "enum": [
+            "intake",
+            "semantic",
+            "resolution",
+            "output",
+            "post_run"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/DiagnosticSubject"
         },
         "data": {
           "type": "object"
@@ -865,7 +875,10 @@
       "additionalProperties": false,
       "required": [
         "seq",
-        "type"
+        "type",
+        "stage",
+        "subject",
+        "data"
       ]
     },
     "Trace": {
@@ -885,6 +898,15 @@
         "compiledAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "terminalStage": {
+          "enum": [
+            "intake",
+            "semantic",
+            "resolution",
+            "output",
+            "post_run"
+          ]
         },
         "events": {
           "type": "array",
@@ -929,6 +951,7 @@
         "compilerVersion",
         "sleeveId",
         "compiledAt",
+        "terminalStage",
         "events",
         "diagnostics",
         "finalNeoStackStates",

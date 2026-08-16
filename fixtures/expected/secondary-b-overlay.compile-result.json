@@ -847,11 +847,16 @@
     "compilerVersion": "0.1.0-experimental",
     "sleeveId": "SLV.DEALERSHIP.GOLDEN.v0.1",
     "compiledAt": "2026-08-16T00:00:00.000Z",
+    "terminalStage": "post_run",
     "events": [
       {
         "seq": 1,
         "type": "SOURCE_VALIDATED",
-        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "stage": "intake",
+        "subject": {
+          "kind": "sleeve",
+          "id": "SLV.DEALERSHIP.GOLDEN.v0.1"
+        },
         "data": {
           "sleeveSchemaVersion": "umg.compiler-vnext.sleeve.v0.1",
           "selectionSchemaVersion": "umg.compiler-vnext.selection.v0.1",
@@ -892,7 +897,11 @@
       {
         "seq": 2,
         "type": "NEOSTACK_ACTIVE",
-        "subjectId": "NS.CONTROLLER",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neostack",
+          "id": "NS.CONTROLLER"
+        },
         "data": {
           "depth": 0,
           "selectionOrder": 1
@@ -901,7 +910,11 @@
       {
         "seq": 3,
         "type": "NEOSTACK_ACTIVE",
-        "subjectId": "NS.SERVICE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neostack",
+          "id": "NS.SERVICE"
+        },
         "data": {
           "depth": 1,
           "parentNeoStackId": "NS.CONTROLLER",
@@ -912,7 +925,11 @@
       {
         "seq": 4,
         "type": "NEOSTACK_READY",
-        "subjectId": "NS.SALES",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neostack",
+          "id": "NS.SALES"
+        },
         "data": {
           "depth": 1,
           "parentNeoStackId": "NS.CONTROLLER",
@@ -922,7 +939,11 @@
       {
         "seq": 5,
         "type": "NEOBLOCK_SELECTION_ATTEMPTED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoStackId": "NS.CONTROLLER",
           "rowInNeoStack": 1
@@ -931,7 +952,11 @@
       {
         "seq": 6,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.CTRL.DEFAULT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.CTRL.DEFAULT"
+        },
         "data": {
           "active": true,
           "matched": true,
@@ -941,7 +966,11 @@
       {
         "seq": 7,
         "type": "PRIME_DIRECTIVE_APPLIED",
-        "subjectId": "D.CTRL.PRIME",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "D.CTRL.PRIME"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE"
         }
@@ -949,8 +978,13 @@
       {
         "seq": 8,
         "type": "SCOPED_MOLT_APPLIED",
-        "subjectId": "PH.SLEEVE.PRAGMATISM",
+        "stage": "resolution",
+        "subject": {
+          "kind": "scoped_attachment",
+          "id": "ATT.SLEEVE.PH.PRAGMATISM"
+        },
         "data": {
+          "blockId": "PH.SLEEVE.PRAGMATISM",
           "source": "scoped",
           "attachmentId": "ATT.SLEEVE.PH.PRAGMATISM",
           "scope": {
@@ -964,8 +998,13 @@
       {
         "seq": 9,
         "type": "SCOPED_MOLT_APPLIED",
-        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "stage": "resolution",
+        "subject": {
+          "kind": "scoped_attachment",
+          "id": "ATT.SLEEVE.BP.INTAKE_FLOW"
+        },
         "data": {
+          "blockId": "BP.SLEEVE.INTAKE_FLOW",
           "source": "scoped",
           "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
           "scope": {
@@ -979,8 +1018,13 @@
       {
         "seq": 10,
         "type": "OVERLAY_APPLIED",
-        "subjectId": "PH.OVERLAY.TAOISM",
+        "stage": "resolution",
+        "subject": {
+          "kind": "scoped_attachment",
+          "id": "ATT.OV.TAOISM.PH"
+        },
         "data": {
+          "blockId": "PH.OVERLAY.TAOISM",
           "source": "overlay",
           "overlayId": "OV.TAOISM",
           "attachmentId": "ATT.OV.TAOISM.PH",
@@ -995,7 +1039,11 @@
       {
         "seq": 11,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "trigger",
@@ -1013,7 +1061,11 @@
       {
         "seq": 12,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "directive",
@@ -1031,7 +1083,11 @@
       {
         "seq": 13,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "moltType": "instruction"
         }
@@ -1039,7 +1095,11 @@
       {
         "seq": 14,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "instruction",
@@ -1057,7 +1117,11 @@
       {
         "seq": 15,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "moltType": "subject"
         }
@@ -1065,7 +1129,11 @@
       {
         "seq": 16,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "subject",
@@ -1083,7 +1151,11 @@
       {
         "seq": 17,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "moltType": "primary"
         }
@@ -1091,7 +1163,11 @@
       {
         "seq": 18,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "primary",
@@ -1109,7 +1185,11 @@
       {
         "seq": 19,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "philosophy",
@@ -1121,7 +1201,11 @@
       {
         "seq": 20,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "moltType": "blueprint"
         }
@@ -1129,7 +1213,11 @@
       {
         "seq": 21,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoBlockId": "NB.CONTROLLER.INTAKE",
           "moltType": "blueprint",
@@ -1147,7 +1235,11 @@
       {
         "seq": 22,
         "type": "NEOBLOCK_ACTIVE",
-        "subjectId": "NB.CONTROLLER.INTAKE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.CONTROLLER.INTAKE"
+        },
         "data": {
           "neoStackId": "NS.CONTROLLER",
           "rowInNeoStack": 1,
@@ -1159,7 +1251,11 @@
       {
         "seq": 23,
         "type": "NEOBLOCK_SELECTION_ATTEMPTED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoStackId": "NS.SERVICE",
           "rowInNeoStack": 1
@@ -1168,7 +1264,11 @@
       {
         "seq": 24,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.SVC.NORMAL",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.SVC.NORMAL"
+        },
         "data": {
           "active": false,
           "matched": false,
@@ -1178,7 +1278,11 @@
       {
         "seq": 25,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.SVC.SAFETY",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.SVC.SAFETY"
+        },
         "data": {
           "active": true,
           "matched": true,
@@ -1188,7 +1292,11 @@
       {
         "seq": 26,
         "type": "TRIGGER_EVALUATED",
-        "subjectId": "T.SVC.WARRANTY",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "T.SVC.WARRANTY"
+        },
         "data": {
           "active": false,
           "matched": false,
@@ -1198,7 +1306,11 @@
       {
         "seq": 27,
         "type": "PRIME_DIRECTIVE_APPLIED",
-        "subjectId": "D.SVC.PRIME",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "D.SVC.PRIME"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE"
         }
@@ -1206,17 +1318,27 @@
       {
         "seq": 28,
         "type": "SECONDARY_DIRECTIVE_SELECTED",
-        "subjectId": "D.SVC.B",
+        "stage": "resolution",
+        "subject": {
+          "kind": "secondary_directive",
+          "id": "SD.SVC.B"
+        },
         "data": {
           "relationId": "SD.SVC.B",
+          "directiveBlockId": "D.SVC.B",
           "triggerBlockId": "T.SVC.SAFETY"
         }
       },
       {
         "seq": 29,
         "type": "SCOPED_MOLT_APPLIED",
-        "subjectId": "PH.SLEEVE.PRAGMATISM",
+        "stage": "resolution",
+        "subject": {
+          "kind": "scoped_attachment",
+          "id": "ATT.SLEEVE.PH.PRAGMATISM"
+        },
         "data": {
+          "blockId": "PH.SLEEVE.PRAGMATISM",
           "source": "scoped",
           "attachmentId": "ATT.SLEEVE.PH.PRAGMATISM",
           "scope": {
@@ -1230,8 +1352,13 @@
       {
         "seq": 30,
         "type": "SCOPED_MOLT_APPLIED",
-        "subjectId": "BP.SLEEVE.INTAKE_FLOW",
+        "stage": "resolution",
+        "subject": {
+          "kind": "scoped_attachment",
+          "id": "ATT.SLEEVE.BP.INTAKE_FLOW"
+        },
         "data": {
+          "blockId": "BP.SLEEVE.INTAKE_FLOW",
           "source": "scoped",
           "attachmentId": "ATT.SLEEVE.BP.INTAKE_FLOW",
           "scope": {
@@ -1245,8 +1372,13 @@
       {
         "seq": 31,
         "type": "OVERLAY_APPLIED",
-        "subjectId": "PH.OVERLAY.TAOISM",
+        "stage": "resolution",
+        "subject": {
+          "kind": "scoped_attachment",
+          "id": "ATT.OV.TAOISM.PH"
+        },
         "data": {
+          "blockId": "PH.OVERLAY.TAOISM",
           "source": "overlay",
           "overlayId": "OV.TAOISM",
           "attachmentId": "ATT.OV.TAOISM.PH",
@@ -1261,7 +1393,11 @@
       {
         "seq": 32,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "trigger",
@@ -1279,7 +1415,11 @@
       {
         "seq": 33,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "directive",
@@ -1301,7 +1441,11 @@
       {
         "seq": 34,
         "type": "BUNDLE_APPLIED",
-        "subjectId": "BND.SVC.B.INSTRUCTION",
+        "stage": "resolution",
+        "subject": {
+          "kind": "bundle",
+          "id": "BND.SVC.B.INSTRUCTION"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "instruction",
@@ -1311,7 +1455,11 @@
       {
         "seq": 35,
         "type": "MOLT_READY",
-        "subjectId": "I.SVC.03",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "I.SVC.03"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1321,7 +1469,11 @@
       {
         "seq": 36,
         "type": "MOLT_READY",
-        "subjectId": "I.SVC.04",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "I.SVC.04"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1331,7 +1483,11 @@
       {
         "seq": 37,
         "type": "MOLT_READY",
-        "subjectId": "I.SVC.08",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "I.SVC.08"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1341,7 +1497,11 @@
       {
         "seq": 38,
         "type": "MOLT_READY",
-        "subjectId": "I.SVC.09",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "I.SVC.09"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1351,7 +1511,11 @@
       {
         "seq": 39,
         "type": "MOLT_READY",
-        "subjectId": "I.SVC.10",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "I.SVC.10"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1361,7 +1525,11 @@
       {
         "seq": 40,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "instruction",
@@ -1398,7 +1566,11 @@
       {
         "seq": 41,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "moltType": "subject"
         }
@@ -1406,7 +1578,11 @@
       {
         "seq": 42,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "subject",
@@ -1424,7 +1600,11 @@
       {
         "seq": 43,
         "type": "BASE_GEOMETRY_APPLIED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "moltType": "primary"
         }
@@ -1432,7 +1612,11 @@
       {
         "seq": 44,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "primary",
@@ -1450,7 +1634,11 @@
       {
         "seq": 45,
         "type": "BUNDLE_APPLIED",
-        "subjectId": "BND.SVC.B.PHILOSOPHY",
+        "stage": "resolution",
+        "subject": {
+          "kind": "bundle",
+          "id": "BND.SVC.B.PHILOSOPHY"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "philosophy",
@@ -1460,7 +1648,11 @@
       {
         "seq": 46,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "philosophy",
@@ -1479,7 +1671,11 @@
       {
         "seq": 47,
         "type": "BUNDLE_APPLIED",
-        "subjectId": "BND.SVC.B.BLUEPRINT",
+        "stage": "resolution",
+        "subject": {
+          "kind": "bundle",
+          "id": "BND.SVC.B.BLUEPRINT"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "blueprint",
@@ -1489,7 +1685,11 @@
       {
         "seq": 48,
         "type": "MOLT_READY",
-        "subjectId": "BP.SVC.BASE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "BP.SVC.BASE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1499,7 +1699,11 @@
       {
         "seq": 49,
         "type": "MOLT_READY",
-        "subjectId": "BP.SVC.WARRANTY",
+        "stage": "resolution",
+        "subject": {
+          "kind": "molt_block",
+          "id": "BP.SVC.WARRANTY"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "reason": "omitted_from_active_bundle",
@@ -1509,7 +1713,11 @@
       {
         "seq": 50,
         "type": "GEOMETRY_RESOLVED",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "moltType": "blueprint",
@@ -1528,7 +1736,11 @@
       {
         "seq": 51,
         "type": "MERGE_VALIDATED",
-        "subjectId": "I.SVC.MERGED.SAFE_STOP",
+        "stage": "resolution",
+        "subject": {
+          "kind": "merge",
+          "id": "MRG.SVC.SAFE_STOP"
+        },
         "data": {
           "neoBlockId": "NB.SERVICE.TRIAGE",
           "mergeId": "MRG.SVC.SAFE_STOP",
@@ -1553,7 +1765,11 @@
       {
         "seq": 52,
         "type": "NEOBLOCK_ACTIVE",
-        "subjectId": "NB.SERVICE.TRIAGE",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "data": {
           "neoStackId": "NS.SERVICE",
           "rowInNeoStack": 1,
@@ -1566,7 +1782,11 @@
       {
         "seq": 53,
         "type": "NEOBLOCK_READY",
-        "subjectId": "NB.SERVICE.DRIVE_IN",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.DRIVE_IN"
+        },
         "data": {
           "neoStackId": "NS.SERVICE",
           "rowInNeoStack": 2
@@ -1575,7 +1795,11 @@
       {
         "seq": 54,
         "type": "NEOBLOCK_READY",
-        "subjectId": "NB.SALES.TRADE_IN",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SALES.TRADE_IN"
+        },
         "data": {
           "neoStackId": "NS.SALES",
           "rowInNeoStack": 1
@@ -1584,7 +1808,10 @@
       {
         "seq": 55,
         "type": "RUNTIME_COMPILED",
-        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "stage": "output",
+        "subject": {
+          "kind": "runtime"
+        },
         "data": {
           "runtimeHash": "51732823e5fee1bb107a517405ac1ecea73b6dcdc44def14b64e47df6e1bb9c7",
           "promptPartCount": 25,
@@ -1599,7 +1826,10 @@
       {
         "seq": 56,
         "type": "POST_RUN_RESET_DECLARED",
-        "subjectId": "SLV.DEALERSHIP.GOLDEN.v0.1",
+        "stage": "post_run",
+        "subject": {
+          "kind": "runtime"
+        },
         "data": {
           "neoStackIds": [
             "NS.CONTROLLER",
