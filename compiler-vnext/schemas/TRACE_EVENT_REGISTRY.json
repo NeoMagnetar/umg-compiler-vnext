@@ -1,451 +1,454 @@
 {
-  "SOURCE_VALIDATED": {
-    "stage": "intake",
-    "allowedSubjectKinds": [
-      "sleeve"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "Canonical authored sources and selection summary were accepted for semantic compilation.",
-    "requiredDataKeys": [
-      "sleeveSchemaVersion",
-      "selectionSchemaVersion",
-      "controllerNeoStackId",
-      "route",
-      "triggerStateTrueIds",
-      "activeOverlayIds",
-      "activeGovernanceRuleIds",
-      "disabledNeoStackIds",
-      "disabledNeoBlockIds",
-      "routeRationale",
-      "counts"
-    ]
-  },
-  "ROUTE_SELECTION_RECEIVED": {
-    "stage": "intake",
-    "allowedSubjectKinds": [
-      "selection"
-    ],
-    "subjectIdPolicy": "forbidden",
-    "summary": "Route rationale was supplied by the caller.",
-    "requiredDataKeys": [
-      "routeRationale"
-    ]
-  },
-  "VALIDATION_ERROR": {
-    "stage": "semantic",
-    "allowedSubjectKinds": [
-      "compiler",
-      "sleeve",
-      "selection",
-      "molt_block",
-      "neoblock",
-      "neostack",
-      "secondary_directive",
-      "bundle",
-      "merge",
-      "scoped_attachment",
-      "overlay",
-      "governance",
-      "runtime",
-      "trace",
-      "compile_result"
-    ],
-    "subjectIdPolicy": "optional",
-    "summary": "A semantic error diagnostic was recorded.",
-    "requiredDataKeys": [
-      "diagnosticIndex",
-      "code"
-    ]
-  },
-  "VALIDATION_WARNING": {
-    "stage": "semantic",
-    "allowedSubjectKinds": [
-      "compiler",
-      "sleeve",
-      "selection",
-      "molt_block",
-      "neoblock",
-      "neostack",
-      "secondary_directive",
-      "bundle",
-      "merge",
-      "scoped_attachment",
-      "overlay",
-      "governance",
-      "runtime",
-      "trace",
-      "compile_result"
-    ],
-    "subjectIdPolicy": "optional",
-    "summary": "A semantic warning diagnostic was recorded.",
-    "requiredDataKeys": [
-      "diagnosticIndex",
-      "code"
-    ]
-  },
-  "RESOLUTION_ERROR": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "compiler",
-      "sleeve",
-      "selection",
-      "molt_block",
-      "neoblock",
-      "neostack",
-      "secondary_directive",
-      "bundle",
-      "merge",
-      "scoped_attachment",
-      "overlay",
-      "governance",
-      "runtime",
-      "trace",
-      "compile_result"
-    ],
-    "subjectIdPolicy": "optional",
-    "summary": "A resolution error diagnostic was recorded.",
-    "requiredDataKeys": [
-      "diagnosticIndex",
-      "code"
-    ]
-  },
-  "RESOLUTION_WARNING": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "compiler",
-      "sleeve",
-      "selection",
-      "molt_block",
-      "neoblock",
-      "neostack",
-      "secondary_directive",
-      "bundle",
-      "merge",
-      "scoped_attachment",
-      "overlay",
-      "governance",
-      "runtime",
-      "trace",
-      "compile_result"
-    ],
-    "subjectIdPolicy": "optional",
-    "summary": "A resolution warning diagnostic was recorded.",
-    "requiredDataKeys": [
-      "diagnosticIndex",
-      "code"
-    ]
-  },
-  "NEOSTACK_SELECTION_BLOCKED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neostack"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A selected NeoStack could not enter execution.",
-    "requiredDataKeys": [
-      "diagnosticCode"
-    ]
-  },
-  "NEOSTACK_ACTIVE": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neostack"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoStack is active in the resolved route.",
-    "requiredDataKeys": [
-      "depth"
-    ]
-  },
-  "NEOSTACK_READY": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neostack"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoStack remains ready after resolution.",
-    "requiredDataKeys": [
-      "depth"
-    ]
-  },
-  "NEOSTACK_DISABLED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neostack"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoStack is disabled by authored or caller configuration.",
-    "requiredDataKeys": [
-      "depth"
-    ]
-  },
-  "NEOSTACK_OFF": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neostack"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoStack is off by governance or inherited state.",
-    "requiredDataKeys": [
-      "depth"
-    ]
-  },
-  "NEOBLOCK_SELECTION_ATTEMPTED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "Resolution attempted to activate a NeoBlock.",
-    "requiredDataKeys": [
-      "neoStackId",
-      "rowInNeoStack"
-    ]
-  },
-  "NEOBLOCK_SELECTION_BLOCKED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A selected NeoBlock could not enter execution.",
-    "requiredDataKeys": [
-      "diagnosticCode",
-      "neoStackId"
-    ]
-  },
-  "NEOBLOCK_ACTIVE": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoBlock is active in the resolved route.",
-    "requiredDataKeys": [
-      "neoStackId",
-      "rowInNeoStack"
-    ]
-  },
-  "NEOBLOCK_READY": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoBlock remains ready after resolution.",
-    "requiredDataKeys": [
-      "neoStackId",
-      "rowInNeoStack"
-    ]
-  },
-  "NEOBLOCK_DISABLED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoBlock is disabled by authored or caller configuration.",
-    "requiredDataKeys": [
-      "neoStackId",
-      "rowInNeoStack"
-    ]
-  },
-  "NEOBLOCK_OFF": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A NeoBlock is off by governance or container state.",
-    "requiredDataKeys": [
-      "neoStackId",
-      "rowInNeoStack"
-    ]
-  },
-  "NEOBLOCK_RESOLUTION_FAILED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "Resolution failed while activating a NeoBlock.",
-    "requiredDataKeys": [
-      "neoStackId"
-    ]
-  },
-  "TRIGGER_EVALUATED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "molt_block"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A Trigger block was evaluated against selection state.",
-    "requiredDataKeys": [
-      "active",
-      "matched",
-      "neoBlockId"
-    ]
-  },
-  "PRIME_DIRECTIVE_APPLIED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "molt_block"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A Prime Directive was applied to an active NeoBlock.",
-    "requiredDataKeys": [
-      "neoBlockId"
-    ]
-  },
-  "SECONDARY_DIRECTIVE_SELECTED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "secondary_directive"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A Secondary Directive relation was selected.",
-    "requiredDataKeys": [
-      "directiveBlockId",
-      "triggerBlockId"
-    ]
-  },
-  "BASE_GEOMETRY_APPLIED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "Base geometry contributed to a resolved lane.",
-    "requiredDataKeys": [
-      "moltType"
-    ]
-  },
-  "BUNDLE_APPLIED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "bundle"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A Bundle replaced base geometry for a lane.",
-    "requiredDataKeys": [
-      "neoBlockId",
-      "moltType",
-      "secondaryDirectiveId"
-    ]
-  },
-  "GEOMETRY_RESOLVED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "neoblock"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A lane geometry surface was resolved.",
-    "requiredDataKeys": [
-      "neoBlockId",
-      "moltType",
-      "source",
-      "rows",
-      "readOrder"
-    ]
-  },
-  "MOLT_READY": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "molt_block"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A local MOLT block remained ready instead of becoming effective output.",
-    "requiredDataKeys": [
-      "neoBlockId",
-      "reason"
-    ]
-  },
-  "SCOPED_MOLT_APPLIED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "scoped_attachment"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A scoped attachment contributed cognition.",
-    "requiredDataKeys": [
-      "blockId",
-      "scope",
-      "neoBlockId",
-      "neoStackId",
-      "moltType"
-    ]
-  },
-  "OVERLAY_APPLIED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "scoped_attachment"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "An Overlay attachment contributed cognition.",
-    "requiredDataKeys": [
-      "blockId",
-      "overlayId",
-      "scope",
-      "neoBlockId",
-      "neoStackId",
-      "moltType"
-    ]
-  },
-  "MERGE_VALIDATED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "merge"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A Merge result passed authority checks and placement.",
-    "requiredDataKeys": [
-      "neoBlockId",
-      "sources",
-      "result",
-      "authorityCeiling",
-      "authorityCheck"
-    ]
-  },
-  "GOVERNANCE_RULE_APPLIED": {
-    "stage": "resolution",
-    "allowedSubjectKinds": [
-      "governance"
-    ],
-    "subjectIdPolicy": "required",
-    "summary": "A Governance rule was active for this compile.",
-    "requiredDataKeys": [
-      "name"
-    ]
-  },
-  "RUNTIME_COMPILED": {
-    "stage": "output",
-    "allowedSubjectKinds": [
-      "runtime"
-    ],
-    "subjectIdPolicy": "forbidden",
-    "summary": "RuntimeSpec construction completed successfully.",
-    "requiredDataKeys": [
-      "runtimeHash",
-      "promptPartCount",
-      "totalNeoStacks",
-      "totalNeoBlocks",
-      "totalMoltBlocks",
-      "activeNeoStacks",
-      "activeNeoBlocks",
-      "effectiveMoltBlocks"
-    ]
-  },
-  "POST_RUN_RESET_DECLARED": {
-    "stage": "post_run",
-    "allowedSubjectKinds": [
-      "runtime"
-    ],
-    "subjectIdPolicy": "forbidden",
-    "summary": "ResetPlan was declared for the host runtime.",
-    "requiredDataKeys": [
-      "neoStackIds",
-      "neoBlockIds",
-      "targetState"
-    ]
+  "registryVersion": "umg.compiler-vnext.trace-event-registry.v0.1",
+  "entries": {
+    "SOURCE_VALIDATED": {
+      "stage": "intake",
+      "allowedSubjectKinds": [
+        "sleeve"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "Canonical authored sources and selection summary were accepted for semantic compilation.",
+      "requiredDataKeys": [
+        "sleeveSchemaVersion",
+        "selectionSchemaVersion",
+        "controllerNeoStackId",
+        "route",
+        "triggerStateTrueIds",
+        "activeOverlayIds",
+        "activeGovernanceRuleIds",
+        "disabledNeoStackIds",
+        "disabledNeoBlockIds",
+        "routeRationale",
+        "counts"
+      ]
+    },
+    "ROUTE_SELECTION_RECEIVED": {
+      "stage": "intake",
+      "allowedSubjectKinds": [
+        "selection"
+      ],
+      "subjectIdPolicy": "forbidden",
+      "summary": "Route rationale was supplied by the caller.",
+      "requiredDataKeys": [
+        "routeRationale"
+      ]
+    },
+    "VALIDATION_ERROR": {
+      "stage": "semantic",
+      "allowedSubjectKinds": [
+        "compiler",
+        "sleeve",
+        "selection",
+        "molt_block",
+        "neoblock",
+        "neostack",
+        "secondary_directive",
+        "bundle",
+        "merge",
+        "scoped_attachment",
+        "overlay",
+        "governance",
+        "runtime",
+        "trace",
+        "compile_result"
+      ],
+      "subjectIdPolicy": "optional",
+      "summary": "A semantic error diagnostic was recorded.",
+      "requiredDataKeys": [
+        "diagnosticIndex",
+        "code"
+      ]
+    },
+    "VALIDATION_WARNING": {
+      "stage": "semantic",
+      "allowedSubjectKinds": [
+        "compiler",
+        "sleeve",
+        "selection",
+        "molt_block",
+        "neoblock",
+        "neostack",
+        "secondary_directive",
+        "bundle",
+        "merge",
+        "scoped_attachment",
+        "overlay",
+        "governance",
+        "runtime",
+        "trace",
+        "compile_result"
+      ],
+      "subjectIdPolicy": "optional",
+      "summary": "A semantic warning diagnostic was recorded.",
+      "requiredDataKeys": [
+        "diagnosticIndex",
+        "code"
+      ]
+    },
+    "RESOLUTION_ERROR": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "compiler",
+        "sleeve",
+        "selection",
+        "molt_block",
+        "neoblock",
+        "neostack",
+        "secondary_directive",
+        "bundle",
+        "merge",
+        "scoped_attachment",
+        "overlay",
+        "governance",
+        "runtime",
+        "trace",
+        "compile_result"
+      ],
+      "subjectIdPolicy": "optional",
+      "summary": "A resolution error diagnostic was recorded.",
+      "requiredDataKeys": [
+        "diagnosticIndex",
+        "code"
+      ]
+    },
+    "RESOLUTION_WARNING": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "compiler",
+        "sleeve",
+        "selection",
+        "molt_block",
+        "neoblock",
+        "neostack",
+        "secondary_directive",
+        "bundle",
+        "merge",
+        "scoped_attachment",
+        "overlay",
+        "governance",
+        "runtime",
+        "trace",
+        "compile_result"
+      ],
+      "subjectIdPolicy": "optional",
+      "summary": "A resolution warning diagnostic was recorded.",
+      "requiredDataKeys": [
+        "diagnosticIndex",
+        "code"
+      ]
+    },
+    "NEOSTACK_SELECTION_BLOCKED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neostack"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A selected NeoStack could not enter execution.",
+      "requiredDataKeys": [
+        "diagnosticCode"
+      ]
+    },
+    "NEOSTACK_ACTIVE": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neostack"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoStack is active in the resolved route.",
+      "requiredDataKeys": [
+        "depth"
+      ]
+    },
+    "NEOSTACK_READY": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neostack"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoStack remains ready after resolution.",
+      "requiredDataKeys": [
+        "depth"
+      ]
+    },
+    "NEOSTACK_DISABLED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neostack"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoStack is disabled by authored or caller configuration.",
+      "requiredDataKeys": [
+        "depth"
+      ]
+    },
+    "NEOSTACK_OFF": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neostack"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoStack is off by governance or inherited state.",
+      "requiredDataKeys": [
+        "depth"
+      ]
+    },
+    "NEOBLOCK_SELECTION_ATTEMPTED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "Resolution attempted to activate a NeoBlock.",
+      "requiredDataKeys": [
+        "neoStackId",
+        "rowInNeoStack"
+      ]
+    },
+    "NEOBLOCK_SELECTION_BLOCKED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A selected NeoBlock could not enter execution.",
+      "requiredDataKeys": [
+        "diagnosticCode",
+        "neoStackId"
+      ]
+    },
+    "NEOBLOCK_ACTIVE": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoBlock is active in the resolved route.",
+      "requiredDataKeys": [
+        "neoStackId",
+        "rowInNeoStack"
+      ]
+    },
+    "NEOBLOCK_READY": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoBlock remains ready after resolution.",
+      "requiredDataKeys": [
+        "neoStackId",
+        "rowInNeoStack"
+      ]
+    },
+    "NEOBLOCK_DISABLED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoBlock is disabled by authored or caller configuration.",
+      "requiredDataKeys": [
+        "neoStackId",
+        "rowInNeoStack"
+      ]
+    },
+    "NEOBLOCK_OFF": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A NeoBlock is off by governance or container state.",
+      "requiredDataKeys": [
+        "neoStackId",
+        "rowInNeoStack"
+      ]
+    },
+    "NEOBLOCK_RESOLUTION_FAILED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "Resolution failed while activating a NeoBlock.",
+      "requiredDataKeys": [
+        "neoStackId"
+      ]
+    },
+    "TRIGGER_EVALUATED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "molt_block"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A Trigger block was evaluated against selection state.",
+      "requiredDataKeys": [
+        "active",
+        "matched",
+        "neoBlockId"
+      ]
+    },
+    "PRIME_DIRECTIVE_APPLIED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "molt_block"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A Prime Directive was applied to an active NeoBlock.",
+      "requiredDataKeys": [
+        "neoBlockId"
+      ]
+    },
+    "SECONDARY_DIRECTIVE_SELECTED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "secondary_directive"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A Secondary Directive relation was selected.",
+      "requiredDataKeys": [
+        "directiveBlockId",
+        "triggerBlockId"
+      ]
+    },
+    "BASE_GEOMETRY_APPLIED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "Base geometry contributed to a resolved lane.",
+      "requiredDataKeys": [
+        "moltType"
+      ]
+    },
+    "BUNDLE_APPLIED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "bundle"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A Bundle replaced base geometry for a lane.",
+      "requiredDataKeys": [
+        "neoBlockId",
+        "moltType",
+        "secondaryDirectiveId"
+      ]
+    },
+    "GEOMETRY_RESOLVED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "neoblock"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A lane geometry surface was resolved.",
+      "requiredDataKeys": [
+        "neoBlockId",
+        "moltType",
+        "source",
+        "rows",
+        "readOrder"
+      ]
+    },
+    "MOLT_READY": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "molt_block"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A local MOLT block remained ready instead of becoming effective output.",
+      "requiredDataKeys": [
+        "neoBlockId",
+        "reason"
+      ]
+    },
+    "SCOPED_MOLT_APPLIED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "scoped_attachment"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A scoped attachment contributed cognition.",
+      "requiredDataKeys": [
+        "blockId",
+        "scope",
+        "neoBlockId",
+        "neoStackId",
+        "moltType"
+      ]
+    },
+    "OVERLAY_APPLIED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "scoped_attachment"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "An Overlay attachment contributed cognition.",
+      "requiredDataKeys": [
+        "blockId",
+        "overlayId",
+        "scope",
+        "neoBlockId",
+        "neoStackId",
+        "moltType"
+      ]
+    },
+    "MERGE_VALIDATED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "merge"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A Merge result passed authority checks and placement.",
+      "requiredDataKeys": [
+        "neoBlockId",
+        "sources",
+        "result",
+        "authorityCeiling",
+        "authorityCheck"
+      ]
+    },
+    "GOVERNANCE_RULE_APPLIED": {
+      "stage": "resolution",
+      "allowedSubjectKinds": [
+        "governance"
+      ],
+      "subjectIdPolicy": "required",
+      "summary": "A Governance rule was active for this compile.",
+      "requiredDataKeys": [
+        "name"
+      ]
+    },
+    "RUNTIME_COMPILED": {
+      "stage": "output",
+      "allowedSubjectKinds": [
+        "runtime"
+      ],
+      "subjectIdPolicy": "forbidden",
+      "summary": "RuntimeSpec construction completed successfully.",
+      "requiredDataKeys": [
+        "runtimeHash",
+        "promptPartCount",
+        "totalNeoStacks",
+        "totalNeoBlocks",
+        "totalMoltBlocks",
+        "activeNeoStacks",
+        "activeNeoBlocks",
+        "effectiveMoltBlocks"
+      ]
+    },
+    "POST_RUN_RESET_DECLARED": {
+      "stage": "post_run",
+      "allowedSubjectKinds": [
+        "runtime"
+      ],
+      "subjectIdPolicy": "forbidden",
+      "summary": "ResetPlan was declared for the host runtime.",
+      "requiredDataKeys": [
+        "neoStackIds",
+        "neoBlockIds",
+        "targetState"
+      ]
+    }
   }
 }

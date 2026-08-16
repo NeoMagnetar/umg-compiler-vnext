@@ -30,3 +30,5 @@ JSON Schema validates document shape. It intentionally does **not** replace comp
 `umg-compiler-vnext.schema.json` contains all shared `$defs`.
 
 `SCHEMA_REGISTRY.json` maps document kinds to versions, schemas, and examples.
+`COMPATIBILITY_MATRIX.json` freezes explicit compiler-to-schema and
+compiler-to-registry compatibility. No SemVer inference is permitted.

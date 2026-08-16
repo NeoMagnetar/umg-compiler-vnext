@@ -1,5 +1,5 @@
 import { sha256Canonical } from './canonicalize.js';
-import { RUNTIME_HASH_PROFILE_VERSION } from './constants.js';
+import { RUNTIME_HASH_PROFILE_VERSION } from './version-contract.js';
 import type {
   PromptPart,
   ResolvedGeometryRow,

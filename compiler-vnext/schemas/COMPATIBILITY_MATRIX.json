@@ -1,0 +1,32 @@
+{
+  "compatibilityManifestVersion": "umg.compiler-vnext.compatibility.v0.1",
+  "compilerVersions": {
+    "0.1.0-experimental": {
+      "accepts": {
+        "sleeve": [
+          "umg.compiler-vnext.sleeve.v0.1"
+        ],
+        "selection": [
+          "umg.compiler-vnext.selection.v0.1"
+        ]
+      },
+      "emits": {
+        "runtime": "umg.compiler-vnext.runtime.v0.1",
+        "trace": "umg.compiler-vnext.trace.v0.1",
+        "compileResult": "umg.compiler-vnext.compile-result.v0.1"
+      },
+      "contracts": {
+        "schemaRegistry": "umg.compiler-vnext.schema-registry.v0.1",
+        "diagnosticRegistry": "umg.compiler-vnext.diagnostic-registry.v0.1",
+        "traceEventRegistry": "umg.compiler-vnext.trace-event-registry.v0.1",
+        "runtimeHashProfile": "umg.compiler-vnext.runtime-hash.v0.1"
+      },
+      "compatibilityPolicy": {
+        "exactManifestMembership": true,
+        "inferFromSemver": false,
+        "autoUpgradeLegacyInput": false,
+        "acceptUnknownFutureVersion": false
+      }
+    }
+  }
+}

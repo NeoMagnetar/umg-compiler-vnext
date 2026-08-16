@@ -1,3 +1,5 @@
+import { DIAGNOSTIC_REGISTRY_VERSION } from './version-contract.js';
+
 export const DIAGNOSTIC_LEVELS = ['error', 'warning'] as const;
 export type DiagnosticLevel = (typeof DIAGNOSTIC_LEVELS)[number];
 
@@ -734,21 +736,27 @@ export function isDiagnosticCode(value: string): value is DiagnosticCode {
   return ownProperty(DIAGNOSTIC_REGISTRY, value);
 }
 
-export function diagnosticRegistryAsJson(): Record<string, DiagnosticRegistryEntry> {
-  return Object.fromEntries(
-    Object.entries(DIAGNOSTIC_REGISTRY)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([code, registryEntry]) => [
-        code,
-        {
-          level: registryEntry.level,
-          stage: registryEntry.stage,
-          allowedSubjectKinds: [...registryEntry.allowedSubjectKinds],
-          summary: registryEntry.summary,
-          requiredDetailKeys: [...registryEntry.requiredDetailKeys],
-        },
-      ]),
-  );
+export function diagnosticRegistryAsJson(): {
+  registryVersion: typeof DIAGNOSTIC_REGISTRY_VERSION;
+  entries: Record<string, DiagnosticRegistryEntry>;
+} {
+  return {
+    registryVersion: DIAGNOSTIC_REGISTRY_VERSION,
+    entries: Object.fromEntries(
+      Object.entries(DIAGNOSTIC_REGISTRY)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([code, registryEntry]) => [
+          code,
+          {
+            level: registryEntry.level,
+            stage: registryEntry.stage,
+            allowedSubjectKinds: [...registryEntry.allowedSubjectKinds],
+            summary: registryEntry.summary,
+            requiredDetailKeys: [...registryEntry.requiredDetailKeys],
+          },
+        ]),
+    ),
+  };
 }
 
 export function validateDiagnosticAgainstRegistry(diagnostic: {

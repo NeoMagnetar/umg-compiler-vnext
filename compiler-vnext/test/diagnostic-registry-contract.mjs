@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compileSleeve, validateSleeve } from '../dist/index.js';
+import { compileSleeve, DIAGNOSTIC_REGISTRY_VERSION, validateSleeve } from '../dist/index.js';
 import {
   DIAGNOSTIC_REGISTRY,
   diagnosticRegistryAsJson,
@@ -71,8 +71,11 @@ function assertConforms(diagnostic) {
 
 {
   const registryJson = json('schemas/DIAGNOSTIC_REGISTRY.json');
+  assert.equal(registryJson.registryVersion, DIAGNOSTIC_REGISTRY_VERSION);
   assert.deepEqual(registryJson, diagnosticRegistryAsJson());
 }
+
+assert.equal(Object.keys(DIAGNOSTIC_REGISTRY).length, 98);
 
 const dealershipSleeve = json('fixtures/dealership.sleeve.json');
 const stateSleeve = json('fixtures/state-selection.sleeve.json');

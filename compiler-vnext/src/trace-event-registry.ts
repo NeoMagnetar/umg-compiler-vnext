@@ -1,4 +1,5 @@
 import type { DiagnosticSubject, DiagnosticSubjectKind } from './diagnostic-registry.js';
+import { TRACE_EVENT_REGISTRY_VERSION } from './version-contract.js';
 
 export const TRACE_STAGES = ['intake', 'semantic', 'resolution', 'output', 'post_run'] as const;
 export type TraceStage = (typeof TRACE_STAGES)[number];
@@ -434,6 +435,12 @@ export function createTraceEvent(
   return event;
 }
 
-export function traceEventRegistryAsJson(): Record<TraceEventType, TraceEventRegistryEntry> {
-  return JSON.parse(JSON.stringify(TRACE_EVENT_REGISTRY)) as Record<TraceEventType, TraceEventRegistryEntry>;
+export function traceEventRegistryAsJson(): {
+  registryVersion: typeof TRACE_EVENT_REGISTRY_VERSION;
+  entries: Record<TraceEventType, TraceEventRegistryEntry>;
+} {
+  return {
+    registryVersion: TRACE_EVENT_REGISTRY_VERSION,
+    entries: JSON.parse(JSON.stringify(TRACE_EVENT_REGISTRY)) as Record<TraceEventType, TraceEventRegistryEntry>,
+  };
 }

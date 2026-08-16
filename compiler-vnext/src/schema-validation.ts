@@ -5,6 +5,13 @@ import type { ErrorObject, ValidateFunction } from 'ajv';
 import type { DiagnosticCode, DiagnosticSubject } from './diagnostic-registry.js';
 import { errorDiagnostic } from './errors.js';
 import type { CompileResult, CompileSelection, CompilerDiagnostic, RuntimeSpec, Sleeve, Trace } from './types.js';
+import {
+  COMPILE_RESULT_SCHEMA_VERSION,
+  RUNTIME_SCHEMA_VERSION,
+  SELECTION_SCHEMA_VERSION,
+  SLEEVE_SCHEMA_VERSION,
+  TRACE_SCHEMA_VERSION,
+} from './version-contract.js';
 
 const require = createRequire(import.meta.url);
 const Ajv2020 = require('ajv/dist/2020').default as typeof import('ajv/dist/2020.js').default;
@@ -142,15 +149,15 @@ function schemaVersionCode(kind: DocumentKind): DiagnosticCode {
 function schemaVersionValue(kind: DocumentKind): string {
   switch (kind) {
     case 'sleeve':
-      return 'umg.compiler-vnext.sleeve.v0.1';
+      return SLEEVE_SCHEMA_VERSION;
     case 'selection':
-      return 'umg.compiler-vnext.selection.v0.1';
+      return SELECTION_SCHEMA_VERSION;
     case 'runtime':
-      return 'umg.compiler-vnext.runtime.v0.1';
+      return RUNTIME_SCHEMA_VERSION;
     case 'trace':
-      return 'umg.compiler-vnext.trace.v0.1';
+      return TRACE_SCHEMA_VERSION;
     case 'compileResult':
-      return 'umg.compiler-vnext.compile-result.v0.1';
+      return COMPILE_RESULT_SCHEMA_VERSION;
   }
 }
 

@@ -4,6 +4,9 @@ This document freezes the v0.1 public output boundary for `compiler-vnext`.
 `RuntimeSpec` is the executor-facing source of truth. `Trace` is forensic
 explanation, not executable authority.
 
+Exact version identity and compatibility policy are frozen in
+[VERSION_COMPATIBILITY_CONTRACT.md](VERSION_COMPATIBILITY_CONTRACT.md).
+
 ## CompileResult Responsibility
 
 `CompileResult` is the canonical public envelope. It always contains:
