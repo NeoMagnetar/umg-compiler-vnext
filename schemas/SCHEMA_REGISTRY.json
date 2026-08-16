@@ -1,0 +1,38 @@
+{
+  "schemaRegistryVersion": "umg.compiler-vnext.schema-registry.v0.1",
+  "draft": "2020-12",
+  "canonicalStructuralSchema": "schemas/umg-compiler-vnext.schema.json",
+  "documents": [
+    {
+      "kind": "sleeve",
+      "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+      "schema": "schemas/sleeve.schema.json",
+      "example": "code/compiler-vnext/fixtures/dealership.sleeve.json"
+    },
+    {
+      "kind": "selection",
+      "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+      "schema": "schemas/compile-selection.schema.json",
+      "example": "code/compiler-vnext/fixtures/requests/secondary-b.selection.json"
+    },
+    {
+      "kind": "runtime",
+      "schemaVersion": "umg.compiler-vnext.runtime.v0.1",
+      "schema": "schemas/runtime-spec.schema.json",
+      "example": "code/compiler-vnext/fixtures/expected/secondary-b.compile-result.json#/runtime"
+    },
+    {
+      "kind": "trace",
+      "schemaVersion": "umg.compiler-vnext.trace.v0.1",
+      "schema": "schemas/trace.schema.json",
+      "example": "code/compiler-vnext/fixtures/expected/secondary-b.compile-result.json#/trace"
+    },
+    {
+      "kind": "compile_result",
+      "schemaVersion": null,
+      "schema": "schemas/compile-result.schema.json",
+      "example": "code/compiler-vnext/fixtures/expected/secondary-b.compile-result.json"
+    }
+  ],
+  "importantBoundary": "JSON Schema validates structural shape. The TypeScript compiler validator remains authoritative for cross-reference integrity, MOLT-lane correctness, Prime Directive position, Merge authority conservation, stack cycles, Bundle references, scoped-MOLT type restrictions, and other relational canon laws."
+}

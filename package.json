@@ -1,0 +1,33 @@
+{
+  "name": "umg-compiler-vnext",
+  "version": "0.1.0-experimental",
+  "private": true,
+  "description": "Side-by-side experimental UMG compiler implementing recursive geometry, READY state, Prime/Secondary Directives, same-type Bundles, explicit Merge provenance, scoped MOLT, Governance OFF, RuntimeSpec, and Trace.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "umg-vnext": "./dist/cli.js"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node test/run-fixtures.mjs",
+    "validate:sample": "npm run build && node dist/cli.js validate fixtures/dealership.sleeve.json",
+    "compile:normal": "npm run build && node dist/cli.js compile fixtures/dealership.sleeve.json fixtures/requests/normal.selection.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}

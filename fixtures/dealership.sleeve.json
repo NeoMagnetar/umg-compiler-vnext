@@ -1,0 +1,826 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.DEALERSHIP.GOLDEN.v0.1",
+  "name": "Dealership Golden Fixture",
+  "description": "Golden fixture for recursive geometry, Secondary Directives, same-type Bundles, Merge, scoped MOLT, Governance, READY/ACTIVE/OFF/DISABLED, RuntimeSpec, and Trace.",
+  "controllerNeoStackId": "NS.CONTROLLER",
+  "moltBlocks": [
+    {
+      "id": "PH.SLEEVE.PRAGMATISM",
+      "type": "philosophy",
+      "content": "Pragmatism",
+      "title": "Pragmatism"
+    },
+    {
+      "id": "BP.SLEEVE.INTAKE_FLOW",
+      "type": "blueprint",
+      "content": "Intake -> Classify -> Resolve or Route -> Confirm Next Action",
+      "title": "Dealership Intake Flow"
+    },
+    {
+      "id": "PH.OVERLAY.TAOISM",
+      "type": "philosophy",
+      "content": "Taoism",
+      "title": "Taoism"
+    },
+    {
+      "id": "T.CTRL.DEFAULT",
+      "type": "trigger",
+      "content": "The Controller NeoBlock is selected for a request.",
+      "title": "Controller Default Trigger"
+    },
+    {
+      "id": "D.CTRL.PRIME",
+      "type": "directive",
+      "content": "Interpret the request and identify the smallest relevant path through the Sleeve.",
+      "title": "Controller Prime Directive"
+    },
+    {
+      "id": "I.CTRL.INTERPRET",
+      "type": "instruction",
+      "content": "Use the explicit route proposal, tags, Use, Aim, and Need to identify relevant downstream domains.",
+      "title": "Interpret and Route"
+    },
+    {
+      "id": "S.CTRL.REQUEST",
+      "type": "subject",
+      "content": "Incoming dealership customer request.",
+      "title": "Incoming Request"
+    },
+    {
+      "id": "P.CTRL.ROUTE",
+      "type": "primary",
+      "content": "Explicit selection of relevant NeoStacks and NeoBlocks.",
+      "title": "Resolved Route"
+    },
+    {
+      "id": "BP.CTRL.SUMMARY",
+      "type": "blueprint",
+      "content": "Request -> Relevant Domains -> Missing Information -> Proposed Route",
+      "title": "Controller Route Summary"
+    },
+    {
+      "id": "T.SVC.NORMAL",
+      "type": "trigger",
+      "content": "Ordinary existing-vehicle service request without an emergency-safety or warranty-specific mode.",
+      "title": "Normal Service Trigger"
+    },
+    {
+      "id": "T.SVC.SAFETY",
+      "type": "trigger",
+      "content": "Credible immediate vehicle safety risk is present.",
+      "title": "Safety Trigger"
+    },
+    {
+      "id": "T.SVC.WARRANTY",
+      "type": "trigger",
+      "content": "The customer asks whether repair or defect coverage applies.",
+      "title": "Warranty Trigger"
+    },
+    {
+      "id": "D.SVC.PRIME",
+      "type": "directive",
+      "content": "Accurately triage the customer's existing-vehicle service need before routing further.",
+      "title": "Service Prime Directive"
+    },
+    {
+      "id": "D.SVC.B",
+      "type": "directive",
+      "content": "Use emergency-safety service mode while remaining subordinate to the Service Prime Directive.",
+      "title": "Secondary Directive B \u2014 Safety"
+    },
+    {
+      "id": "D.SVC.C",
+      "type": "directive",
+      "content": "Use warranty-evaluation service mode while remaining subordinate to the Service Prime Directive.",
+      "title": "Secondary Directive C \u2014 Warranty"
+    },
+    {
+      "id": "I.SVC.01",
+      "type": "instruction",
+      "content": "Identify the vehicle.",
+      "title": "Service Instruction 01"
+    },
+    {
+      "id": "I.SVC.02",
+      "type": "instruction",
+      "content": "Identify the reported symptom.",
+      "title": "Service Instruction 02"
+    },
+    {
+      "id": "I.SVC.03",
+      "type": "instruction",
+      "content": "Determine the requested service outcome.",
+      "title": "Service Instruction 03"
+    },
+    {
+      "id": "I.SVC.04",
+      "type": "instruction",
+      "content": "Identify the appropriate service destination.",
+      "title": "Service Instruction 04"
+    },
+    {
+      "id": "I.SVC.05",
+      "type": "instruction",
+      "content": "Confirm the next action.",
+      "title": "Service Instruction 05"
+    },
+    {
+      "id": "I.SVC.06",
+      "type": "instruction",
+      "content": "Establish whether the vehicle can be safely operated.",
+      "title": "Service Instruction 06"
+    },
+    {
+      "id": "I.SVC.07",
+      "type": "instruction",
+      "content": "Determine whether immediate safe transport or towing is required.",
+      "title": "Service Instruction 07"
+    },
+    {
+      "id": "I.SVC.08",
+      "type": "instruction",
+      "content": "Obtain warranty-identifying information.",
+      "title": "Service Instruction 08"
+    },
+    {
+      "id": "I.SVC.09",
+      "type": "instruction",
+      "content": "Establish relevant repair and service history.",
+      "title": "Service Instruction 09"
+    },
+    {
+      "id": "I.SVC.10",
+      "type": "instruction",
+      "content": "Determine the explicit warranty-coverage path without inventing coverage facts.",
+      "title": "Service Instruction 10"
+    },
+    {
+      "id": "I.SVC.MERGED.SAFE_STOP",
+      "type": "instruction",
+      "content": "When credible evidence indicates serious operational danger, establish a safe-stop or transport path before routine service handling.",
+      "title": "Merged Safe-Stop Instruction"
+    },
+    {
+      "id": "S.SVC.REQUEST",
+      "type": "subject",
+      "content": "The customer's existing vehicle, reported condition, and requested service outcome.",
+      "title": "Service Request Subject"
+    },
+    {
+      "id": "P.SVC.TRIAGE",
+      "type": "primary",
+      "content": "The service triage determination and next valid service path.",
+      "title": "Service Triage Primary"
+    },
+    {
+      "id": "PH.SVC.PRECAUTION",
+      "type": "philosophy",
+      "content": "Precautionary principle.",
+      "title": "Precautionary Principle"
+    },
+    {
+      "id": "BP.SVC.BASE",
+      "type": "blueprint",
+      "content": "Identify Vehicle -> Identify Symptom -> Determine Outcome -> Route -> Confirm",
+      "title": "Base Service Triage"
+    },
+    {
+      "id": "BP.SVC.SAFETY",
+      "type": "blueprint",
+      "content": "Safety Assessment -> Stabilization -> Safe Routing -> Confirmation",
+      "title": "Safety Triage Formation"
+    },
+    {
+      "id": "BP.SVC.WARRANTY",
+      "type": "blueprint",
+      "content": "Facts -> Coverage Basis -> Exclusions or Uncertainty -> Determination -> Next Action",
+      "title": "Warranty Determination Form"
+    },
+    {
+      "id": "T.DRIVE.DEFAULT",
+      "type": "trigger",
+      "content": "A drive-in service option is being evaluated.",
+      "title": "Drive-In Trigger"
+    },
+    {
+      "id": "D.DRIVE.PRIME",
+      "type": "directive",
+      "content": "Route an operable vehicle to an appropriate in-person service appointment.",
+      "title": "Drive-In Prime Directive"
+    },
+    {
+      "id": "I.DRIVE.SCHEDULE",
+      "type": "instruction",
+      "content": "Offer an in-person drive-in appointment only when Governance permits continued vehicle operation.",
+      "title": "Schedule Drive-In"
+    },
+    {
+      "id": "S.DRIVE.VEHICLE",
+      "type": "subject",
+      "content": "The customer vehicle and appointment availability.",
+      "title": "Drive-In Subject"
+    },
+    {
+      "id": "P.DRIVE.APPOINTMENT",
+      "type": "primary",
+      "content": "A valid drive-in service appointment path.",
+      "title": "Drive-In Appointment"
+    },
+    {
+      "id": "BP.DRIVE.CONFIRMATION",
+      "type": "blueprint",
+      "content": "Appointment Window -> Location -> Arrival Instructions -> Confirmation",
+      "title": "Drive-In Confirmation"
+    },
+    {
+      "id": "T.SALES.DEFAULT",
+      "type": "trigger",
+      "content": "A vehicle replacement, trade-in, or purchase path is explicitly relevant.",
+      "title": "Sales Trigger"
+    },
+    {
+      "id": "D.SALES.PRIME",
+      "type": "directive",
+      "content": "Assess the customer's replacement or trade-in interest without displacing urgent service needs.",
+      "title": "Sales Prime Directive"
+    },
+    {
+      "id": "I.SALES.ASSESS",
+      "type": "instruction",
+      "content": "Identify the desired replacement or trade-in outcome.",
+      "title": "Assess Sales Need"
+    },
+    {
+      "id": "S.SALES.TRADE",
+      "type": "subject",
+      "content": "The customer's vehicle replacement or trade-in interest.",
+      "title": "Sales Subject"
+    },
+    {
+      "id": "P.SALES.OPTIONS",
+      "type": "primary",
+      "content": "Relevant sales or trade-in options.",
+      "title": "Sales Options"
+    },
+    {
+      "id": "BP.SALES.SUMMARY",
+      "type": "blueprint",
+      "content": "Need -> Vehicle Preference -> Trade-In Context -> Next Sales Step",
+      "title": "Sales Summary"
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.CONTROLLER.INTAKE",
+      "name": "Controller Intake",
+      "tags": [
+        "controller",
+        "intake",
+        "routing"
+      ],
+      "moltBlockIds": [
+        "T.CTRL.DEFAULT",
+        "D.CTRL.PRIME",
+        "I.CTRL.INTERPRET",
+        "S.CTRL.REQUEST",
+        "P.CTRL.ROUTE",
+        "BP.CTRL.SUMMARY"
+      ],
+      "primeDirectiveId": "D.CTRL.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.CTRL.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.CTRL.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.CTRL.INTERPRET"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.CTRL.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.CTRL.ROUTE"
+            ]
+          }
+        ],
+        "blueprint": [
+          {
+            "row": 1,
+            "blockIds": [
+              "BP.CTRL.SUMMARY"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "NB.SERVICE.TRIAGE",
+      "name": "Service Triage",
+      "tags": [
+        "service",
+        "repair",
+        "warranty",
+        "safety"
+      ],
+      "moltBlockIds": [
+        "T.SVC.NORMAL",
+        "T.SVC.SAFETY",
+        "T.SVC.WARRANTY",
+        "D.SVC.PRIME",
+        "D.SVC.B",
+        "D.SVC.C",
+        "I.SVC.01",
+        "I.SVC.02",
+        "I.SVC.03",
+        "I.SVC.04",
+        "I.SVC.05",
+        "I.SVC.06",
+        "I.SVC.07",
+        "I.SVC.08",
+        "I.SVC.09",
+        "I.SVC.10",
+        "I.SVC.MERGED.SAFE_STOP",
+        "S.SVC.REQUEST",
+        "P.SVC.TRIAGE",
+        "PH.SVC.PRECAUTION",
+        "BP.SVC.BASE",
+        "BP.SVC.SAFETY",
+        "BP.SVC.WARRANTY"
+      ],
+      "primeDirectiveId": "D.SVC.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.SVC.B",
+          "directiveBlockId": "D.SVC.B",
+          "triggerBlockId": "T.SVC.SAFETY",
+          "bundles": {
+            "instruction": "BND.SVC.B.INSTRUCTION",
+            "philosophy": "BND.SVC.B.PHILOSOPHY",
+            "blueprint": "BND.SVC.B.BLUEPRINT"
+          }
+        },
+        {
+          "id": "SD.SVC.C",
+          "directiveBlockId": "D.SVC.C",
+          "triggerBlockId": "T.SVC.WARRANTY",
+          "bundles": {
+            "instruction": "BND.SVC.C.INSTRUCTION",
+            "blueprint": "BND.SVC.C.BLUEPRINT"
+          }
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.SVC.NORMAL",
+              "T.SVC.SAFETY",
+              "T.SVC.WARRANTY"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.SVC.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.SVC.01",
+              "I.SVC.02"
+            ]
+          },
+          {
+            "row": 2,
+            "blockIds": [
+              "I.SVC.03"
+            ]
+          },
+          {
+            "row": 3,
+            "blockIds": [
+              "I.SVC.04",
+              "I.SVC.05"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.SVC.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.SVC.TRIAGE"
+            ]
+          }
+        ],
+        "blueprint": [
+          {
+            "row": 1,
+            "blockIds": [
+              "BP.SVC.BASE"
+            ]
+          }
+        ]
+      },
+      "bundles": [
+        {
+          "id": "BND.SVC.B.INSTRUCTION",
+          "name": "Safety Instruction Bundle",
+          "moltType": "instruction",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "I.SVC.06"
+              ]
+            },
+            {
+              "row": 2,
+              "blockIds": [
+                "I.SVC.02",
+                "I.SVC.01"
+              ]
+            },
+            {
+              "row": 3,
+              "blockIds": [
+                "I.SVC.07"
+              ]
+            },
+            {
+              "row": 4,
+              "blockIds": [
+                "I.SVC.MERGED.SAFE_STOP"
+              ]
+            },
+            {
+              "row": 5,
+              "blockIds": [
+                "I.SVC.05"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "BND.SVC.B.PHILOSOPHY",
+          "name": "Safety Philosophy Bundle",
+          "moltType": "philosophy",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "PH.SVC.PRECAUTION"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "BND.SVC.B.BLUEPRINT",
+          "name": "Safety Blueprint Bundle",
+          "moltType": "blueprint",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "BP.SVC.SAFETY"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "BND.SVC.C.INSTRUCTION",
+          "name": "Warranty Instruction Bundle",
+          "moltType": "instruction",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "I.SVC.01",
+                "I.SVC.08"
+              ]
+            },
+            {
+              "row": 2,
+              "blockIds": [
+                "I.SVC.02",
+                "I.SVC.09"
+              ]
+            },
+            {
+              "row": 3,
+              "blockIds": [
+                "I.SVC.10"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "BND.SVC.C.BLUEPRINT",
+          "name": "Warranty Blueprint Bundle",
+          "moltType": "blueprint",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "BP.SVC.WARRANTY"
+              ]
+            }
+          ]
+        }
+      ],
+      "merges": [
+        {
+          "id": "MRG.SVC.SAFE_STOP",
+          "sourceBlockIds": [
+            "I.SVC.06",
+            "PH.SVC.PRECAUTION"
+          ],
+          "resultBlockId": "I.SVC.MERGED.SAFE_STOP"
+        }
+      ]
+    },
+    {
+      "id": "NB.SERVICE.DRIVE_IN",
+      "name": "Drive-In Appointment",
+      "tags": [
+        "service",
+        "appointment"
+      ],
+      "moltBlockIds": [
+        "T.DRIVE.DEFAULT",
+        "D.DRIVE.PRIME",
+        "I.DRIVE.SCHEDULE",
+        "S.DRIVE.VEHICLE",
+        "P.DRIVE.APPOINTMENT",
+        "BP.DRIVE.CONFIRMATION"
+      ],
+      "primeDirectiveId": "D.DRIVE.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.DRIVE.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.DRIVE.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.DRIVE.SCHEDULE"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.DRIVE.VEHICLE"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.DRIVE.APPOINTMENT"
+            ]
+          }
+        ],
+        "blueprint": [
+          {
+            "row": 1,
+            "blockIds": [
+              "BP.DRIVE.CONFIRMATION"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "NB.SALES.TRADE_IN",
+      "name": "Trade-In Interest",
+      "tags": [
+        "sales",
+        "trade-in"
+      ],
+      "moltBlockIds": [
+        "T.SALES.DEFAULT",
+        "D.SALES.PRIME",
+        "I.SALES.ASSESS",
+        "S.SALES.TRADE",
+        "P.SALES.OPTIONS",
+        "BP.SALES.SUMMARY"
+      ],
+      "primeDirectiveId": "D.SALES.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.SALES.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.SALES.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.SALES.ASSESS"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.SALES.TRADE"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.SALES.OPTIONS"
+            ]
+          }
+        ],
+        "blueprint": [
+          {
+            "row": 1,
+            "blockIds": [
+              "BP.SALES.SUMMARY"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.CONTROLLER",
+      "name": "Controller",
+      "skill": "This NeoStack intakes the request and identifies the smallest relevant downstream path.",
+      "tags": [
+        "controller",
+        "routing"
+      ],
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.CONTROLLER.INTAKE"
+          ]
+        }
+      ],
+      "childStackRows": [
+        {
+          "row": 1,
+          "neoStackIds": [
+            "NS.SERVICE",
+            "NS.SALES"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NS.SERVICE",
+      "name": "Vehicle Service",
+      "skill": "This NeoStack handles diagnosis, repair, safety, warranty-related service, and service scheduling for existing vehicles.",
+      "tags": [
+        "service",
+        "repair",
+        "warranty"
+      ],
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.SERVICE.TRIAGE"
+          ]
+        },
+        {
+          "row": 2,
+          "neoBlockIds": [
+            "NB.SERVICE.DRIVE_IN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NS.SALES",
+      "name": "Vehicle Sales",
+      "skill": "This NeoStack handles vehicle replacement, trade-in, and purchase interests after urgent service needs are addressed.",
+      "tags": [
+        "sales",
+        "trade-in"
+      ],
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.SALES.TRADE_IN"
+          ]
+        }
+      ]
+    }
+  ],
+  "scopedMolt": [
+    {
+      "id": "ATT.SLEEVE.PH.PRAGMATISM",
+      "blockId": "PH.SLEEVE.PRAGMATISM",
+      "scope": {
+        "kind": "sleeve"
+      }
+    },
+    {
+      "id": "ATT.SLEEVE.BP.INTAKE_FLOW",
+      "blockId": "BP.SLEEVE.INTAKE_FLOW",
+      "scope": {
+        "kind": "sleeve"
+      }
+    }
+  ],
+  "overlays": [
+    {
+      "id": "OV.TAOISM",
+      "name": "Taoism Philosophy Overlay",
+      "attachments": [
+        {
+          "id": "ATT.OV.TAOISM.PH",
+          "blockId": "PH.OVERLAY.TAOISM",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      ]
+    }
+  ],
+  "governance": [
+    {
+      "id": "GOV.SAFETY.NO_DRIVE",
+      "name": "Unsafe Vehicle No-Drive Rule",
+      "description": "When activated by an external Governance evaluator, the drive-in appointment NeoBlock is OFF.",
+      "offNeoBlockIds": [
+        "NB.SERVICE.DRIVE_IN"
+      ]
+    }
+  ]
+}

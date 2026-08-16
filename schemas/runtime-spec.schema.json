@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://umg.local/schemas/runtime-spec.schema.json",
+  "$ref": "umg-compiler-vnext.schema.json#/$defs/RuntimeSpec"
+}
