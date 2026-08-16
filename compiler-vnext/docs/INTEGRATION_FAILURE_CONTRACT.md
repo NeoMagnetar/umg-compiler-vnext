@@ -93,6 +93,37 @@ Rejected conditions:
 
 Malformed scoped attachments are not silently ignored.
 
+## State And Selection Contract
+
+`compiler-vnext` freezes effective compile state precedence as:
+
+- `off`
+- `disabled`
+- `active`
+- `ready`
+
+Impossible explicit selection fails closed. The compiler does not silently drop:
+
+- selected NeoStacks blocked by `off` or `disabled`
+- selected NeoStacks missing selected ancestors
+- selected NeoBlocks whose container NeoStack is missing, unselected, `off`, or `disabled`
+
+The compiler does not infer missing route ancestors or auto-select missing containers.
+
+## Multiple Secondary Directive Matches
+
+`compiler-vnext` does not support implicit coexistence of multiple simultaneously
+matching Secondary Directives in this schema/compiler version.
+
+Current rule:
+
+- 0 matching Secondary Directives -> Prime only
+- 1 matching Secondary Directive -> Prime + selected Secondary
+- 2+ matching Secondary Directives -> `MULTIPLE_SECONDARY_DIRECTIVE_MATCH`
+
+Multiple matches are invalid unless a future version defines an explicit
+coexistence construct.
+
 ## CLI Exit Codes
 
 Compile command behavior:

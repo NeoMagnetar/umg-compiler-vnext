@@ -3,15 +3,17 @@
   "compiledAt": "2026-08-16T00:00:00.000Z",
   "activeNeoStackIds": [
     "NS.CONTROLLER",
-    "NS.SALES"
+    "NS.SERVICE"
   ],
   "activeNeoBlockIds": [
     "NB.CONTROLLER.INTAKE",
-    "NB.SALES.TRADE_IN"
+    "NB.SERVICE.TRIAGE"
   ],
   "triggerState": {
     "T.CTRL.DEFAULT": true,
-    "T.SALES.DEFAULT": true
+    "T.SVC.NORMAL": true,
+    "T.SVC.SAFETY": false,
+    "T.SVC.WARRANTY": false
   },
   "activeOverlayIds": [],
   "activeGovernanceRuleIds": [],
