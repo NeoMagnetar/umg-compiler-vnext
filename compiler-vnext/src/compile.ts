@@ -1,6 +1,10 @@
 import { COMPILE_RESULT_SCHEMA_VERSION, COMPILER_VERSION } from './constants.js';
 import { sha256Canonical } from './canonicalize.js';
-import { internalCompilerErrorDiagnostic } from './errors.js';
+import {
+  internalCompilerErrorDiagnostic,
+  internalOutputContractViolationDiagnostic,
+} from './errors.js';
+import { validateCompileResultContract } from './public-output-contract.js';
 import { resolveSleeve } from './resolve.js';
 import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
 import { validateCanonicalSelection } from './validate.js';
@@ -13,6 +17,98 @@ import type {
   Trace,
   TraceEvent,
 } from './types.js';
+
+function finalizeCompileResult(
+  candidate: CompileResult,
+  sleeve: Sleeve,
+  selection: CompileSelection,
+): CompileResult {
+  const contractDiagnostics = validateCompileResultContract(candidate).diagnostics;
+  if (candidate.compilerVersion !== COMPILER_VERSION) {
+    contractDiagnostics.push(
+      internalOutputContractViolationDiagnostic({
+        message: 'CompileResult compilerVersion must match the compiler version constant.',
+        path: 'compilerVersion',
+      }),
+    );
+  }
+
+  if (candidate.trace) {
+    if (candidate.trace.sleeveId !== sleeve.id) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'Trace sleeveId must match the compiled sleeve.',
+          path: 'trace.sleeveId',
+        }),
+      );
+    }
+    if (candidate.trace.compiledAt !== selection.compiledAt) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'Trace compiledAt must match the supplied selection timestamp.',
+          path: 'trace.compiledAt',
+        }),
+      );
+    }
+  }
+
+  if (candidate.runtime) {
+    if (candidate.runtime.sleeveId !== sleeve.id) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'RuntimeSpec sleeveId must match the compiled sleeve.',
+          path: 'runtime.sleeveId',
+        }),
+      );
+    }
+    if (candidate.runtime.sleeveName !== sleeve.name) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'RuntimeSpec sleeveName must match the compiled sleeve.',
+          path: 'runtime.sleeveName',
+        }),
+      );
+    }
+    if (candidate.runtime.controllerNeoStackId !== sleeve.controllerNeoStackId) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'RuntimeSpec controllerNeoStackId must match the compiled sleeve.',
+          path: 'runtime.controllerNeoStackId',
+        }),
+      );
+    }
+    if (candidate.runtime.compiledAt !== selection.compiledAt) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'RuntimeSpec compiledAt must match the supplied selection timestamp.',
+          path: 'runtime.compiledAt',
+        }),
+      );
+    }
+
+    const { runtimeHash: actualRuntimeHash, ...runtimeWithoutHash } = candidate.runtime;
+    const expectedRuntimeHash = sha256Canonical(runtimeWithoutHash);
+    if (actualRuntimeHash !== expectedRuntimeHash) {
+      contractDiagnostics.push(
+        internalOutputContractViolationDiagnostic({
+          message: 'RuntimeSpec runtimeHash must equal the canonical hash of the runtime payload.',
+          path: 'runtime.runtimeHash',
+          expectedRuntimeHash,
+          actualRuntimeHash,
+        }),
+      );
+    }
+  }
+
+  if (contractDiagnostics.length > 0) {
+    return buildFailureCompileResult(
+      [internalOutputContractViolationDiagnostic({ violations: contractDiagnostics })],
+      null,
+    );
+  }
+
+  return candidate;
+}
 
 function buildFailureCompileResult(
   diagnostics: CompilerDiagnostic[],
@@ -116,7 +212,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
         sleeve.neoBlocks.map((block) => [block.id, block.defaultState ?? 'ready']),
       ),
     };
-    return buildFailureCompileResult(validation.diagnostics, trace);
+    return finalizeCompileResult(buildFailureCompileResult(validation.diagnostics, trace), sleeve, selection);
   }
 
   const resolution = resolveSleeve(sleeve, selection);
@@ -143,7 +239,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
       finalNeoStackStates: resolution.finalNeoStackStates,
       finalNeoBlockStates: resolution.finalNeoBlockStates,
     };
-    return buildFailureCompileResult(diagnostics, trace);
+    return finalizeCompileResult(buildFailureCompileResult(diagnostics, trace), sleeve, selection);
   }
 
   const runtimeWithoutHash = {
@@ -204,7 +300,7 @@ function compileCanonicalSleeve(sleeve: Sleeve, selection: CompileSelection): Co
     finalNeoBlockStates: resolution.finalNeoBlockStates,
   };
 
-  return buildSuccessCompileResult(runtime, trace, diagnostics);
+  return finalizeCompileResult(buildSuccessCompileResult(runtime, trace, diagnostics), sleeve, selection);
 }
 
 export function compileSleeve(sleeve: unknown, selection: unknown): CompileResult {

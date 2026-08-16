@@ -25,3 +25,14 @@ export function internalCompilerErrorDiagnostic(): CompilerDiagnostic {
     message: 'Unexpected internal compiler failure.',
   };
 }
+
+export function internalOutputContractViolationDiagnostic(
+  details?: Record<string, unknown>,
+): CompilerDiagnostic {
+  return {
+    code: 'INTERNAL_OUTPUT_CONTRACT_VIOLATION',
+    level: 'error',
+    message: 'Internal public output contract violation.',
+    details,
+  };
+}

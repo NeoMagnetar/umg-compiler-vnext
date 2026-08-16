@@ -3,13 +3,13 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import type { ErrorObject, ValidateFunction } from 'ajv';
 import { errorDiagnostic } from './errors.js';
-import type { CompileSelection, CompilerDiagnostic, Sleeve } from './types.js';
+import type { CompileResult, CompileSelection, CompilerDiagnostic, RuntimeSpec, Sleeve, Trace } from './types.js';
 
 const require = createRequire(import.meta.url);
 const Ajv2020 = require('ajv/dist/2020').default as typeof import('ajv/dist/2020.js').default;
 const addFormats = require('ajv-formats').default as typeof import('ajv-formats').default;
 
-type DocumentKind = 'sleeve' | 'selection';
+type DocumentKind = 'sleeve' | 'selection' | 'runtime' | 'trace' | 'compileResult';
 
 interface StructuralValidationSuccess<T> {
   ok: true;
@@ -29,6 +29,9 @@ export type StructuralValidationResult<T> =
 interface ValidatorSet {
   sleeve: ValidateFunction<Sleeve>;
   selection: ValidateFunction<CompileSelection>;
+  runtime: ValidateFunction<RuntimeSpec>;
+  trace: ValidateFunction<Trace>;
+  compileResult: ValidateFunction<CompileResult>;
 }
 
 let validators: ValidatorSet | undefined;
@@ -54,6 +57,9 @@ function getValidators(): ValidatorSet {
   validators = {
     sleeve: ajv.compile<Sleeve>(loadSchema('sleeve.schema.json')),
     selection: ajv.compile<CompileSelection>(loadSchema('compile-selection.schema.json')),
+    runtime: ajv.compile<RuntimeSpec>(loadSchema('runtime-spec.schema.json')),
+    trace: ajv.compile<Trace>(loadSchema('trace.schema.json')),
+    compileResult: ajv.compile<CompileResult>(loadSchema('compile-result.schema.json')),
   };
 
   return validators;
@@ -118,13 +124,33 @@ function sortDiagnostics(diagnostics: CompilerDiagnostic[]): CompilerDiagnostic[
 }
 
 function schemaVersionCode(kind: DocumentKind): string {
-  return kind === 'sleeve' ? 'UNSUPPORTED_SLEEVE_SCHEMA' : 'UNSUPPORTED_SELECTION_SCHEMA';
+  switch (kind) {
+    case 'sleeve':
+      return 'UNSUPPORTED_SLEEVE_SCHEMA';
+    case 'selection':
+      return 'UNSUPPORTED_SELECTION_SCHEMA';
+    case 'runtime':
+      return 'UNSUPPORTED_RUNTIME_SCHEMA';
+    case 'trace':
+      return 'UNSUPPORTED_TRACE_SCHEMA';
+    case 'compileResult':
+      return 'UNSUPPORTED_COMPILE_RESULT_SCHEMA';
+  }
 }
 
 function schemaVersionValue(kind: DocumentKind): string {
-  return kind === 'sleeve'
-    ? 'umg.compiler-vnext.sleeve.v0.1'
-    : 'umg.compiler-vnext.selection.v0.1';
+  switch (kind) {
+    case 'sleeve':
+      return 'umg.compiler-vnext.sleeve.v0.1';
+    case 'selection':
+      return 'umg.compiler-vnext.selection.v0.1';
+    case 'runtime':
+      return 'umg.compiler-vnext.runtime.v0.1';
+    case 'trace':
+      return 'umg.compiler-vnext.trace.v0.1';
+    case 'compileResult':
+      return 'umg.compiler-vnext.compile-result.v0.1';
+  }
 }
 
 function describeType(value: unknown): string {
@@ -308,4 +334,16 @@ export function structurallyValidateSleeve(input: unknown): StructuralValidation
 
 export function structurallyValidateSelection(input: unknown): StructuralValidationResult<CompileSelection> {
   return structurallyValidate('selection', input, getValidators().selection);
+}
+
+export function structurallyValidateRuntimeSpec(input: unknown): StructuralValidationResult<RuntimeSpec> {
+  return structurallyValidate('runtime', input, getValidators().runtime);
+}
+
+export function structurallyValidateTrace(input: unknown): StructuralValidationResult<Trace> {
+  return structurallyValidate('trace', input, getValidators().trace);
+}
+
+export function structurallyValidateCompileResult(input: unknown): StructuralValidationResult<CompileResult> {
+  return structurallyValidate('compileResult', input, getValidators().compileResult);
 }
