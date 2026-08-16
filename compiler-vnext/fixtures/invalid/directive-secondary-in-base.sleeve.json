@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.INVALID.DIRECTIVE.BASE.v0.1",
+  "name": "Invalid Directive Base Geometry Fixture",
+  "description": "Invalid fixture that authors a Secondary Directive row directly inside baseGeometry.directive.",
+  "controllerNeoStackId": "NS.INVALID.ROOT",
+  "moltBlocks": [
+    {
+      "id": "T.BAD.DEFAULT",
+      "type": "trigger",
+      "content": "Base route remains available."
+    },
+    {
+      "id": "T.BAD.ALT",
+      "type": "trigger",
+      "content": "Secondary directive route is externally selected."
+    },
+    {
+      "id": "D.BAD.PRIME",
+      "type": "directive",
+      "content": "Apply the prime directive first."
+    },
+    {
+      "id": "D.BAD.SECONDARY",
+      "type": "directive",
+      "content": "This authored directive row should be rejected."
+    },
+    {
+      "id": "I.BAD.STEP",
+      "type": "instruction",
+      "content": "Execute the invalid directive-shape fixture deterministically."
+    },
+    {
+      "id": "S.BAD.REQUEST",
+      "type": "subject",
+      "content": "Invalid directive geometry request."
+    },
+    {
+      "id": "P.BAD.GOAL",
+      "type": "primary",
+      "content": "Demonstrate directive schema rejection."
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.INVALID.DIRECTIVE",
+      "name": "Invalid Directive Geometry",
+      "moltBlockIds": [
+        "T.BAD.DEFAULT",
+        "T.BAD.ALT",
+        "D.BAD.PRIME",
+        "D.BAD.SECONDARY",
+        "I.BAD.STEP",
+        "S.BAD.REQUEST",
+        "P.BAD.GOAL"
+      ],
+      "primeDirectiveId": "D.BAD.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.BAD.SECONDARY",
+          "directiveBlockId": "D.BAD.SECONDARY",
+          "triggerBlockId": "T.BAD.ALT"
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.BAD.DEFAULT",
+              "T.BAD.ALT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.BAD.PRIME"
+            ]
+          },
+          {
+            "row": 2,
+            "blockIds": [
+              "D.BAD.SECONDARY"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.BAD.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.BAD.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.BAD.GOAL"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.INVALID.ROOT",
+      "name": "Invalid Root",
+      "skill": "Provides a single invalid directive-shape NeoBlock for validation testing.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.INVALID.DIRECTIVE"
+          ]
+        }
+      ]
+    }
+  ]
+}

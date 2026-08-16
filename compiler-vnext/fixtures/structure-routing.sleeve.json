@@ -1,0 +1,385 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.STRUCTURE.ROUTING.v0.1",
+  "name": "Structure Routing Fixture",
+  "description": "Nested NeoStack fixture with horizontal peer NeoBlocks for traversal and authored-order assertions.",
+  "controllerNeoStackId": "NS.ROOT",
+  "moltBlocks": [
+    {
+      "id": "T.ROOT.DEFAULT",
+      "type": "trigger",
+      "content": "Root route is active."
+    },
+    {
+      "id": "D.ROOT.PRIME",
+      "type": "directive",
+      "content": "Resolve the root route first."
+    },
+    {
+      "id": "I.ROOT.STEP",
+      "type": "instruction",
+      "content": "Route into the nested service path."
+    },
+    {
+      "id": "S.ROOT.REQUEST",
+      "type": "subject",
+      "content": "Nested routing request."
+    },
+    {
+      "id": "P.ROOT.GOAL",
+      "type": "primary",
+      "content": "Open the nested route."
+    },
+    {
+      "id": "T.PARENT.LEFT.DEFAULT",
+      "type": "trigger",
+      "content": "Left peer is active."
+    },
+    {
+      "id": "D.PARENT.LEFT.PRIME",
+      "type": "directive",
+      "content": "Evaluate the left peer first on its shared row."
+    },
+    {
+      "id": "I.PARENT.LEFT.STEP",
+      "type": "instruction",
+      "content": "Process the left peer deterministically."
+    },
+    {
+      "id": "S.PARENT.LEFT.REQUEST",
+      "type": "subject",
+      "content": "Left peer request."
+    },
+    {
+      "id": "P.PARENT.LEFT.GOAL",
+      "type": "primary",
+      "content": "Complete the left peer."
+    },
+    {
+      "id": "T.PARENT.RIGHT.DEFAULT",
+      "type": "trigger",
+      "content": "Right peer is active."
+    },
+    {
+      "id": "D.PARENT.RIGHT.PRIME",
+      "type": "directive",
+      "content": "Evaluate the right peer second on its shared row."
+    },
+    {
+      "id": "I.PARENT.RIGHT.STEP",
+      "type": "instruction",
+      "content": "Process the right peer deterministically."
+    },
+    {
+      "id": "S.PARENT.RIGHT.REQUEST",
+      "type": "subject",
+      "content": "Right peer request."
+    },
+    {
+      "id": "P.PARENT.RIGHT.GOAL",
+      "type": "primary",
+      "content": "Complete the right peer."
+    },
+    {
+      "id": "T.CHILD.DEFAULT",
+      "type": "trigger",
+      "content": "Child descendant is active."
+    },
+    {
+      "id": "D.CHILD.PRIME",
+      "type": "directive",
+      "content": "Resolve the descendant after parent peers."
+    },
+    {
+      "id": "I.CHILD.STEP",
+      "type": "instruction",
+      "content": "Process the descendant deterministically."
+    },
+    {
+      "id": "S.CHILD.REQUEST",
+      "type": "subject",
+      "content": "Child descendant request."
+    },
+    {
+      "id": "P.CHILD.GOAL",
+      "type": "primary",
+      "content": "Complete the child descendant."
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.ROOT.ROUTE",
+      "name": "Root Route",
+      "moltBlockIds": [
+        "T.ROOT.DEFAULT",
+        "D.ROOT.PRIME",
+        "I.ROOT.STEP",
+        "S.ROOT.REQUEST",
+        "P.ROOT.GOAL"
+      ],
+      "primeDirectiveId": "D.ROOT.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.ROOT.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.ROOT.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.ROOT.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.ROOT.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.ROOT.GOAL"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "NB.PARENT.LEFT",
+      "name": "Parent Left Peer",
+      "moltBlockIds": [
+        "T.PARENT.LEFT.DEFAULT",
+        "D.PARENT.LEFT.PRIME",
+        "I.PARENT.LEFT.STEP",
+        "S.PARENT.LEFT.REQUEST",
+        "P.PARENT.LEFT.GOAL"
+      ],
+      "primeDirectiveId": "D.PARENT.LEFT.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.PARENT.LEFT.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.PARENT.LEFT.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.PARENT.LEFT.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.PARENT.LEFT.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.PARENT.LEFT.GOAL"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "NB.PARENT.RIGHT",
+      "name": "Parent Right Peer",
+      "moltBlockIds": [
+        "T.PARENT.RIGHT.DEFAULT",
+        "D.PARENT.RIGHT.PRIME",
+        "I.PARENT.RIGHT.STEP",
+        "S.PARENT.RIGHT.REQUEST",
+        "P.PARENT.RIGHT.GOAL"
+      ],
+      "primeDirectiveId": "D.PARENT.RIGHT.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.PARENT.RIGHT.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.PARENT.RIGHT.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.PARENT.RIGHT.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.PARENT.RIGHT.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.PARENT.RIGHT.GOAL"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "NB.CHILD.DESCENDANT",
+      "name": "Child Descendant",
+      "moltBlockIds": [
+        "T.CHILD.DEFAULT",
+        "D.CHILD.PRIME",
+        "I.CHILD.STEP",
+        "S.CHILD.REQUEST",
+        "P.CHILD.GOAL"
+      ],
+      "primeDirectiveId": "D.CHILD.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.CHILD.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.CHILD.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.CHILD.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.CHILD.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.CHILD.GOAL"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.ROOT",
+      "name": "Root",
+      "skill": "Owns the controller entry into the nested route.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.ROOT.ROUTE"
+          ]
+        }
+      ],
+      "childStackRows": [
+        {
+          "row": 1,
+          "neoStackIds": [
+            "NS.PARENT"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NS.PARENT",
+      "name": "Parent",
+      "skill": "Contains horizontal peer NeoBlocks and the descendant child stack.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.PARENT.LEFT",
+            "NB.PARENT.RIGHT"
+          ]
+        }
+      ],
+      "childStackRows": [
+        {
+          "row": 1,
+          "neoStackIds": [
+            "NS.CHILD"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NS.CHILD",
+      "name": "Child",
+      "skill": "Contains the selected descendant NeoBlock.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.CHILD.DESCENDANT"
+          ]
+        }
+      ]
+    }
+  ]
+}

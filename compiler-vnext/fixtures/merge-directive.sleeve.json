@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.MERGE.DIRECTIVE.v0.1",
+  "name": "Directive Merge Fixture",
+  "description": "Minimal fixture for directive-plus-philosophy merge provenance on an active Secondary Directive lane.",
+  "controllerNeoStackId": "NS.MERGE.ROOT",
+  "moltBlocks": [
+    {
+      "id": "T.MRG.DEFAULT",
+      "type": "trigger",
+      "content": "Base route remains available."
+    },
+    {
+      "id": "T.MRG.ALT",
+      "type": "trigger",
+      "content": "Secondary directive route is externally selected."
+    },
+    {
+      "id": "D.MRG.PRIME",
+      "type": "directive",
+      "content": "Apply the prime directive first."
+    },
+    {
+      "id": "D.MRG.SELECTED",
+      "type": "directive",
+      "content": "Apply the merged contextual directive as the selected secondary row."
+    },
+    {
+      "id": "I.MRG.STEP",
+      "type": "instruction",
+      "content": "Execute the directive merge path deterministically."
+    },
+    {
+      "id": "S.MRG.REQUEST",
+      "type": "subject",
+      "content": "Directive merge request."
+    },
+    {
+      "id": "P.MRG.GOAL",
+      "type": "primary",
+      "content": "Deliver the merged directive outcome."
+    },
+    {
+      "id": "PH.MRG.CONTEXT",
+      "type": "philosophy",
+      "content": "Context narrows the directive without elevating authority."
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.MERGE.DIRECTIVE",
+      "name": "Directive Merge",
+      "moltBlockIds": [
+        "T.MRG.DEFAULT",
+        "T.MRG.ALT",
+        "D.MRG.PRIME",
+        "D.MRG.SELECTED",
+        "I.MRG.STEP",
+        "S.MRG.REQUEST",
+        "P.MRG.GOAL",
+        "PH.MRG.CONTEXT"
+      ],
+      "primeDirectiveId": "D.MRG.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.MRG.DIRECTIVE",
+          "directiveBlockId": "D.MRG.SELECTED",
+          "triggerBlockId": "T.MRG.ALT"
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.MRG.DEFAULT",
+              "T.MRG.ALT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.MRG.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.MRG.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.MRG.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.MRG.GOAL"
+            ]
+          }
+        ],
+        "philosophy": [
+          {
+            "row": 1,
+            "blockIds": [
+              "PH.MRG.CONTEXT"
+            ]
+          }
+        ]
+      },
+      "merges": [
+        {
+          "id": "MRG.DIRECTIVE.CONTEXT",
+          "sourceBlockIds": [
+            "D.MRG.PRIME",
+            "PH.MRG.CONTEXT"
+          ],
+          "resultBlockId": "D.MRG.SELECTED"
+        }
+      ]
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.MERGE.ROOT",
+      "name": "Merge Root",
+      "skill": "Exercises explicit directive merge provenance inside compiler-vnext.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.MERGE.DIRECTIVE"
+          ]
+        }
+      ]
+    }
+  ]
+}

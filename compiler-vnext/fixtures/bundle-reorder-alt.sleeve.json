@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.BUNDLE.REORDER.v0.1",
+  "name": "Bundle Reorder Fixture",
+  "description": "Fixture for asserting that selected bundle row order structurally changes runtime output and hash.",
+  "controllerNeoStackId": "NS.BUNDLE.ROOT",
+  "moltBlocks": [
+    {
+      "id": "T.BND.DEFAULT",
+      "type": "trigger",
+      "content": "Default route remains available."
+    },
+    {
+      "id": "T.BND.ALT",
+      "type": "trigger",
+      "content": "Bundle reorder route is externally selected."
+    },
+    {
+      "id": "D.BND.PRIME",
+      "type": "directive",
+      "content": "Apply the prime directive first."
+    },
+    {
+      "id": "D.BND.SEC",
+      "type": "directive",
+      "content": "Select the alternate bundle row ordering."
+    },
+    {
+      "id": "I.BND.01",
+      "type": "instruction",
+      "content": "Instruction one."
+    },
+    {
+      "id": "I.BND.02",
+      "type": "instruction",
+      "content": "Instruction two."
+    },
+    {
+      "id": "I.BND.03",
+      "type": "instruction",
+      "content": "Instruction three."
+    },
+    {
+      "id": "S.BND.REQUEST",
+      "type": "subject",
+      "content": "Bundle reorder request."
+    },
+    {
+      "id": "P.BND.GOAL",
+      "type": "primary",
+      "content": "Observe deterministic bundle geometry changes only."
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.BUNDLE.ORDER",
+      "name": "Bundle Order",
+      "moltBlockIds": [
+        "T.BND.DEFAULT",
+        "T.BND.ALT",
+        "D.BND.PRIME",
+        "D.BND.SEC",
+        "I.BND.01",
+        "I.BND.02",
+        "I.BND.03",
+        "S.BND.REQUEST",
+        "P.BND.GOAL"
+      ],
+      "primeDirectiveId": "D.BND.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.BND.ALT",
+          "directiveBlockId": "D.BND.SEC",
+          "triggerBlockId": "T.BND.ALT",
+          "bundles": {
+            "instruction": "BND.BND.ALT"
+          }
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.BND.DEFAULT",
+              "T.BND.ALT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.BND.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.BND.01",
+              "I.BND.02",
+              "I.BND.03"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.BND.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.BND.GOAL"
+            ]
+          }
+        ]
+      },
+      "bundles": [
+        {
+          "id": "BND.BND.ALT",
+          "moltType": "instruction",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "I.BND.02"
+              ]
+            },
+            {
+              "row": 2,
+              "blockIds": [
+                "I.BND.03",
+                "I.BND.01"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.BUNDLE.ROOT",
+      "name": "Bundle Root",
+      "skill": "Contains a single NeoBlock for bundle-order mutation testing.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.BUNDLE.ORDER"
+          ]
+        }
+      ]
+    }
+  ]
+}

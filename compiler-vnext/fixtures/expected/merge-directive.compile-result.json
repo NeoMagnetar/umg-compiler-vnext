@@ -1,0 +1,603 @@
+{
+  "runtime": {
+    "schemaVersion": "umg.compiler-vnext.runtime.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.MERGE.DIRECTIVE.v0.1",
+    "sleeveName": "Directive Merge Fixture",
+    "controllerNeoStackId": "NS.MERGE.ROOT",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "activeNeoStackIds": [
+      "NS.MERGE.ROOT"
+    ],
+    "resolvedNeoBlocks": [
+      {
+        "id": "NB.MERGE.DIRECTIVE",
+        "name": "Directive Merge",
+        "state": "active",
+        "postRunState": "ready",
+        "primeDirectiveId": "D.MRG.PRIME",
+        "secondaryDirectiveId": "SD.MRG.DIRECTIVE",
+        "activeTriggerIds": [
+          "T.MRG.DEFAULT",
+          "T.MRG.ALT"
+        ],
+        "lanes": [
+          {
+            "moltType": "trigger",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "T.MRG.DEFAULT",
+                    "type": "trigger",
+                    "content": "Base route remains available.",
+                    "sourceMode": "local",
+                    "sourceId": "T.MRG.DEFAULT"
+                  },
+                  {
+                    "id": "T.MRG.ALT",
+                    "type": "trigger",
+                    "content": "Secondary directive route is externally selected.",
+                    "sourceMode": "local",
+                    "sourceId": "T.MRG.ALT"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "evaluated-trigger-lane"
+          },
+          {
+            "moltType": "directive",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "D.MRG.PRIME",
+                    "type": "directive",
+                    "content": "Apply the prime directive first.",
+                    "sourceMode": "local",
+                    "sourceId": "D.MRG.PRIME"
+                  }
+                ]
+              },
+              {
+                "row": 2,
+                "blocks": [
+                  {
+                    "id": "D.MRG.SELECTED",
+                    "type": "directive",
+                    "content": "Apply the merged contextual directive as the selected secondary row.",
+                    "sourceMode": "merge",
+                    "sourceId": "MRG.DIRECTIVE.CONTEXT",
+                    "mergeId": "MRG.DIRECTIVE.CONTEXT"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "generated-directive-lane"
+          },
+          {
+            "moltType": "instruction",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "I.MRG.STEP",
+                    "type": "instruction",
+                    "content": "Execute the directive merge path deterministically.",
+                    "sourceMode": "local",
+                    "sourceId": "I.MRG.STEP"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "subject",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "S.MRG.REQUEST",
+                    "type": "subject",
+                    "content": "Directive merge request.",
+                    "sourceMode": "local",
+                    "sourceId": "S.MRG.REQUEST"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "primary",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "P.MRG.GOAL",
+                    "type": "primary",
+                    "content": "Deliver the merged directive outcome.",
+                    "sourceMode": "local",
+                    "sourceId": "P.MRG.GOAL"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          },
+          {
+            "moltType": "philosophy",
+            "scoped": [],
+            "rows": [
+              {
+                "row": 1,
+                "blocks": [
+                  {
+                    "id": "PH.MRG.CONTEXT",
+                    "type": "philosophy",
+                    "content": "Context narrows the directive without elevating authority.",
+                    "sourceMode": "local",
+                    "sourceId": "PH.MRG.CONTEXT"
+                  }
+                ]
+              }
+            ],
+            "geometrySource": "base"
+          }
+        ]
+      }
+    ],
+    "promptParts": [
+      {
+        "id": "T.MRG.DEFAULT",
+        "type": "trigger",
+        "content": "Base route remains available.",
+        "sourceMode": "local",
+        "sourceId": "T.MRG.DEFAULT",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "T.MRG.ALT",
+        "type": "trigger",
+        "content": "Secondary directive route is externally selected.",
+        "sourceMode": "local",
+        "sourceId": "T.MRG.ALT",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 1,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 2
+      },
+      {
+        "id": "D.MRG.PRIME",
+        "type": "directive",
+        "content": "Apply the prime directive first.",
+        "sourceMode": "local",
+        "sourceId": "D.MRG.PRIME",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "D.MRG.SELECTED",
+        "type": "directive",
+        "content": "Apply the merged contextual directive as the selected secondary row.",
+        "sourceMode": "merge",
+        "sourceId": "MRG.DIRECTIVE.CONTEXT",
+        "mergeId": "MRG.DIRECTIVE.CONTEXT",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 2,
+        "scopeLayer": 100,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "I.MRG.STEP",
+        "type": "instruction",
+        "content": "Execute the directive merge path deterministically.",
+        "sourceMode": "local",
+        "sourceId": "I.MRG.STEP",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 3,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "S.MRG.REQUEST",
+        "type": "subject",
+        "content": "Directive merge request.",
+        "sourceMode": "local",
+        "sourceId": "S.MRG.REQUEST",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 4,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "P.MRG.GOAL",
+        "type": "primary",
+        "content": "Deliver the merged directive outcome.",
+        "sourceMode": "local",
+        "sourceId": "P.MRG.GOAL",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 5,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "PH.MRG.CONTEXT",
+        "type": "philosophy",
+        "content": "Context narrows the directive without elevating authority.",
+        "sourceMode": "local",
+        "sourceId": "PH.MRG.CONTEXT",
+        "neoStackId": "NS.MERGE.ROOT",
+        "neoBlockId": "NB.MERGE.DIRECTIVE",
+        "laneOrder": 6,
+        "scopeLayer": 100,
+        "row": 1,
+        "column": 1
+      }
+    ],
+    "diagnostics": [],
+    "resetPlan": {
+      "neoStackIds": [
+        "NS.MERGE.ROOT"
+      ],
+      "neoBlockIds": [
+        "NB.MERGE.DIRECTIVE"
+      ],
+      "targetState": "ready"
+    },
+    "runtimeHash": "a38ef55bed7730bb57a92add7d34cb496924c23c09318e508b1fe933b2449432"
+  },
+  "trace": {
+    "schemaVersion": "umg.compiler-vnext.trace.v0.1",
+    "compilerVersion": "0.1.0-experimental",
+    "sleeveId": "SLV.MERGE.DIRECTIVE.v0.1",
+    "compiledAt": "2026-08-16T00:00:00.000Z",
+    "events": [
+      {
+        "seq": 1,
+        "type": "SOURCE_VALIDATED",
+        "subjectId": "SLV.MERGE.DIRECTIVE.v0.1",
+        "data": {
+          "sleeveSchemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+          "selectionSchemaVersion": "umg.compiler-vnext.selection.v0.1",
+          "controllerNeoStackId": "NS.MERGE.ROOT",
+          "route": {
+            "neoStackIds": [
+              "NS.MERGE.ROOT"
+            ],
+            "neoBlockIds": [
+              "NB.MERGE.DIRECTIVE"
+            ]
+          },
+          "triggerStateTrueIds": [
+            "T.MRG.ALT",
+            "T.MRG.DEFAULT"
+          ],
+          "activeOverlayIds": [],
+          "activeGovernanceRuleIds": [],
+          "disabledNeoStackIds": [],
+          "disabledNeoBlockIds": [],
+          "routeRationale": "not_supplied",
+          "counts": {
+            "neoStacks": 1,
+            "neoBlocks": 1,
+            "moltBlocks": 8,
+            "scopedMoltAttachments": 0,
+            "overlays": 0,
+            "governanceRules": 0,
+            "validationErrors": 0,
+            "validationWarnings": 0
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "type": "NEOSTACK_ACTIVE",
+        "subjectId": "NS.MERGE.ROOT",
+        "data": {
+          "depth": 0,
+          "selectionOrder": 1
+        }
+      },
+      {
+        "seq": 3,
+        "type": "NEOBLOCK_SELECTION_ATTEMPTED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoStackId": "NS.MERGE.ROOT",
+          "rowInNeoStack": 1
+        }
+      },
+      {
+        "seq": 4,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.MRG.DEFAULT",
+        "data": {
+          "active": true,
+          "matched": true,
+          "neoBlockId": "NB.MERGE.DIRECTIVE"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "TRIGGER_EVALUATED",
+        "subjectId": "T.MRG.ALT",
+        "data": {
+          "active": true,
+          "matched": true,
+          "neoBlockId": "NB.MERGE.DIRECTIVE"
+        }
+      },
+      {
+        "seq": 6,
+        "type": "PRIME_DIRECTIVE_APPLIED",
+        "subjectId": "D.MRG.PRIME",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "SECONDARY_DIRECTIVE_SELECTED",
+        "subjectId": "D.MRG.SELECTED",
+        "data": {
+          "relationId": "SD.MRG.DIRECTIVE",
+          "triggerBlockId": "T.MRG.ALT"
+        }
+      },
+      {
+        "seq": 8,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "moltType": "trigger",
+          "source": "base",
+          "rows": [
+            [
+              "T.MRG.DEFAULT",
+              "T.MRG.ALT"
+            ]
+          ],
+          "readOrder": [
+            "T.MRG.DEFAULT",
+            "T.MRG.ALT"
+          ]
+        }
+      },
+      {
+        "seq": 9,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "moltType": "directive",
+          "source": "base",
+          "rows": [
+            [
+              "D.MRG.PRIME"
+            ],
+            [
+              "D.MRG.SELECTED"
+            ]
+          ],
+          "readOrder": [
+            "D.MRG.PRIME",
+            "D.MRG.SELECTED"
+          ]
+        }
+      },
+      {
+        "seq": 10,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "moltType": "instruction"
+        }
+      },
+      {
+        "seq": 11,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "moltType": "instruction",
+          "source": "base",
+          "rows": [
+            [
+              "I.MRG.STEP"
+            ]
+          ],
+          "readOrder": [
+            "I.MRG.STEP"
+          ]
+        }
+      },
+      {
+        "seq": 12,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "moltType": "subject"
+        }
+      },
+      {
+        "seq": 13,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "moltType": "subject",
+          "source": "base",
+          "rows": [
+            [
+              "S.MRG.REQUEST"
+            ]
+          ],
+          "readOrder": [
+            "S.MRG.REQUEST"
+          ]
+        }
+      },
+      {
+        "seq": 14,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "moltType": "primary"
+        }
+      },
+      {
+        "seq": 15,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "moltType": "primary",
+          "source": "base",
+          "rows": [
+            [
+              "P.MRG.GOAL"
+            ]
+          ],
+          "readOrder": [
+            "P.MRG.GOAL"
+          ]
+        }
+      },
+      {
+        "seq": 16,
+        "type": "BASE_GEOMETRY_APPLIED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "moltType": "philosophy"
+        }
+      },
+      {
+        "seq": 17,
+        "type": "GEOMETRY_RESOLVED",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "moltType": "philosophy",
+          "source": "base",
+          "rows": [
+            [
+              "PH.MRG.CONTEXT"
+            ]
+          ],
+          "readOrder": [
+            "PH.MRG.CONTEXT"
+          ]
+        }
+      },
+      {
+        "seq": 18,
+        "type": "MERGE_VALIDATED",
+        "subjectId": "D.MRG.SELECTED",
+        "data": {
+          "neoBlockId": "NB.MERGE.DIRECTIVE",
+          "mergeId": "MRG.DIRECTIVE.CONTEXT",
+          "sources": [
+            {
+              "blockId": "D.MRG.PRIME",
+              "moltType": "directive"
+            },
+            {
+              "blockId": "PH.MRG.CONTEXT",
+              "moltType": "philosophy"
+            }
+          ],
+          "result": {
+            "blockId": "D.MRG.SELECTED",
+            "moltType": "directive"
+          },
+          "authorityCeiling": "directive",
+          "authorityCheck": "pass"
+        }
+      },
+      {
+        "seq": 19,
+        "type": "NEOBLOCK_ACTIVE",
+        "subjectId": "NB.MERGE.DIRECTIVE",
+        "data": {
+          "neoStackId": "NS.MERGE.ROOT",
+          "rowInNeoStack": 1,
+          "activeTriggerIds": [
+            "T.MRG.DEFAULT",
+            "T.MRG.ALT"
+          ],
+          "secondaryDirectiveId": "SD.MRG.DIRECTIVE"
+        }
+      },
+      {
+        "seq": 20,
+        "type": "RUNTIME_COMPILED",
+        "subjectId": "SLV.MERGE.DIRECTIVE.v0.1",
+        "data": {
+          "runtimeHash": "a38ef55bed7730bb57a92add7d34cb496924c23c09318e508b1fe933b2449432",
+          "promptPartCount": 8,
+          "totalNeoStacks": 1,
+          "totalNeoBlocks": 1,
+          "totalMoltBlocks": 8,
+          "activeNeoStacks": 1,
+          "activeNeoBlocks": 1,
+          "effectiveMoltBlocks": 8
+        }
+      },
+      {
+        "seq": 21,
+        "type": "POST_RUN_RESET_DECLARED",
+        "subjectId": "SLV.MERGE.DIRECTIVE.v0.1",
+        "data": {
+          "neoStackIds": [
+            "NS.MERGE.ROOT"
+          ],
+          "neoBlockIds": [
+            "NB.MERGE.DIRECTIVE"
+          ],
+          "targetState": "ready"
+        }
+      }
+    ],
+    "diagnostics": [],
+    "finalNeoStackStates": {
+      "NS.MERGE.ROOT": "active"
+    },
+    "finalNeoBlockStates": {
+      "NB.MERGE.DIRECTIVE": "active"
+    }
+  },
+  "hasErrors": false
+}
