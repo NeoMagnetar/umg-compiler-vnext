@@ -221,11 +221,35 @@ function diagnosticsFromSchemaErrors(
         );
 
       case 'minItems':
+        if (basePath?.endsWith('.sourceBlockIds')) {
+          return errorDiagnostic(
+            'MERGE_TOO_FEW_SOURCES',
+            'Merge requires at least two unique source blocks.',
+            basePath,
+            { documentKind: kind, minimumItems: params.limit },
+          );
+        }
         return errorDiagnostic(
           'ARRAY_TOO_SHORT',
           `Array must contain at least ${String(params.limit ?? 'the minimum number of')} items.`,
           basePath,
           { documentKind: kind, minimumItems: params.limit },
+        );
+
+      case 'uniqueItems':
+        if (basePath?.endsWith('.sourceBlockIds')) {
+          return errorDiagnostic(
+            'MERGE_DUPLICATE_SOURCE',
+            'Merge source IDs must be unique.',
+            basePath,
+            { documentKind: kind },
+          );
+        }
+        return errorDiagnostic(
+          'STRUCTURAL_SCHEMA_VIOLATION',
+          error.message ?? 'Value violates the structural schema.',
+          basePath,
+          { documentKind: kind, keyword: error.keyword },
         );
 
       case 'minLength':

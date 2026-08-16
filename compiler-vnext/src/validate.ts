@@ -36,8 +36,123 @@ function duplicates(values: string[]): string[] {
 
 type ModuleRow = { row: number; neoBlockIds?: string[]; neoStackIds?: string[] };
 
+interface MergeDependency {
+  dependencyMergeId: string;
+  sourceBlockId: string;
+}
+
 function moduleRowMemberIds(row: ModuleRow): string[] {
   return row.neoBlockIds ?? row.neoStackIds ?? [];
+}
+
+function structurallyPlacedLocalMoltIds(neoBlock: NeoBlock): Set<string> {
+  const placed = new Set<string>([neoBlock.primeDirectiveId]);
+
+  for (const rows of Object.values(neoBlock.baseGeometry)) {
+    for (const row of rows ?? []) {
+      row.blockIds.forEach((id) => placed.add(id));
+    }
+  }
+
+  for (const bundle of neoBlock.bundles ?? []) {
+    for (const row of bundle.rows) {
+      row.blockIds.forEach((id) => placed.add(id));
+    }
+  }
+
+  for (const secondary of neoBlock.secondaryDirectives ?? []) {
+    placed.add(secondary.directiveBlockId);
+  }
+
+  return placed;
+}
+
+function mergeParticipationLocalMoltIds(neoBlock: NeoBlock): Set<string> {
+  const reachable = structurallyPlacedLocalMoltIds(neoBlock);
+
+  for (const secondary of neoBlock.secondaryDirectives ?? []) {
+    reachable.add(secondary.triggerBlockId);
+  }
+
+  for (const merge of neoBlock.merges ?? []) {
+    merge.sourceBlockIds.forEach((id) => reachable.add(id));
+  }
+
+  return reachable;
+}
+
+function mergeResultOwnerByBlockId(sleeve: Sleeve): Map<string, string> {
+  const owners = new Map<string, string>();
+  for (const neoBlock of sleeve.neoBlocks) {
+    for (const merge of neoBlock.merges ?? []) {
+      owners.set(merge.resultBlockId, neoBlock.id);
+    }
+  }
+  return owners;
+}
+
+function mergeDependenciesByMergeId(
+  neoBlock: NeoBlock,
+  uniqueResultToMergeId: Map<string, string>,
+): Map<string, MergeDependency[]> {
+  const dependencies = new Map<string, MergeDependency[]>();
+
+  for (const merge of neoBlock.merges ?? []) {
+    const seen = new Set<string>();
+    const mergeDependencies: MergeDependency[] = [];
+
+    for (const sourceBlockId of merge.sourceBlockIds) {
+      if (sourceBlockId === merge.resultBlockId) continue;
+      if (seen.has(sourceBlockId)) continue;
+      seen.add(sourceBlockId);
+
+      const dependencyMergeId = uniqueResultToMergeId.get(sourceBlockId);
+      if (!dependencyMergeId) continue;
+
+      mergeDependencies.push({ dependencyMergeId, sourceBlockId });
+    }
+
+    dependencies.set(merge.id, mergeDependencies);
+  }
+
+  return dependencies;
+}
+
+function cycleMergeIds(
+  mergeIds: string[],
+  dependenciesByMergeId: Map<string, MergeDependency[]>,
+): Set<string> {
+  const inCycle = new Set<string>();
+  const stack: string[] = [];
+  const visitingIndex = new Map<string, number>();
+  const visited = new Set<string>();
+
+  const visit = (mergeId: string): void => {
+    if (visited.has(mergeId)) return;
+
+    visitingIndex.set(mergeId, stack.length);
+    stack.push(mergeId);
+
+    for (const dependency of dependenciesByMergeId.get(mergeId) ?? []) {
+      const dependencyId = dependency.dependencyMergeId;
+      const activeIndex = visitingIndex.get(dependencyId);
+
+      if (activeIndex !== undefined) {
+        for (const cycleId of stack.slice(activeIndex)) inCycle.add(cycleId);
+        inCycle.add(dependencyId);
+        continue;
+      }
+
+      visit(dependencyId);
+    }
+
+    stack.pop();
+    visitingIndex.delete(mergeId);
+    visited.add(mergeId);
+  };
+
+  for (const mergeId of mergeIds) visit(mergeId);
+  return inCycle;
 }
 
 function validateRows(
@@ -557,6 +672,31 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
     );
   }
 
+  const placedIds = structurallyPlacedLocalMoltIds(neoBlock);
+  const resultOwners = new Map<string, string[]>();
+  for (const merge of neoBlock.merges ?? []) {
+    const owners = resultOwners.get(merge.resultBlockId) ?? [];
+    owners.push(merge.id);
+    resultOwners.set(merge.resultBlockId, owners);
+  }
+  for (const [resultBlockId, owners] of [...resultOwners.entries()].sort(([left], [right]) => left.localeCompare(right))) {
+    if (owners.length > 1) {
+      diagnostics.push(
+        errorDiagnostic(
+          'DUPLICATE_MERGE_RESULT',
+          `Merge result ${resultBlockId} may be declared by only one Merge inside NeoBlock ${neoBlock.id}.`,
+          `${path}.merges`,
+          {
+            resultBlockId,
+            mergeIds: [...owners].sort(),
+          },
+        ),
+      );
+    }
+  }
+
+  const validLocalResultByMergeId = new Map<string, string>();
+
   for (const merge of neoBlock.merges ?? []) {
     const mergePath = `${path}.merges.${merge.id}`;
     const sourceDupes = duplicates(merge.sourceBlockIds);
@@ -570,6 +710,16 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic('MERGE_DUPLICATE_SOURCE', 'Merge source IDs must be unique.', mergePath, {
           duplicateIds: sourceDupes,
         }),
+      );
+    }
+    if (merge.sourceBlockIds.includes(merge.resultBlockId)) {
+      diagnostics.push(
+        errorDiagnostic(
+          'MERGE_RESULT_IS_SOURCE',
+          `Merge ${merge.id} resultBlockId must be distinct from every sourceBlockId.`,
+          `${mergePath}.resultBlockId`,
+          { resultBlockId: merge.resultBlockId },
+        ),
       );
     }
 
@@ -587,6 +737,18 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
     if (result.type === 'trigger') {
       diagnostics.push(
         errorDiagnostic('TRIGGER_MERGE_UNSUPPORTED', 'Trigger is outside vNext Merge semantics.', mergePath),
+      );
+    } else {
+      validLocalResultByMergeId.set(merge.id, merge.resultBlockId);
+    }
+    if (!placedIds.has(merge.resultBlockId)) {
+      diagnostics.push(
+        errorDiagnostic(
+          'MERGE_RESULT_NOT_PLACED',
+          `Merge ${merge.id} result ${merge.resultBlockId} must be explicitly placed through Prime/Secondary Directive, Base Geometry, or a Bundle.`,
+          `${mergePath}.resultBlockId`,
+          { resultBlockId: merge.resultBlockId },
+        ),
       );
     }
 
@@ -635,18 +797,53 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
     }
   }
 
-  const reachable = new Set<string>();
-  for (const rows of Object.values(neoBlock.baseGeometry)) for (const row of rows ?? []) row.blockIds.forEach((id) => reachable.add(id));
-  for (const bundle of neoBlock.bundles ?? []) for (const row of bundle.rows) row.blockIds.forEach((id) => reachable.add(id));
-  for (const secondary of neoBlock.secondaryDirectives ?? []) {
-    reachable.add(secondary.directiveBlockId);
-    reachable.add(secondary.triggerBlockId);
-  }
-  for (const merge of neoBlock.merges ?? []) {
-    merge.sourceBlockIds.forEach((id) => reachable.add(id));
-    reachable.add(merge.resultBlockId);
+  const uniqueResultToMergeId = new Map<string, string>();
+  for (const [resultBlockId, owners] of resultOwners) {
+    if (owners.length !== 1) continue;
+    const [ownerMergeId] = owners;
+    if (!validLocalResultByMergeId.has(ownerMergeId)) continue;
+    uniqueResultToMergeId.set(resultBlockId, ownerMergeId);
   }
 
+  const dependenciesByMergeId = mergeDependenciesByMergeId(neoBlock, uniqueResultToMergeId);
+  const cycleIds = cycleMergeIds(mergeIds, dependenciesByMergeId);
+  if (cycleIds.size) {
+    diagnostics.push(
+      errorDiagnostic(
+        'MERGE_CYCLE',
+        `NeoBlock ${neoBlock.id} declares a cyclic Merge dependency. compiler-vnext requires Merge dependencies to remain acyclic and non-chained.`,
+        `${path}.merges`,
+        {
+          mergeIds: [...cycleIds].sort(),
+          resultBlockIds: [...cycleIds]
+            .map((mergeId) => validLocalResultByMergeId.get(mergeId))
+            .filter((resultBlockId): resultBlockId is string => resultBlockId !== undefined)
+            .sort(),
+        },
+      ),
+    );
+  }
+
+  for (const merge of neoBlock.merges ?? []) {
+    if (cycleIds.has(merge.id)) continue;
+
+    const dependencies = dependenciesByMergeId.get(merge.id) ?? [];
+    if (!dependencies.length) continue;
+
+    diagnostics.push(
+      errorDiagnostic(
+        'MERGE_CHAIN_UNSUPPORTED',
+        `Merge ${merge.id} references the result of another Merge. compiler-vnext does not support Merge chaining.`,
+        `${path}.merges.${merge.id}`,
+        {
+          dependencyMergeIds: dependencies.map((dependency) => dependency.dependencyMergeId),
+          sourceBlockIds: dependencies.map((dependency) => dependency.sourceBlockId),
+        },
+      ),
+    );
+  }
+
+  const reachable = mergeParticipationLocalMoltIds(neoBlock);
   const unreachable = neoBlock.moltBlockIds.filter((id) => !reachable.has(id));
   if (unreachable.length) {
     diagnostics.push(
@@ -669,11 +866,34 @@ function validateScopeRef(scope: ScopeRef, indexes: Indexes, diagnostics: Compil
 }
 
 function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics: CompilerDiagnostic[]): void {
-  const validateOne = (attachment: { id: string; blockId: string; scope: ScopeRef }, path: string): void => {
+  const declaredMergeResultOwners = mergeResultOwnerByBlockId(sleeve);
+
+  const validateOne = (
+    attachment: { id: string; blockId: string; scope: ScopeRef },
+    path: string,
+    sourceKind: 'scopedMolt' | 'overlay',
+    overlayId?: string,
+  ): void => {
     const block = indexes.moltBlocks.get(attachment.blockId);
     if (!block) {
       diagnostics.push(errorDiagnostic('UNKNOWN_SCOPED_MOLT_BLOCK', `Unknown MOLT Block ${attachment.blockId}.`, path));
       return;
+    }
+    if (declaredMergeResultOwners.has(attachment.blockId)) {
+      diagnostics.push(
+        errorDiagnostic(
+          'MERGE_RESULT_SCOPED_UNSUPPORTED',
+          `Merge result ${attachment.blockId} cannot be used through ${sourceKind === 'overlay' ? 'Overlay attachments' : 'scopedMolt'} in compiler-vnext.`,
+          path,
+          {
+            blockId: attachment.blockId,
+            attachmentId: attachment.id,
+            sourceKind,
+            ...(overlayId ? { overlayId } : {}),
+            ownerNeoBlockId: declaredMergeResultOwners.get(attachment.blockId),
+          },
+        ),
+      );
     }
     if (!SCOPED_MOLT_TYPES.includes(block.type as (typeof SCOPED_MOLT_TYPES)[number])) {
       diagnostics.push(
@@ -688,7 +908,7 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
   };
 
   (sleeve.scopedMolt ?? []).forEach((attachment, index) =>
-    validateOne(attachment, `scopedMolt[${index}]`),
+    validateOne(attachment, `scopedMolt[${index}]`, 'scopedMolt'),
   );
 
   const overlayIds = (sleeve.overlays ?? []).map((overlay) => overlay.id);
@@ -702,7 +922,7 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
   }
   for (const overlay of sleeve.overlays ?? []) {
     overlay.attachments.forEach((attachment, index) =>
-      validateOne(attachment, `overlays.${overlay.id}.attachments[${index}]`),
+      validateOne(attachment, `overlays.${overlay.id}.attachments[${index}]`, 'overlay', overlay.id),
     );
   }
 }

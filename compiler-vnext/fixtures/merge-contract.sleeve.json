@@ -1,0 +1,408 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.MERGE.CONTRACT.v0.1",
+  "name": "Merge Contract Fixture",
+  "description": "Merge fixture for B3B1 contract freeze: base placement, bundle placement, dormant bundle participation, scoped coexistence, overlay coexistence, and source reuse.",
+  "controllerNeoStackId": "NS.MRG.ROOT",
+  "moltBlocks": [
+    {
+      "id": "T.MRG.DEFAULT",
+      "type": "trigger",
+      "content": "Base merge route is active."
+    },
+    {
+      "id": "T.MRG.BUNDLE",
+      "type": "trigger",
+      "content": "Bundle merge route is active."
+    },
+    {
+      "id": "D.MRG.PRIME",
+      "type": "directive",
+      "content": "Apply the prime directive before any merge-specific branch."
+    },
+    {
+      "id": "D.MRG.BUNDLE",
+      "type": "directive",
+      "content": "Select the bundle route when the bundle trigger is true."
+    },
+    {
+      "id": "D.MRG.DOWN.SOURCE",
+      "type": "directive",
+      "content": "Preserve higher-authority context without escalating the result."
+    },
+    {
+      "id": "I.MRG.BASE.STEP",
+      "type": "instruction",
+      "content": "Execute the base merge route deterministically."
+    },
+    {
+      "id": "I.MRG.SRC.HIDDEN",
+      "type": "instruction",
+      "content": "Local merge source that does not independently appear in active geometry."
+    },
+    {
+      "id": "I.MRG.RESULT.BASE",
+      "type": "instruction",
+      "content": "Base-placed merge result."
+    },
+    {
+      "id": "I.MRG.RESULT.DOWN",
+      "type": "instruction",
+      "content": "Downward-authority merge result."
+    },
+    {
+      "id": "I.MRG.RESULT.REUSE",
+      "type": "instruction",
+      "content": "Second merge result reusing a shared source."
+    },
+    {
+      "id": "I.MRG.BUNDLE.KEEP",
+      "type": "instruction",
+      "content": "Ordinary bundle member that coexists with the merged bundle result."
+    },
+    {
+      "id": "I.MRG.BUNDLE.SRC",
+      "type": "instruction",
+      "content": "Bundle-only merge source that need not independently activate."
+    },
+    {
+      "id": "I.MRG.RESULT.BUNDLE",
+      "type": "instruction",
+      "content": "Bundle-placed merge result."
+    },
+    {
+      "id": "S.MRG.REQUEST",
+      "type": "subject",
+      "content": "Merge contract request."
+    },
+    {
+      "id": "P.MRG.OUTCOME",
+      "type": "primary",
+      "content": "Deliver the explicit merge contract outcome."
+    },
+    {
+      "id": "PH.MRG.BASE.CONTEXT",
+      "type": "philosophy",
+      "content": "Context for the base merge result without increasing authority."
+    },
+    {
+      "id": "PH.MRG.REUSE.CONTEXT",
+      "type": "philosophy",
+      "content": "Context for the shared-source merge result."
+    },
+    {
+      "id": "PH.MRG.BUNDLE.CONTEXT",
+      "type": "philosophy",
+      "content": "Context for the bundle-only merge result."
+    },
+    {
+      "id": "BP.MRG.DOWN.CONTEXT",
+      "type": "blueprint",
+      "content": "Structured context that permits a downward merge result."
+    },
+    {
+      "id": "T.OTHER.DEFAULT",
+      "type": "trigger",
+      "content": "Other block default trigger."
+    },
+    {
+      "id": "D.OTHER.PRIME",
+      "type": "directive",
+      "content": "Other block prime directive."
+    },
+    {
+      "id": "I.OTHER.STEP",
+      "type": "instruction",
+      "content": "Other block instruction."
+    },
+    {
+      "id": "I.OTHER.NONLOCAL",
+      "type": "instruction",
+      "content": "Instruction owned by a different NeoBlock for nonlocal validation checks."
+    },
+    {
+      "id": "S.OTHER.REQUEST",
+      "type": "subject",
+      "content": "Other block subject."
+    },
+    {
+      "id": "P.OTHER.OUTCOME",
+      "type": "primary",
+      "content": "Other block primary."
+    },
+    {
+      "id": "I.SCOPE.MRG.GUIDE",
+      "type": "instruction",
+      "content": "Scoped instruction that coexists with local Merge results."
+    },
+    {
+      "id": "PH.SCOPE.MRG.CONTEXT",
+      "type": "philosophy",
+      "content": "Scoped philosophy that remains separate from Merge provenance."
+    },
+    {
+      "id": "BP.SCOPE.MRG.FLOW",
+      "type": "blueprint",
+      "content": "Scoped blueprint that remains separate from Merge provenance."
+    },
+    {
+      "id": "I.OVERLAY.MRG.NOTE",
+      "type": "instruction",
+      "content": "Overlay instruction that coexists with local Merge results."
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.MRG.CONTRACT",
+      "name": "Merge Contract Block",
+      "moltBlockIds": [
+        "T.MRG.DEFAULT",
+        "T.MRG.BUNDLE",
+        "D.MRG.PRIME",
+        "D.MRG.BUNDLE",
+        "D.MRG.DOWN.SOURCE",
+        "I.MRG.BASE.STEP",
+        "I.MRG.SRC.HIDDEN",
+        "I.MRG.RESULT.BASE",
+        "I.MRG.RESULT.DOWN",
+        "I.MRG.RESULT.REUSE",
+        "I.MRG.BUNDLE.KEEP",
+        "I.MRG.BUNDLE.SRC",
+        "I.MRG.RESULT.BUNDLE",
+        "S.MRG.REQUEST",
+        "P.MRG.OUTCOME",
+        "PH.MRG.BASE.CONTEXT",
+        "PH.MRG.REUSE.CONTEXT",
+        "PH.MRG.BUNDLE.CONTEXT",
+        "BP.MRG.DOWN.CONTEXT"
+      ],
+      "primeDirectiveId": "D.MRG.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.MRG.BUNDLE",
+          "directiveBlockId": "D.MRG.BUNDLE",
+          "triggerBlockId": "T.MRG.BUNDLE",
+          "bundles": {
+            "instruction": "B.MRG.INSTRUCTION"
+          }
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.MRG.DEFAULT",
+              "T.MRG.BUNDLE"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.MRG.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.MRG.BASE.STEP",
+              "I.MRG.RESULT.BASE"
+            ]
+          },
+          {
+            "row": 2,
+            "blockIds": [
+              "I.MRG.RESULT.DOWN",
+              "I.MRG.RESULT.REUSE"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.MRG.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.MRG.OUTCOME"
+            ]
+          }
+        ]
+      },
+      "bundles": [
+        {
+          "id": "B.MRG.INSTRUCTION",
+          "name": "Bundle Merge Instruction Lane",
+          "moltType": "instruction",
+          "rows": [
+            {
+              "row": 1,
+              "blockIds": [
+                "I.MRG.BUNDLE.KEEP",
+                "I.MRG.RESULT.BUNDLE"
+              ]
+            }
+          ]
+        }
+      ],
+      "merges": [
+        {
+          "id": "MRG.MRG.BASE.CONTEXT",
+          "sourceBlockIds": [
+            "I.MRG.SRC.HIDDEN",
+            "PH.MRG.BASE.CONTEXT"
+          ],
+          "resultBlockId": "I.MRG.RESULT.BASE"
+        },
+        {
+          "id": "MRG.MRG.DOWNWARD",
+          "sourceBlockIds": [
+            "D.MRG.DOWN.SOURCE",
+            "BP.MRG.DOWN.CONTEXT"
+          ],
+          "resultBlockId": "I.MRG.RESULT.DOWN"
+        },
+        {
+          "id": "MRG.MRG.REUSE",
+          "sourceBlockIds": [
+            "I.MRG.SRC.HIDDEN",
+            "PH.MRG.REUSE.CONTEXT"
+          ],
+          "resultBlockId": "I.MRG.RESULT.REUSE"
+        },
+        {
+          "id": "MRG.MRG.BUNDLE",
+          "sourceBlockIds": [
+            "I.MRG.BUNDLE.SRC",
+            "PH.MRG.BUNDLE.CONTEXT"
+          ],
+          "resultBlockId": "I.MRG.RESULT.BUNDLE"
+        }
+      ]
+    },
+    {
+      "id": "NB.MRG.OTHER",
+      "name": "Other Block",
+      "moltBlockIds": [
+        "T.OTHER.DEFAULT",
+        "D.OTHER.PRIME",
+        "I.OTHER.STEP",
+        "I.OTHER.NONLOCAL",
+        "S.OTHER.REQUEST",
+        "P.OTHER.OUTCOME"
+      ],
+      "primeDirectiveId": "D.OTHER.PRIME",
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.OTHER.DEFAULT"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.OTHER.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.OTHER.STEP"
+            ]
+          },
+          {
+            "row": 2,
+            "blockIds": [
+              "I.OTHER.NONLOCAL"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.OTHER.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.OTHER.OUTCOME"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.MRG.ROOT",
+      "name": "Merge Contract Root",
+      "skill": "Exercises compiler-vnext Merge contract semantics in isolation.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.MRG.CONTRACT",
+            "NB.MRG.OTHER"
+          ]
+        }
+      ]
+    }
+  ],
+  "scopedMolt": [
+    {
+      "id": "ATT.SCOPE.MRG.INSTR",
+      "blockId": "I.SCOPE.MRG.GUIDE",
+      "scope": {
+        "kind": "sleeve"
+      }
+    },
+    {
+      "id": "ATT.SCOPE.MRG.PH",
+      "blockId": "PH.SCOPE.MRG.CONTEXT",
+      "scope": {
+        "kind": "sleeve"
+      }
+    },
+    {
+      "id": "ATT.SCOPE.MRG.BP",
+      "blockId": "BP.SCOPE.MRG.FLOW",
+      "scope": {
+        "kind": "sleeve"
+      }
+    }
+  ],
+  "overlays": [
+    {
+      "id": "OVR.MRG.ACTIVE",
+      "name": "Merge Overlay",
+      "attachments": [
+        {
+          "id": "ATT.OVR.MRG.NOTE",
+          "blockId": "I.OVERLAY.MRG.NOTE",
+          "scope": {
+            "kind": "sleeve"
+          }
+        }
+      ]
+    }
+  ]
+}
