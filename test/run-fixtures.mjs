@@ -35,6 +35,28 @@ function assertGolden(name) {
   return result;
 }
 
+function assertSuccessInvariant(result) {
+  assert.equal(result.schemaVersion, 'umg.compiler-vnext.compile-result.v0.1');
+  assert.equal(result.compilerVersion, '0.1.0-experimental');
+  assert.equal(result.status, 'success');
+  assert.equal(result.hasErrors, false);
+  assert.ok(result.runtime);
+  assert.ok(result.trace);
+  assert.deepEqual(result.diagnostics, result.trace.diagnostics);
+  assert.ok(!result.diagnostics.some((diagnostic) => diagnostic.level === 'error'));
+}
+
+function assertFailureInvariant(result) {
+  assert.equal(result.schemaVersion, 'umg.compiler-vnext.compile-result.v0.1');
+  assert.equal(result.compilerVersion, '0.1.0-experimental');
+  assert.equal(result.status, 'failure');
+  assert.equal(result.hasErrors, true);
+  assert.equal(result.runtime, null);
+  assert.ok(result.trace);
+  assert.deepEqual(result.diagnostics, result.trace.diagnostics);
+  assert.ok(result.diagnostics.some((diagnostic) => diagnostic.level === 'error'));
+}
+
 function lane(runtime, neoBlockId, moltType) {
   const neoBlock = runtime.resolvedNeoBlocks.find((item) => item.id === neoBlockId);
   assert.ok(neoBlock, `missing resolved NeoBlock ${neoBlockId}`);
@@ -233,6 +255,7 @@ const badMerge = validateSleeve(json('fixtures/invalid/upward-merge.sleeve.json'
 assert.ok(badMerge.diagnostics.some((item) => item.code === 'MERGE_AUTHORITY_ESCALATION'));
 
 const normal = assertGolden('normal');
+assertSuccessInvariant(normal);
 assert.equal(normal.hasErrors, false, JSON.stringify(normal.trace.diagnostics, null, 2));
 assert.deepEqual(idsForLane(normal.runtime, 'NB.SERVICE.TRIAGE', 'directive'), ['D.SVC.PRIME']);
 assert.deepEqual(idsForLane(normal.runtime, 'NB.SERVICE.TRIAGE', 'instruction'), [
@@ -249,6 +272,7 @@ assert.equal(traceEvent(normal, 'SOURCE_VALIDATED').data.routeRationale, 'not_su
 assert.ok(normal.runtime.resolvedNeoBlocks.every((neoBlock) => neoBlock.postRunState === 'ready'));
 
 const secondaryB = assertGolden('secondary-b');
+assertSuccessInvariant(secondaryB);
 assert.equal(secondaryB.hasErrors, false, JSON.stringify(secondaryB.trace.diagnostics, null, 2));
 assert.deepEqual(idsForLane(secondaryB.runtime, 'NB.SERVICE.TRIAGE', 'directive'), ['D.SVC.PRIME', 'D.SVC.B']);
 assert.deepEqual(idsForLane(secondaryB.runtime, 'NB.SERVICE.TRIAGE', 'instruction'), [
@@ -295,6 +319,7 @@ assert.deepEqual(
 );
 
 const secondaryC = assertGolden('secondary-c');
+assertSuccessInvariant(secondaryC);
 assert.equal(secondaryC.hasErrors, false, JSON.stringify(secondaryC.trace.diagnostics, null, 2));
 assert.deepEqual(idsForLane(secondaryC.runtime, 'NB.SERVICE.TRIAGE', 'directive'), ['D.SVC.PRIME', 'D.SVC.C']);
 assert.deepEqual(idsForLane(secondaryC.runtime, 'NB.SERVICE.TRIAGE', 'instruction'), [
@@ -309,6 +334,7 @@ assert.deepEqual(scopedIdsForLane(secondaryC.runtime, 'NB.SERVICE.TRIAGE', 'phil
 assert.deepEqual(idsForLane(secondaryC.runtime, 'NB.SERVICE.TRIAGE', 'blueprint'), ['BP.SVC.WARRANTY']);
 
 const overlay = assertGolden('secondary-b-overlay');
+assertSuccessInvariant(overlay);
 assert.equal(overlay.hasErrors, false);
 assert.deepEqual(scopedIdsForLane(overlay.runtime, 'NB.SERVICE.TRIAGE', 'philosophy'), [
   'PH.SLEEVE.PRAGMATISM',
@@ -317,10 +343,11 @@ assert.deepEqual(scopedIdsForLane(overlay.runtime, 'NB.SERVICE.TRIAGE', 'philoso
 assert.ok(overlay.trace.events.some((event) => event.type === 'OVERLAY_APPLIED'));
 
 const multi = assertGolden('multi-secondary-error');
+assertFailureInvariant(multi);
 assert.equal(multi.hasErrors, true);
 assert.ok(multi.trace.diagnostics.some((item) => item.code === 'MULTIPLE_SECONDARY_DIRECTIVE_MATCH'));
 assert.equal(multi.trace.finalNeoBlockStates['NB.SERVICE.TRIAGE'], 'ready');
-assert.equal(multi.runtime, undefined);
+assert.equal(multi.runtime, null);
 assert.ok(traceEvent(multi, 'NEOBLOCK_SELECTION_ATTEMPTED', (event) => event.subjectId === 'NB.SERVICE.TRIAGE'));
 assert.deepEqual(traceEvent(multi, 'NEOBLOCK_RESOLUTION_FAILED', (event) => event.subjectId === 'NB.SERVICE.TRIAGE').data, {
   neoStackId: 'NS.SERVICE',
@@ -332,6 +359,7 @@ assert.deepEqual(traceEvent(multi, 'NEOBLOCK_RESOLUTION_FAILED', (event) => even
 assert.ok(traceEvent(multi, 'NEOBLOCK_READY', (event) => event.subjectId === 'NB.SERVICE.TRIAGE'));
 
 const governance = assertGolden('governance-off');
+assertSuccessInvariant(governance);
 assert.equal(governance.hasErrors, false, JSON.stringify(governance.trace.diagnostics, null, 2));
 assert.equal(governance.trace.finalNeoBlockStates['NB.SERVICE.DRIVE_IN'], 'off');
 assert.ok(!governance.runtime.resolvedNeoBlocks.some((item) => item.id === 'NB.SERVICE.DRIVE_IN'));
@@ -339,6 +367,7 @@ assert.ok(governance.trace.events.some((event) => event.type === 'GOVERNANCE_RUL
 assert.ok(!governance.runtime.resetPlan.neoBlockIds.includes('NB.SERVICE.DRIVE_IN'));
 
 const disabled = assertGolden('disabled-sales');
+assertSuccessInvariant(disabled);
 assert.equal(disabled.hasErrors, false, JSON.stringify(disabled.trace.diagnostics, null, 2));
 assert.equal(disabled.trace.finalNeoStackStates['NS.SALES'], 'disabled');
 assert.equal(disabled.trace.finalNeoBlockStates['NB.SALES.TRADE_IN'], 'disabled');
@@ -348,12 +377,14 @@ assert.ok(!disabled.runtime.resetPlan.neoBlockIds.includes('NB.SALES.TRADE_IN'))
 
 const routeRationaleSelection = json('fixtures/requests/route-rationale.selection.json');
 const routeRationale = assertGolden('route-rationale');
+assertSuccessInvariant(routeRationale);
 assert.equal(routeRationale.hasErrors, false);
 assert.deepEqual(traceEvent(routeRationale, 'ROUTE_SELECTION_RECEIVED').data.routeRationale, routeRationaleSelection.routeRationale);
 assert.equal(traceEvent(routeRationale, 'SOURCE_VALIDATED').data.routeRationale, 'supplied');
 assert.equal(routeRationale.runtime.runtimeHash, secondaryB.runtime.runtimeHash);
 
 const mergeDirective = assertGolden('merge-directive');
+assertSuccessInvariant(mergeDirective);
 assert.equal(mergeDirective.hasErrors, false, JSON.stringify(mergeDirective.trace.diagnostics, null, 2));
 assert.deepEqual(idsForLane(mergeDirective.runtime, 'NB.MERGE.DIRECTIVE', 'directive'), ['D.MRG.PRIME', 'D.MRG.SELECTED']);
 assert.deepEqual(traceEvent(mergeDirective, 'MERGE_VALIDATED').data, {
@@ -369,6 +400,7 @@ assert.deepEqual(traceEvent(mergeDirective, 'MERGE_VALIDATED').data, {
 });
 
 const structureRouting = assertGolden('structure-routing');
+assertSuccessInvariant(structureRouting);
 assert.equal(structureRouting.hasErrors, false, JSON.stringify(structureRouting.trace.diagnostics, null, 2));
 assert.deepEqual(structureRouting.runtime.activeNeoStackIds, ['NS.ROOT', 'NS.PARENT', 'NS.CHILD']);
 assert.deepEqual(
@@ -394,6 +426,8 @@ assert.deepEqual(traceEvent(structureRouting, 'NEOSTACK_ACTIVE', (event) => even
 
 const bundleReorderBase = assertGolden('bundle-reorder-base');
 const bundleReorderAlt = assertGolden('bundle-reorder-alt');
+assertSuccessInvariant(bundleReorderBase);
+assertSuccessInvariant(bundleReorderAlt);
 assert.equal(bundleReorderBase.hasErrors, false);
 assert.equal(bundleReorderAlt.hasErrors, false);
 assert.notEqual(bundleReorderBase.runtime.runtimeHash, bundleReorderAlt.runtime.runtimeHash);
@@ -425,6 +459,7 @@ assert.equal(
   JSON.stringify(sparseValidation, null, 2),
 );
 const sparse = compileSleeve(sparseFixture.sleeve, sparseFixture.selection);
+assertSuccessInvariant(sparse);
 assert.equal(sparse.hasErrors, false, JSON.stringify(sparse.trace.diagnostics, null, 2));
 assert.deepEqual(sparse.runtime.activeNeoStackIds, sparseFixture.activeNeoStackIds);
 assert.deepEqual(

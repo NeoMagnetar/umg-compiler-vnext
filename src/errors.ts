@@ -17,3 +17,11 @@ export function warningDiagnostic(
 ): CompilerDiagnostic {
   return { code, level: 'warning', message, path, details };
 }
+
+export function internalCompilerErrorDiagnostic(): CompilerDiagnostic {
+  return {
+    code: 'INTERNAL_COMPILER_ERROR',
+    level: 'error',
+    message: 'Unexpected internal compiler failure.',
+  };
+}

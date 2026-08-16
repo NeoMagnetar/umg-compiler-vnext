@@ -1,5 +1,6 @@
 import { MERGE_AUTHORITY_ORDER, SCOPED_MOLT_TYPES } from './constants.js';
-import { errorDiagnostic, warningDiagnostic } from './errors.js';
+import { errorDiagnostic, internalCompilerErrorDiagnostic, warningDiagnostic } from './errors.js';
+import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
 import type {
   BundleMoltType,
   CompilerDiagnostic,
@@ -621,7 +622,7 @@ function validateNeoStackRows(stack: NeoStack, diagnostics: CompilerDiagnostic[]
   validateOrdinalRows(stack.childStackRows ?? [], `neoStacks.${stack.id}.childStackRows`);
 }
 
-export function validateSleeve(sleeve: Sleeve): ValidationResult {
+export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
   const diagnostics: CompilerDiagnostic[] = [];
 
   if (sleeve.schemaVersion !== 'umg.compiler-vnext.sleeve.v0.1') {
@@ -692,9 +693,9 @@ export function validateSleeve(sleeve: Sleeve): ValidationResult {
   return { diagnostics };
 }
 
-export function validateSelection(sleeve: Sleeve, selection: CompileSelection): ValidationResult {
+export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSelection): ValidationResult {
   const diagnostics: CompilerDiagnostic[] = [];
-  const source = validateSleeve(sleeve);
+  const source = validateCanonicalSleeve(sleeve);
   diagnostics.push(...source.diagnostics);
 
   if (selection.schemaVersion !== 'umg.compiler-vnext.selection.v0.1') {
@@ -732,6 +733,7 @@ export function validateSelection(sleeve: Sleeve, selection: CompileSelection): 
 
   const stackIds = new Set(sleeve.neoStacks.map((stack) => stack.id));
   const blockIds = new Set(sleeve.neoBlocks.map((block) => block.id));
+  const moltBlocks = new Map(sleeve.moltBlocks.map((block) => [block.id, block]));
   const overlayIds = new Set((sleeve.overlays ?? []).map((overlay) => overlay.id));
   const governanceIds = new Set((sleeve.governance ?? []).map((rule) => rule.id));
 
@@ -761,6 +763,30 @@ export function validateSelection(sleeve: Sleeve, selection: CompileSelection): 
     'selection.activeGovernanceRuleIds',
   );
 
+  for (const triggerId of Object.keys(selection.triggerState).sort()) {
+    const block = moltBlocks.get(triggerId);
+    if (!block) {
+      diagnostics.push(
+        errorDiagnostic(
+          'UNKNOWN_TRIGGER_STATE_ID',
+          `Trigger state references unknown Trigger ${triggerId}.`,
+          `selection.triggerState.${triggerId}`,
+        ),
+      );
+      continue;
+    }
+    if (block.type !== 'trigger') {
+      diagnostics.push(
+        errorDiagnostic(
+          'TRIGGER_STATE_TYPE_MISMATCH',
+          `Trigger state ID ${triggerId} references ${block.type}, not trigger.`,
+          `selection.triggerState.${triggerId}`,
+          { actualType: block.type, expectedType: 'trigger' },
+        ),
+      );
+    }
+  }
+
   if (!selection.activeNeoStackIds.includes(sleeve.controllerNeoStackId)) {
     diagnostics.push(
       errorDiagnostic(
@@ -772,4 +798,31 @@ export function validateSelection(sleeve: Sleeve, selection: CompileSelection): 
   }
 
   return { diagnostics };
+}
+
+export function validateSleeve(sleeve: unknown): ValidationResult {
+  try {
+    const structural = structurallyValidateSleeve(sleeve);
+    if (!structural.ok) return { diagnostics: structural.diagnostics };
+    return validateCanonicalSleeve(structural.value);
+  } catch {
+    return { diagnostics: [internalCompilerErrorDiagnostic()] };
+  }
+}
+
+export function validateSelection(sleeve: unknown, selection: unknown): ValidationResult {
+  try {
+    const structuralSleeve = structurallyValidateSleeve(sleeve);
+    const structuralSelection = structurallyValidateSelection(selection);
+    if (!structuralSleeve.ok || !structuralSelection.ok) {
+      const diagnostics: CompilerDiagnostic[] = [];
+      if (!structuralSleeve.ok) diagnostics.push(...structuralSleeve.diagnostics);
+      if (!structuralSelection.ok) diagnostics.push(...structuralSelection.diagnostics);
+      return { diagnostics };
+    }
+
+    return validateCanonicalSelection(structuralSleeve.value, structuralSelection.value);
+  } catch {
+    return { diagnostics: [internalCompilerErrorDiagnostic()] };
+  }
 }

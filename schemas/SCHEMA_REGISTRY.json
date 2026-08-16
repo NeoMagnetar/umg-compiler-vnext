@@ -29,7 +29,7 @@
     },
     {
       "kind": "compile_result",
-      "schemaVersion": null,
+      "schemaVersion": "umg.compiler-vnext.compile-result.v0.1",
       "schema": "schemas/compile-result.schema.json",
       "example": "code/compiler-vnext/fixtures/expected/secondary-b.compile-result.json"
     }

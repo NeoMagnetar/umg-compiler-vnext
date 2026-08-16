@@ -1,0 +1,287 @@
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import type { ErrorObject, ValidateFunction } from 'ajv';
+import { errorDiagnostic } from './errors.js';
+import type { CompileSelection, CompilerDiagnostic, Sleeve } from './types.js';
+
+const require = createRequire(import.meta.url);
+const Ajv2020 = require('ajv/dist/2020').default as typeof import('ajv/dist/2020.js').default;
+const addFormats = require('ajv-formats').default as typeof import('ajv-formats').default;
+
+type DocumentKind = 'sleeve' | 'selection';
+
+interface StructuralValidationSuccess<T> {
+  ok: true;
+  diagnostics: [];
+  value: T;
+}
+
+interface StructuralValidationFailure {
+  ok: false;
+  diagnostics: CompilerDiagnostic[];
+}
+
+export type StructuralValidationResult<T> =
+  | StructuralValidationSuccess<T>
+  | StructuralValidationFailure;
+
+interface ValidatorSet {
+  sleeve: ValidateFunction<Sleeve>;
+  selection: ValidateFunction<CompileSelection>;
+}
+
+let validators: ValidatorSet | undefined;
+
+function loadSchema(path: string): Record<string, unknown> {
+  return JSON.parse(
+    readFileSync(fileURLToPath(new URL(`../schemas/${path}`, import.meta.url)), 'utf8'),
+  ) as Record<string, unknown>;
+}
+
+function getValidators(): ValidatorSet {
+  if (validators) return validators;
+
+  const ajv = new Ajv2020({
+    allErrors: true,
+    strict: true,
+    validateFormats: true,
+  });
+  addFormats(ajv);
+
+  ajv.addSchema(loadSchema('umg-compiler-vnext.schema.json'));
+
+  validators = {
+    sleeve: ajv.compile<Sleeve>(loadSchema('sleeve.schema.json')),
+    selection: ajv.compile<CompileSelection>(loadSchema('compile-selection.schema.json')),
+  };
+
+  return validators;
+}
+
+function decodePointerToken(token: string): string {
+  return token.replace(/~1/g, '/').replace(/~0/g, '~');
+}
+
+function pointerToPath(instancePath: string): string | undefined {
+  const tokens = instancePath
+    .split('/')
+    .slice(1)
+    .map(decodePointerToken);
+
+  if (tokens.length === 0) return undefined;
+
+  let path = '';
+  for (const token of tokens) {
+    if (/^\d+$/.test(token)) {
+      path += `[${token}]`;
+    } else {
+      path += path ? `.${token}` : token;
+    }
+  }
+  return path;
+}
+
+function appendPath(base: string | undefined, child: string | undefined): string | undefined {
+  if (!child) return base;
+  if (!base) return child;
+  return /^\[\d+\]$/.test(child) ? `${base}${child}` : `${base}.${child}`;
+}
+
+function valueAtPointer(input: unknown, instancePath: string): unknown {
+  const tokens = instancePath
+    .split('/')
+    .slice(1)
+    .map(decodePointerToken);
+
+  let current = input;
+  for (const token of tokens) {
+    if (current === null || typeof current !== 'object') return undefined;
+    if (Array.isArray(current)) {
+      const index = Number(token);
+      current = Number.isInteger(index) ? current[index] : undefined;
+      continue;
+    }
+    current = (current as Record<string, unknown>)[token];
+  }
+  return current;
+}
+
+function sortDiagnostics(diagnostics: CompilerDiagnostic[]): CompilerDiagnostic[] {
+  return diagnostics.slice().sort((a, b) => {
+    const pathCompare = (a.path ?? '').localeCompare(b.path ?? '');
+    if (pathCompare !== 0) return pathCompare;
+    const codeCompare = a.code.localeCompare(b.code);
+    if (codeCompare !== 0) return codeCompare;
+    return a.message.localeCompare(b.message);
+  });
+}
+
+function schemaVersionCode(kind: DocumentKind): string {
+  return kind === 'sleeve' ? 'UNSUPPORTED_SLEEVE_SCHEMA' : 'UNSUPPORTED_SELECTION_SCHEMA';
+}
+
+function schemaVersionValue(kind: DocumentKind): string {
+  return kind === 'sleeve'
+    ? 'umg.compiler-vnext.sleeve.v0.1'
+    : 'umg.compiler-vnext.selection.v0.1';
+}
+
+function describeType(value: unknown): string {
+  if (Array.isArray(value)) return 'array';
+  if (value === null) return 'null';
+  return typeof value;
+}
+
+function diagnosticsFromSchemaErrors(
+  kind: DocumentKind,
+  input: unknown,
+  errors: readonly ErrorObject[] | null | undefined,
+): CompilerDiagnostic[] {
+  if (!errors?.length) return [];
+
+  const diagnostics = errors.map((error) => {
+    const basePath = pointerToPath(error.instancePath);
+    const params = error.params as Record<string, unknown>;
+    const actualValue = valueAtPointer(input, error.instancePath);
+
+    switch (error.keyword) {
+      case 'additionalProperties': {
+        const field = String(params.additionalProperty ?? 'unknown');
+        const path = appendPath(basePath, field);
+        return errorDiagnostic(
+          'UNKNOWN_FIELD',
+          `Unknown field ${field} is not allowed.`,
+          path,
+          { documentKind: kind, field },
+        );
+      }
+
+      case 'required': {
+        const missingProperty = String(params.missingProperty ?? 'unknown');
+        const path = appendPath(basePath, missingProperty);
+        return errorDiagnostic(
+          'MISSING_REQUIRED_FIELD',
+          `Missing required field ${missingProperty}.`,
+          path,
+          { documentKind: kind, missingProperty },
+        );
+      }
+
+      case 'enum':
+        return errorDiagnostic(
+          'INVALID_ENUM_VALUE',
+          `Field must use an allowed enum value; received ${JSON.stringify(actualValue)}.`,
+          basePath,
+          { documentKind: kind, received: actualValue },
+        );
+
+      case 'const':
+        if (basePath === 'schemaVersion') {
+          return errorDiagnostic(
+            schemaVersionCode(kind),
+            `Expected ${schemaVersionValue(kind)}; received ${JSON.stringify(actualValue)}.`,
+            basePath,
+            { documentKind: kind, received: actualValue },
+          );
+        }
+        return errorDiagnostic(
+          'INVALID_CONST_VALUE',
+          `Field must match the required constant value; received ${JSON.stringify(actualValue)}.`,
+          basePath,
+          { documentKind: kind, received: actualValue },
+        );
+
+      case 'type':
+        return errorDiagnostic(
+          'INVALID_FIELD_TYPE',
+          `Field has invalid type; expected ${String(params.type ?? 'unknown')} but received ${describeType(actualValue)}.`,
+          basePath,
+          {
+            documentKind: kind,
+            expectedType: params.type,
+            receivedType: describeType(actualValue),
+          },
+        );
+
+      case 'format':
+        return errorDiagnostic(
+          'INVALID_FIELD_FORMAT',
+          `Field has invalid format; expected ${String(params.format ?? 'unknown')}.`,
+          basePath,
+          { documentKind: kind, format: params.format },
+        );
+
+      case 'minimum':
+        return errorDiagnostic(
+          'INVALID_NUMERIC_RANGE',
+          `Field must be greater than or equal to ${String(params.limit ?? 'the minimum')}.`,
+          basePath,
+          { documentKind: kind, minimum: params.limit },
+        );
+
+      case 'minItems':
+        return errorDiagnostic(
+          'ARRAY_TOO_SHORT',
+          `Array must contain at least ${String(params.limit ?? 'the minimum number of')} items.`,
+          basePath,
+          { documentKind: kind, minimumItems: params.limit },
+        );
+
+      case 'minLength':
+        return errorDiagnostic(
+          'STRING_TOO_SHORT',
+          `String must contain at least ${String(params.limit ?? 'the minimum number of')} characters.`,
+          basePath,
+          { documentKind: kind, minimumLength: params.limit },
+        );
+
+      case 'oneOf':
+        return errorDiagnostic(
+          'INVALID_UNION_SHAPE',
+          'Value does not match any supported structural shape.',
+          basePath,
+          { documentKind: kind },
+        );
+
+      default:
+        return errorDiagnostic(
+          'STRUCTURAL_SCHEMA_VIOLATION',
+          error.message ?? 'Value violates the structural schema.',
+          basePath,
+          { documentKind: kind, keyword: error.keyword },
+        );
+    }
+  });
+
+  const deduped = new Map<string, CompilerDiagnostic>();
+  for (const diagnostic of diagnostics) {
+    const key = `${diagnostic.code}|${diagnostic.path ?? ''}|${diagnostic.message}`;
+    deduped.set(key, diagnostic);
+  }
+  return sortDiagnostics([...deduped.values()]);
+}
+
+function structurallyValidate<T>(
+  kind: DocumentKind,
+  input: unknown,
+  validator: ValidateFunction<T>,
+): StructuralValidationResult<T> {
+  const valid = validator(input);
+  if (valid) {
+    return { ok: true, diagnostics: [], value: input as T };
+  }
+
+  return {
+    ok: false,
+    diagnostics: diagnosticsFromSchemaErrors(kind, input, validator.errors),
+  };
+}
+
+export function structurallyValidateSleeve(input: unknown): StructuralValidationResult<Sleeve> {
+  return structurallyValidate('sleeve', input, getValidators().sleeve);
+}
+
+export function structurallyValidateSelection(input: unknown): StructuralValidationResult<CompileSelection> {
+  return structurallyValidate('selection', input, getValidators().selection);
+}
