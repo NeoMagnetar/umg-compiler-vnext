@@ -731,6 +731,50 @@
         "triggerState"
       ]
     },
+    "DiagnosticStage": {
+      "enum": [
+        "structural",
+        "semantic",
+        "resolution",
+        "output",
+        "internal"
+      ]
+    },
+    "DiagnosticSubjectKind": {
+      "enum": [
+        "compiler",
+        "sleeve",
+        "selection",
+        "molt_block",
+        "neoblock",
+        "neostack",
+        "secondary_directive",
+        "bundle",
+        "merge",
+        "scoped_attachment",
+        "overlay",
+        "governance",
+        "runtime",
+        "trace",
+        "compile_result"
+      ]
+    },
+    "DiagnosticSubject": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/DiagnosticSubjectKind"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
     "CompilerDiagnostic": {
       "type": "object",
       "properties": {
@@ -743,6 +787,12 @@
             "error",
             "warning"
           ]
+        },
+        "stage": {
+          "$ref": "#/$defs/DiagnosticStage"
+        },
+        "subject": {
+          "$ref": "#/$defs/DiagnosticSubject"
         },
         "message": {
           "type": "string",
@@ -759,6 +809,8 @@
       "required": [
         "code",
         "level",
+        "stage",
+        "subject",
         "message"
       ]
     },

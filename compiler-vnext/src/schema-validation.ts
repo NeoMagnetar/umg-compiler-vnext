@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import type { ErrorObject, ValidateFunction } from 'ajv';
+import type { DiagnosticCode, DiagnosticSubject } from './diagnostic-registry.js';
 import { errorDiagnostic } from './errors.js';
 import type { CompileResult, CompileSelection, CompilerDiagnostic, RuntimeSpec, Sleeve, Trace } from './types.js';
 
@@ -123,7 +124,7 @@ function sortDiagnostics(diagnostics: CompilerDiagnostic[]): CompilerDiagnostic[
   });
 }
 
-function schemaVersionCode(kind: DocumentKind): string {
+function schemaVersionCode(kind: DocumentKind): DiagnosticCode {
   switch (kind) {
     case 'sleeve':
       return 'UNSUPPORTED_SLEEVE_SCHEMA';
@@ -153,6 +154,28 @@ function schemaVersionValue(kind: DocumentKind): string {
   }
 }
 
+function documentSubject(kind: DocumentKind, input: unknown): DiagnosticSubject {
+  if (kind === 'sleeve') {
+    const id = (input as { id?: unknown } | null)?.id;
+    return typeof id === 'string' && id.length > 0 ? { kind, id } : { kind };
+  }
+  if (kind === 'runtime' || kind === 'trace') {
+    const sleeveId = (input as { sleeveId?: unknown } | null)?.sleeveId;
+    return typeof sleeveId === 'string' && sleeveId.length > 0 ? { kind, id: sleeveId } : { kind };
+  }
+  if (kind === 'compileResult') {
+    const runtimeSleeveId = (input as { runtime?: { sleeveId?: unknown } | null } | null)?.runtime?.sleeveId;
+    if (typeof runtimeSleeveId === 'string' && runtimeSleeveId.length > 0) {
+      return { kind: 'compile_result', id: runtimeSleeveId };
+    }
+    const traceSleeveId = (input as { trace?: { sleeveId?: unknown } | null } | null)?.trace?.sleeveId;
+    return typeof traceSleeveId === 'string' && traceSleeveId.length > 0
+      ? { kind: 'compile_result', id: traceSleeveId }
+      : { kind: 'compile_result' };
+  }
+  return { kind };
+}
+
 function describeType(value: unknown): string {
   if (Array.isArray(value)) return 'array';
   if (value === null) return 'null';
@@ -166,6 +189,7 @@ function diagnosticsFromSchemaErrors(
 ): CompilerDiagnostic[] {
   if (!errors?.length) return [];
 
+  const subject = documentSubject(kind, input);
   const diagnostics = errors.map((error) => {
     const basePath = pointerToPath(error.instancePath);
     const params = error.params as Record<string, unknown>;
@@ -178,6 +202,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'UNKNOWN_FIELD',
           `Unknown field ${field} is not allowed.`,
+          subject,
           path,
           { documentKind: kind, field },
         );
@@ -189,6 +214,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'MISSING_REQUIRED_FIELD',
           `Missing required field ${missingProperty}.`,
+          subject,
           path,
           { documentKind: kind, missingProperty },
         );
@@ -198,6 +224,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'INVALID_ENUM_VALUE',
           `Field must use an allowed enum value; received ${JSON.stringify(actualValue)}.`,
+          subject,
           basePath,
           { documentKind: kind, received: actualValue },
         );
@@ -207,6 +234,7 @@ function diagnosticsFromSchemaErrors(
           return errorDiagnostic(
             schemaVersionCode(kind),
             `Expected ${schemaVersionValue(kind)}; received ${JSON.stringify(actualValue)}.`,
+            subject,
             basePath,
             { documentKind: kind, received: actualValue },
           );
@@ -214,6 +242,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'INVALID_CONST_VALUE',
           `Field must match the required constant value; received ${JSON.stringify(actualValue)}.`,
+          subject,
           basePath,
           { documentKind: kind, received: actualValue },
         );
@@ -222,6 +251,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'INVALID_FIELD_TYPE',
           `Field has invalid type; expected ${String(params.type ?? 'unknown')} but received ${describeType(actualValue)}.`,
+          subject,
           basePath,
           {
             documentKind: kind,
@@ -234,6 +264,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'INVALID_FIELD_FORMAT',
           `Field has invalid format; expected ${String(params.format ?? 'unknown')}.`,
+          subject,
           basePath,
           { documentKind: kind, format: params.format },
         );
@@ -242,6 +273,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'INVALID_NUMERIC_RANGE',
           `Field must be greater than or equal to ${String(params.limit ?? 'the minimum')}.`,
+          subject,
           basePath,
           { documentKind: kind, minimum: params.limit },
         );
@@ -251,6 +283,7 @@ function diagnosticsFromSchemaErrors(
           return errorDiagnostic(
             'MERGE_TOO_FEW_SOURCES',
             'Merge requires at least two unique source blocks.',
+            subject,
             basePath,
             { documentKind: kind, minimumItems: params.limit },
           );
@@ -258,6 +291,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'ARRAY_TOO_SHORT',
           `Array must contain at least ${String(params.limit ?? 'the minimum number of')} items.`,
+          subject,
           basePath,
           { documentKind: kind, minimumItems: params.limit },
         );
@@ -267,6 +301,7 @@ function diagnosticsFromSchemaErrors(
           return errorDiagnostic(
             'MERGE_DUPLICATE_SOURCE',
             'Merge source IDs must be unique.',
+            subject,
             basePath,
             { documentKind: kind },
           );
@@ -274,6 +309,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'STRUCTURAL_SCHEMA_VIOLATION',
           error.message ?? 'Value violates the structural schema.',
+          subject,
           basePath,
           { documentKind: kind, keyword: error.keyword },
         );
@@ -282,6 +318,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'STRING_TOO_SHORT',
           `String must contain at least ${String(params.limit ?? 'the minimum number of')} characters.`,
+          subject,
           basePath,
           { documentKind: kind, minimumLength: params.limit },
         );
@@ -290,6 +327,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'INVALID_UNION_SHAPE',
           'Value does not match any supported structural shape.',
+          subject,
           basePath,
           { documentKind: kind },
         );
@@ -298,6 +336,7 @@ function diagnosticsFromSchemaErrors(
         return errorDiagnostic(
           'STRUCTURAL_SCHEMA_VIOLATION',
           error.message ?? 'Value violates the structural schema.',
+          subject,
           basePath,
           { documentKind: kind, keyword: error.keyword },
         );

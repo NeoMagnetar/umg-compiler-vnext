@@ -1,3 +1,4 @@
+import type { DiagnosticSubject } from './diagnostic-registry.js';
 import { MOLT_AUTHORITY_ORDER } from './constants.js';
 import { errorDiagnostic } from './errors.js';
 import type {
@@ -412,6 +413,7 @@ function selectionTargetNotExecutableDiagnostic(
   path: string,
   extraDetails: Record<string, unknown> = {},
 ): CompilerDiagnostic {
+  const subject: DiagnosticSubject = { kind: targetKind, id: targetId };
   const blockerData = availability.blocker
     ? blockerTraceData(availability.blocker)
     : {
@@ -422,6 +424,7 @@ function selectionTargetNotExecutableDiagnostic(
   return errorDiagnostic(
     'SELECTION_TARGET_NOT_EXECUTABLE',
     `Selected ${targetKind === 'neostack' ? 'NeoStack' : 'NeoBlock'} ${targetId} has effective state ${availability.state} and cannot participate in this compile.`,
+    subject,
     path,
     {
       targetId,
@@ -468,6 +471,7 @@ function resolveNeoBlock(
       errorDiagnostic(
         'NO_TRIGGER_MATCH_FOR_ACTIVE_NEOBLOCK',
         `Active NeoBlock ${neoBlock.id} has no true Trigger state.`,
+        { kind: 'neoblock', id: neoBlock.id },
         `selection.triggerState`,
         { neoBlockId: neoBlock.id, triggerBlockIds: triggerBlocks.map((block) => block.id) },
       ),
@@ -479,6 +483,7 @@ function resolveNeoBlock(
       errorDiagnostic(
         'MULTIPLE_SECONDARY_DIRECTIVE_MATCH',
         `NeoBlock ${neoBlock.id} matched more than one Secondary Directive. compiler-vnext does not support implicit coexistence of multiple simultaneously matching Secondary Directives in this schema/compiler version.`,
+        { kind: 'neoblock', id: neoBlock.id },
         `neoBlocks.${neoBlock.id}.secondaryDirectives`,
         { secondaryDirectiveIds: matchedSecondaries.map((secondary) => secondary.id) },
       ),
@@ -963,6 +968,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       const diagnostic = errorDiagnostic(
         'ACTIVE_NEOSTACK_OUTSIDE_CONTROLLER_TREE',
         `Selected NeoStack ${stackId} is not reachable from the Controller NeoStack.`,
+        { kind: 'neostack', id: stackId },
         'selection.activeNeoStackIds',
         {
           selectedNeoStackId: stackId,
@@ -994,6 +1000,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       const diagnostic = errorDiagnostic(
         'SELECTION_MISSING_ANCESTOR',
         `Selected NeoStack ${stackId} requires selected ancestor ${missingAncestorNeoStackId}. compiler-vnext does not infer missing route ancestors.`,
+        { kind: 'neostack', id: stackId },
         'selection.activeNeoStackIds',
         {
           selectedNeoStackId: stackId,
@@ -1088,6 +1095,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       const diagnostic = errorDiagnostic(
         'SELECTION_NEOBLOCK_CONTAINER_UNKNOWN',
         `Selected NeoBlock ${blockId} is not placed in any NeoStack.`,
+        { kind: 'neoblock', id: blockId },
         'selection.activeNeoBlockIds',
         {
           targetId: blockId,
@@ -1119,6 +1127,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       const diagnostic = errorDiagnostic(
         'SELECTION_NEOBLOCK_CONTAINER_NOT_SELECTED',
         `Selected NeoBlock ${blockId} requires selected containing NeoStack ${stackId}. compiler-vnext does not infer missing route ancestors or containers.`,
+        { kind: 'neoblock', id: blockId },
         'selection.activeNeoBlockIds',
         {
           targetId: blockId,
@@ -1183,6 +1192,7 @@ export function resolveSleeve(sleeve: Sleeve, selection: CompileSelection): Reso
       const diagnostic = errorDiagnostic(
         'SELECTION_NEOBLOCK_CONTAINER_NOT_EXECUTABLE',
         `Selected NeoBlock ${blockId} requires executable containing NeoStack ${stackId}.`,
+        { kind: 'neoblock', id: blockId },
         'selection.activeNeoBlockIds',
         {
           targetId: blockId,

@@ -1,0 +1,1113 @@
+{
+  "ACTIVE_NEOSTACK_OUTSIDE_CONTROLLER_TREE": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A selected NeoStack is outside the Controller NeoStack tree.",
+    "requiredDetailKeys": [
+      "selectedNeoStackId",
+      "controllerNeoStackId",
+      "blockingReason",
+      "blockingSource"
+    ]
+  },
+  "ARRAY_TOO_SHORT": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "An array failed a structural minimum length requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "minimumItems"
+    ]
+  },
+  "BUNDLE_REFERENCE_TYPE_MISMATCH": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "secondary_directive"
+    ],
+    "summary": "A Secondary Directive references a Bundle for the wrong lane type.",
+    "requiredDetailKeys": []
+  },
+  "CONTROLLER_HAS_PARENT": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "sleeve"
+    ],
+    "summary": "The Controller NeoStack is not the apex of the tree.",
+    "requiredDetailKeys": []
+  },
+  "CONTROLLER_NOT_SELECTED": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "selection"
+    ],
+    "summary": "The compile selection omitted the Controller NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "DIRECTIVE_BASE_GEOMETRY_CANON_VIOLATION": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "Directive Base Geometry violates the Prime/Secondary Directive canon.",
+    "requiredDetailKeys": [
+      "primeDirectiveId",
+      "authoredRows"
+    ]
+  },
+  "DUPLICATE_BUNDLE_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "Bundle IDs are duplicated inside one NeoBlock.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_GEOMETRY_MEMBER": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry repeats a block member.",
+    "requiredDetailKeys": [
+      "duplicateBlockIds"
+    ]
+  },
+  "DUPLICATE_GEOMETRY_ROW": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry repeats a row number.",
+    "requiredDetailKeys": [
+      "duplicateRows"
+    ]
+  },
+  "DUPLICATE_GLOBAL_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "sleeve"
+    ],
+    "summary": "Canonical object IDs are duplicated across the Sleeve.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_LOCAL_MOLT_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A NeoBlock repeats a local MOLT block id.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_MERGE_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "Merge relation IDs are duplicated inside one NeoBlock.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_MERGE_RESULT": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "More than one Merge declaration targets the same result block.",
+    "requiredDetailKeys": [
+      "resultBlockId",
+      "mergeIds"
+    ]
+  },
+  "DUPLICATE_MODULE_ROW": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack repeats a module row number.",
+    "requiredDetailKeys": [
+      "duplicateRows"
+    ]
+  },
+  "DUPLICATE_MODULE_ROW_MEMBER": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack repeats a member inside one parent geometry.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_OVERLAY_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "overlay"
+    ],
+    "summary": "Overlay IDs are duplicated.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_SECONDARY_DIRECTIVE_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "Secondary Directive relation IDs are duplicated inside one NeoBlock.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "DUPLICATE_SELECTION_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "selection"
+    ],
+    "summary": "A selection id list contains duplicates.",
+    "requiredDetailKeys": [
+      "duplicateIds"
+    ]
+  },
+  "EMPTY_GEOMETRY": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry is missing all rows.",
+    "requiredDetailKeys": []
+  },
+  "EMPTY_GEOMETRY_ROW": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry row is missing all members.",
+    "requiredDetailKeys": []
+  },
+  "EMPTY_MODULE_ROW": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack row is missing all members.",
+    "requiredDetailKeys": []
+  },
+  "GOVERNANCE_RULE_NO_TARGETS": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "governance"
+    ],
+    "summary": "A Governance rule does not target any NeoStack or NeoBlock.",
+    "requiredDetailKeys": []
+  },
+  "INTERNAL_COMPILER_ERROR": {
+    "level": "error",
+    "stage": "internal",
+    "allowedSubjectKinds": [
+      "compiler"
+    ],
+    "summary": "The compiler failed unexpectedly.",
+    "requiredDetailKeys": []
+  },
+  "INTERNAL_OUTPUT_CONTRACT_VIOLATION": {
+    "level": "error",
+    "stage": "output",
+    "allowedSubjectKinds": [
+      "compile_result"
+    ],
+    "summary": "The compiler produced output that violates the public output contract.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_COMPILED_AT": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "selection"
+    ],
+    "summary": "The selection compiledAt value is not a valid ISO-8601 timestamp.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_CONST_VALUE": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A field failed a structural const requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  },
+  "INVALID_ENUM_VALUE": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A field failed a structural enum requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  },
+  "INVALID_FIELD_FORMAT": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A field failed a structural format requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "format"
+    ]
+  },
+  "INVALID_FIELD_TYPE": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A field failed a structural type requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "expectedType",
+      "receivedType"
+    ]
+  },
+  "INVALID_GEOMETRY_ROW": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry row number is not a positive integer.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_MERGE_RESULT": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge result does not reference a local pre-authored result block.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_MERGE_SOURCE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge source does not reference a local MOLT block.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_MODULE_ROW": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack row number is not a positive integer.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_NUMERIC_RANGE": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A numeric field failed a structural minimum requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "minimum"
+    ]
+  },
+  "INVALID_PRIME_DIRECTIVE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A NeoBlock primeDirectiveId is not one local Directive block.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_ROUTE_RATIONALE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "selection"
+    ],
+    "summary": "The selection routeRationale value is not a JSON object.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_SECONDARY_DIRECTIVE_BLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "secondary_directive"
+    ],
+    "summary": "A Secondary Directive does not reference a local Directive block.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_SECONDARY_TRIGGER_BLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "secondary_directive"
+    ],
+    "summary": "A Secondary Directive does not reference a local Trigger block.",
+    "requiredDetailKeys": []
+  },
+  "INVALID_UNION_SHAPE": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A value does not match any supported structural union shape.",
+    "requiredDetailKeys": [
+      "documentKind"
+    ]
+  },
+  "LANE_MEMBER_TYPE_MISMATCH": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane member has the wrong MOLT type for the lane.",
+    "requiredDetailKeys": [
+      "blockId",
+      "actualType",
+      "expectedType"
+    ]
+  },
+  "MERGE_AUTHORITY_ESCALATION": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge attempts to produce higher authority than its sources allow.",
+    "requiredDetailKeys": [
+      "sourceTypes",
+      "resultType",
+      "highestAuthorizedType"
+    ]
+  },
+  "MERGE_CHAIN_UNSUPPORTED": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge references the result of another Merge.",
+    "requiredDetailKeys": [
+      "dependencyMergeIds",
+      "sourceBlockIds"
+    ]
+  },
+  "MERGE_CYCLE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A NeoBlock declares a cyclic Merge dependency.",
+    "requiredDetailKeys": [
+      "mergeIds",
+      "resultBlockIds"
+    ]
+  },
+  "MERGE_DUPLICATE_SOURCE": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A Merge declaration repeats a source block id.",
+    "requiredDetailKeys": []
+  },
+  "MERGE_RESULT_IS_SOURCE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge result is also listed as a Merge source.",
+    "requiredDetailKeys": [
+      "resultBlockId"
+    ]
+  },
+  "MERGE_RESULT_NOT_PLACED": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge result is not placed through Prime/Secondary Directive, Base Geometry, or a Bundle.",
+    "requiredDetailKeys": [
+      "resultBlockId"
+    ]
+  },
+  "MERGE_RESULT_SCOPED_UNSUPPORTED": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "scoped_attachment"
+    ],
+    "summary": "A Merge result is referenced through scopedMolt or Overlay attachments.",
+    "requiredDetailKeys": [
+      "blockId",
+      "attachmentId",
+      "sourceKind",
+      "ownerNeoBlockId"
+    ]
+  },
+  "MERGE_TOO_FEW_SOURCES": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A Merge declaration has fewer than two source block ids.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "minimumItems"
+    ]
+  },
+  "MISSING_REQUIRED_FIELD": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A required field is missing.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "missingProperty"
+    ]
+  },
+  "MULTIPLE_NEOSTACK_PARENTS": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack appears beneath more than one parent.",
+    "requiredDetailKeys": [
+      "parents"
+    ]
+  },
+  "MULTIPLE_SECONDARY_DIRECTIVE_MATCH": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "More than one Secondary Directive matched one active NeoBlock.",
+    "requiredDetailKeys": [
+      "secondaryDirectiveIds"
+    ]
+  },
+  "NEOBLOCK_IN_MULTIPLE_NEOSTACKS": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoBlock appears in more than one NeoStack.",
+    "requiredDetailKeys": [
+      "neoStacks"
+    ]
+  },
+  "NEOBLOCK_WITHOUT_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A NeoBlock is not placed in any NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "NEOSTACK_CYCLE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack cycle exists in the parent tree.",
+    "requiredDetailKeys": []
+  },
+  "NO_TRIGGER_MATCH_FOR_ACTIVE_NEOBLOCK": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "An active NeoBlock has no true Trigger state.",
+    "requiredDetailKeys": [
+      "neoBlockId",
+      "triggerBlockIds"
+    ]
+  },
+  "NONCONTIGUOUS_GEOMETRY_ROWS": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "Lane geometry rows are not one-based contiguous integers.",
+    "requiredDetailKeys": [
+      "actualRows",
+      "expectedRows"
+    ]
+  },
+  "NONCONTIGUOUS_MODULE_ROWS": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "NeoStack rows are not one-based contiguous integers.",
+    "requiredDetailKeys": [
+      "actualRows",
+      "expectedRows"
+    ]
+  },
+  "NONLOCAL_GEOMETRY_MEMBER": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry references a non-local MOLT block.",
+    "requiredDetailKeys": []
+  },
+  "ORPHAN_LOCAL_DIRECTIVE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A non-Prime local Directive is not connected to a Secondary Directive or Merge.",
+    "requiredDetailKeys": [
+      "directiveBlockIds"
+    ]
+  },
+  "ORPHAN_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack is not properly parented beneath the Controller NeoStack.",
+    "requiredDetailKeys": [
+      "controllerNeoStackId",
+      "reason"
+    ]
+  },
+  "PRIME_AS_SECONDARY_DIRECTIVE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "secondary_directive"
+    ],
+    "summary": "A Prime Directive is also declared as a Secondary Directive.",
+    "requiredDetailKeys": []
+  },
+  "REQUIRED_BASE_LANE_MISSING": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A required Base Geometry lane is missing from a NeoBlock.",
+    "requiredDetailKeys": []
+  },
+  "REQUIRED_MOLT_MISSING": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A required local MOLT authority is missing from a NeoBlock.",
+    "requiredDetailKeys": [
+      "moltType"
+    ]
+  },
+  "SCOPED_MOLT_TYPE_UNSUPPORTED": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "scoped_attachment"
+    ],
+    "summary": "A scopedMolt or Overlay attachment references an unsupported MOLT type.",
+    "requiredDetailKeys": []
+  },
+  "SELECTION_MISSING_ANCESTOR": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A selected NeoStack is missing a selected ancestor.",
+    "requiredDetailKeys": [
+      "selectedNeoStackId",
+      "missingAncestorNeoStackId",
+      "expectedPath",
+      "blockingReason",
+      "blockingSource"
+    ]
+  },
+  "SELECTION_NEOBLOCK_CONTAINER_NOT_EXECUTABLE": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A selected NeoBlock is inside a selected but non-executable containing NeoStack.",
+    "requiredDetailKeys": [
+      "targetId",
+      "targetKind",
+      "containerNeoStackId",
+      "blockingObjectId",
+      "blockingReason",
+      "blockingSource"
+    ]
+  },
+  "SELECTION_NEOBLOCK_CONTAINER_NOT_SELECTED": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A selected NeoBlock is missing a selected containing NeoStack.",
+    "requiredDetailKeys": [
+      "targetId",
+      "targetKind",
+      "containerNeoStackId",
+      "blockingObjectId",
+      "blockingReason",
+      "blockingSource"
+    ]
+  },
+  "SELECTION_NEOBLOCK_CONTAINER_UNKNOWN": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A selected NeoBlock is not placed in any NeoStack.",
+    "requiredDetailKeys": [
+      "targetId",
+      "targetKind",
+      "blockingReason",
+      "blockingSource"
+    ]
+  },
+  "SELECTION_TARGET_NOT_EXECUTABLE": {
+    "level": "error",
+    "stage": "resolution",
+    "allowedSubjectKinds": [
+      "neostack",
+      "neoblock"
+    ],
+    "summary": "A selected target has an effective state that prevents execution.",
+    "requiredDetailKeys": [
+      "targetId",
+      "targetKind",
+      "effectiveState",
+      "blockingReason",
+      "blockingSource"
+    ]
+  },
+  "STRING_TOO_SHORT": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A string failed a structural minimum length requirement.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "minimumLength"
+    ]
+  },
+  "STRUCTURAL_SCHEMA_VIOLATION": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "A value failed structural JSON Schema validation.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "keyword"
+    ]
+  },
+  "TRIGGER_BOUND_TO_MULTIPLE_SECONDARIES": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "One Trigger is bound to multiple Secondary Directives.",
+    "requiredDetailKeys": [
+      "triggerBlockIds"
+    ]
+  },
+  "TRIGGER_MERGE_UNSUPPORTED": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "merge"
+    ],
+    "summary": "A Merge uses Trigger blocks, which are outside compiler-vnext Merge semantics.",
+    "requiredDetailKeys": []
+  },
+  "TRIGGER_STATE_TYPE_MISMATCH": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "molt_block"
+    ],
+    "summary": "A triggerState entry references a non-trigger MOLT block.",
+    "requiredDetailKeys": [
+      "actualType",
+      "expectedType"
+    ]
+  },
+  "UNKNOWN_ACTIVE_GOVERNANCE_RULE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "governance"
+    ],
+    "summary": "The selection references an unknown active Governance rule.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_ACTIVE_NEOBLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "The selection references an unknown active NeoBlock.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_ACTIVE_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "The selection references an unknown active NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_ACTIVE_OVERLAY": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "overlay"
+    ],
+    "summary": "The selection references an unknown active Overlay.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_BUNDLE_REFERENCE": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "secondary_directive"
+    ],
+    "summary": "A Secondary Directive references an unknown Bundle.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_CHILD_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack references an unknown child NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_CONTROLLER_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "sleeve"
+    ],
+    "summary": "The Sleeve controllerNeoStackId does not reference an authored NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_DISABLED_NEOBLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "The selection references an unknown disabled NeoBlock.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_DISABLED_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "The selection references an unknown disabled NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_FIELD": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve",
+      "selection",
+      "runtime",
+      "trace",
+      "compile_result"
+    ],
+    "summary": "An unexpected field is present.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "field"
+    ]
+  },
+  "UNKNOWN_GOVERNANCE_NEOBLOCK_TARGET": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "governance"
+    ],
+    "summary": "A Governance rule targets an unknown NeoBlock.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_GOVERNANCE_NEOSTACK_TARGET": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "governance"
+    ],
+    "summary": "A Governance rule targets an unknown NeoStack.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_LOCAL_MOLT_BLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A NeoBlock references an unknown local MOLT block.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_MOLT_BLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock",
+      "bundle"
+    ],
+    "summary": "A lane geometry references an unknown MOLT block.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_NEOBLOCK_IN_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neostack"
+    ],
+    "summary": "A NeoStack references an unknown NeoBlock.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_SCOPED_MOLT_BLOCK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "scoped_attachment"
+    ],
+    "summary": "A scopedMolt or Overlay attachment references an unknown MOLT block.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_SCOPED_NEOSTACK": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "scoped_attachment"
+    ],
+    "summary": "A scopedMolt or Overlay attachment references an unknown NeoStack scope.",
+    "requiredDetailKeys": []
+  },
+  "UNKNOWN_TRIGGER_STATE_ID": {
+    "level": "error",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "molt_block"
+    ],
+    "summary": "A triggerState entry references an unknown MOLT block id.",
+    "requiredDetailKeys": []
+  },
+  "UNREACHABLE_LOCAL_MOLT_BLOCK": {
+    "level": "warning",
+    "stage": "semantic",
+    "allowedSubjectKinds": [
+      "neoblock"
+    ],
+    "summary": "A local MOLT block is unreachable from authored runtime surfaces.",
+    "requiredDetailKeys": [
+      "blockIds"
+    ]
+  },
+  "UNSUPPORTED_COMPILE_RESULT_SCHEMA": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "compile_result"
+    ],
+    "summary": "The CompileResult schemaVersion is unsupported.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  },
+  "UNSUPPORTED_RUNTIME_SCHEMA": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "runtime"
+    ],
+    "summary": "The RuntimeSpec schemaVersion is unsupported.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  },
+  "UNSUPPORTED_SELECTION_SCHEMA": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "selection"
+    ],
+    "summary": "The CompileSelection schemaVersion is unsupported.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  },
+  "UNSUPPORTED_SLEEVE_SCHEMA": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "sleeve"
+    ],
+    "summary": "The Sleeve schemaVersion is unsupported.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  },
+  "UNSUPPORTED_TRACE_SCHEMA": {
+    "level": "error",
+    "stage": "structural",
+    "allowedSubjectKinds": [
+      "trace"
+    ],
+    "summary": "The Trace schemaVersion is unsupported.",
+    "requiredDetailKeys": [
+      "documentKind",
+      "received"
+    ]
+  }
+}

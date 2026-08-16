@@ -400,6 +400,11 @@
       {
         "code": "MULTIPLE_SECONDARY_DIRECTIVE_MATCH",
         "level": "error",
+        "stage": "resolution",
+        "subject": {
+          "kind": "neoblock",
+          "id": "NB.SERVICE.TRIAGE"
+        },
         "message": "NeoBlock NB.SERVICE.TRIAGE matched more than one Secondary Directive. compiler-vnext does not support implicit coexistence of multiple simultaneously matching Secondary Directives in this schema/compiler version.",
         "path": "neoBlocks.NB.SERVICE.TRIAGE.secondaryDirectives",
         "details": {
@@ -427,6 +432,11 @@
     {
       "code": "MULTIPLE_SECONDARY_DIRECTIVE_MATCH",
       "level": "error",
+      "stage": "resolution",
+      "subject": {
+        "kind": "neoblock",
+        "id": "NB.SERVICE.TRIAGE"
+      },
       "message": "NeoBlock NB.SERVICE.TRIAGE matched more than one Secondary Directive. compiler-vnext does not support implicit coexistence of multiple simultaneously matching Secondary Directives in this schema/compiler version.",
       "path": "neoBlocks.NB.SERVICE.TRIAGE.secondaryDirectives",
       "details": {

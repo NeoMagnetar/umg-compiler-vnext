@@ -1,3 +1,4 @@
+import type { DiagnosticCode, DiagnosticSubject } from './diagnostic-registry.js';
 import { MERGE_AUTHORITY_ORDER, SCOPED_MOLT_TYPES } from './constants.js';
 import { errorDiagnostic, internalCompilerErrorDiagnostic, warningDiagnostic } from './errors.js';
 import { structurallyValidateSelection, structurallyValidateSleeve } from './schema-validation.js';
@@ -159,9 +160,10 @@ function validateRows(
   rows: GeometryRow[] | undefined,
   path: string,
   diagnostics: CompilerDiagnostic[],
+  subject: DiagnosticSubject,
 ): void {
   if (!rows || rows.length === 0) {
-    diagnostics.push(errorDiagnostic('EMPTY_GEOMETRY', 'Geometry requires at least one row.', path));
+    diagnostics.push(errorDiagnostic('EMPTY_GEOMETRY', 'Geometry requires at least one row.', subject, path));
     return;
   }
 
@@ -169,7 +171,7 @@ function validateRows(
   const rowDupes = duplicates(rowNumbers.map(String));
   if (rowDupes.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_GEOMETRY_ROW', 'Geometry row numbers must be unique.', path, {
+      errorDiagnostic('DUPLICATE_GEOMETRY_ROW', 'Geometry row numbers must be unique.', subject, path, {
         duplicateRows: rowDupes,
       }),
     );
@@ -182,6 +184,7 @@ function validateRows(
       errorDiagnostic(
         'NONCONTIGUOUS_GEOMETRY_ROWS',
         'Geometry rows must be one-based and contiguous: 1, 2, 3, ...',
+        subject,
         path,
         { actualRows: sorted, expectedRows: expected },
       ),
@@ -192,12 +195,22 @@ function validateRows(
   rows.forEach((row, index) => {
     if (!Number.isInteger(row.row) || row.row < 1) {
       diagnostics.push(
-        errorDiagnostic('INVALID_GEOMETRY_ROW', 'Geometry row must be a positive integer.', `${path}[${index}].row`),
+        errorDiagnostic(
+          'INVALID_GEOMETRY_ROW',
+          'Geometry row must be a positive integer.',
+          subject,
+          `${path}[${index}].row`,
+        ),
       );
     }
     if (!Array.isArray(row.blockIds) || row.blockIds.length === 0) {
       diagnostics.push(
-        errorDiagnostic('EMPTY_GEOMETRY_ROW', 'Every geometry row requires at least one block.', `${path}[${index}]`),
+        errorDiagnostic(
+          'EMPTY_GEOMETRY_ROW',
+          'Every geometry row requires at least one block.',
+          subject,
+          `${path}[${index}]`,
+        ),
       );
     }
     allBlockIds.push(...row.blockIds);
@@ -209,6 +222,7 @@ function validateRows(
       errorDiagnostic(
         'DUPLICATE_GEOMETRY_MEMBER',
         'A block may appear only once in one lane geometry.',
+        subject,
         path,
         { duplicateBlockIds: blockDupes },
       ),
@@ -216,7 +230,12 @@ function validateRows(
   }
 }
 
-function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: CompilerDiagnostic[]): void {
+function validateModuleRows(
+  rows: ModuleRow[],
+  path: string,
+  diagnostics: CompilerDiagnostic[],
+  subject: DiagnosticSubject,
+): void {
   if (!rows.length) return;
 
   const rowNumbers = rows.map((row) => row.row);
@@ -226,6 +245,7 @@ function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: Compil
       errorDiagnostic(
         'DUPLICATE_MODULE_ROW',
         'NeoBlock/NeoStack row numbers must be unique within one parent geometry.',
+        subject,
         path,
         { duplicateRows },
       ),
@@ -239,6 +259,7 @@ function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: Compil
       errorDiagnostic(
         'NONCONTIGUOUS_MODULE_ROWS',
         'NeoBlock/NeoStack rows must be one-based and contiguous.',
+        subject,
         path,
         { actualRows: sorted, expectedRows: expected },
       ),
@@ -252,6 +273,7 @@ function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: Compil
         errorDiagnostic(
           'INVALID_MODULE_ROW',
           'NeoBlock/NeoStack row must be a positive integer.',
+          subject,
           `${path}[${index}].row`,
         ),
       );
@@ -263,6 +285,7 @@ function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: Compil
         errorDiagnostic(
           'EMPTY_MODULE_ROW',
           'Every NeoBlock/NeoStack row requires at least one member.',
+          subject,
           `${path}[${index}]`,
         ),
       );
@@ -275,14 +298,21 @@ function validateModuleRows(rows: ModuleRow[], path: string, diagnostics: Compil
   const duplicateMembers = duplicates(allIds);
   if (duplicateMembers.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_MODULE_ROW_MEMBER', 'A module may appear only once per parent geometry.', path, {
-        duplicateIds: duplicateMembers,
-      }),
+      errorDiagnostic(
+        'DUPLICATE_MODULE_ROW_MEMBER',
+        'A module may appear only once per parent geometry.',
+        subject,
+        path,
+        {
+          duplicateIds: duplicateMembers,
+        },
+      ),
     );
   }
 }
 
 function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexes {
+  const sleeveSubject: DiagnosticSubject = { kind: 'sleeve', id: sleeve.id };
   const allIds = [
     ...sleeve.moltBlocks.map((item) => item.id),
     ...sleeve.neoBlocks.map((item) => item.id),
@@ -294,9 +324,13 @@ function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexe
   const duplicateGlobalIds = duplicates(allIds);
   if (duplicateGlobalIds.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_GLOBAL_ID', 'All canonical object IDs must be globally unique.', 'sleeve', {
-        duplicateIds: duplicateGlobalIds,
-      }),
+      errorDiagnostic(
+        'DUPLICATE_GLOBAL_ID',
+        'All canonical object IDs must be globally unique.',
+        sleeveSubject,
+        'sleeve',
+        { duplicateIds: duplicateGlobalIds },
+      ),
     );
   }
 
@@ -307,6 +341,7 @@ function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexe
   const stackByNeoBlockId = new Map<string, string>();
 
   for (const stack of sleeve.neoStacks) {
+    const stackSubject: DiagnosticSubject = { kind: 'neostack', id: stack.id };
     for (const row of stack.childStackRows ?? []) {
       for (const childId of row.neoStackIds) {
         if (!neoStacks.has(childId)) {
@@ -314,6 +349,7 @@ function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexe
             errorDiagnostic(
               'UNKNOWN_CHILD_NEOSTACK',
               `NeoStack ${stack.id} references unknown child ${childId}.`,
+              stackSubject,
               `neoStacks.${stack.id}.childStackRows`,
             ),
           );
@@ -325,6 +361,7 @@ function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexe
             errorDiagnostic(
               'MULTIPLE_NEOSTACK_PARENTS',
               `NeoStack ${childId} has more than one parent.`,
+              stackSubject,
               `neoStacks.${stack.id}.childStackRows`,
               { parents: [existingParent, stack.id] },
             ),
@@ -342,6 +379,7 @@ function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexe
             errorDiagnostic(
               'UNKNOWN_NEOBLOCK_IN_NEOSTACK',
               `NeoStack ${stack.id} references unknown NeoBlock ${neoBlockId}.`,
+              stackSubject,
               `neoStacks.${stack.id}.neoBlockRows`,
             ),
           );
@@ -353,6 +391,7 @@ function buildIndexes(sleeve: Sleeve, diagnostics: CompilerDiagnostic[]): Indexe
             errorDiagnostic(
               'NEOBLOCK_IN_MULTIPLE_NEOSTACKS',
               `NeoBlock ${neoBlockId} belongs to more than one NeoStack in vNext.`,
+              stackSubject,
               `neoStacks.${stack.id}.neoBlockRows`,
               { neoStacks: [existingStack, stack.id] },
             ),
@@ -374,7 +413,12 @@ function validateNoStackCycles(indexes: Indexes, diagnostics: CompilerDiagnostic
     while (current) {
       if (visited.has(current)) {
         diagnostics.push(
-          errorDiagnostic('NEOSTACK_CYCLE', `NeoStack cycle detected from ${stackId}.`, `neoStacks.${stackId}`),
+          errorDiagnostic(
+            'NEOSTACK_CYCLE',
+            `NeoStack cycle detected from ${stackId}.`,
+            { kind: 'neostack', id: stackId },
+            `neoStacks.${stackId}`,
+          ),
         );
         break;
       }
@@ -406,13 +450,14 @@ function validateGeometryMembers(
   indexes: Indexes,
   diagnostics: CompilerDiagnostic[],
   path: string,
+  subject: DiagnosticSubject,
 ): void {
   const localIds = new Set(neoBlock.moltBlockIds);
   for (const row of rows) {
     for (const blockId of row.blockIds) {
       const block = indexes.moltBlocks.get(blockId);
       if (!block) {
-        diagnostics.push(errorDiagnostic('UNKNOWN_MOLT_BLOCK', `Unknown MOLT Block ${blockId}.`, path));
+        diagnostics.push(errorDiagnostic('UNKNOWN_MOLT_BLOCK', `Unknown MOLT Block ${blockId}.`, subject, path));
         continue;
       }
       if (!localIds.has(blockId)) {
@@ -420,6 +465,7 @@ function validateGeometryMembers(
           errorDiagnostic(
             'NONLOCAL_GEOMETRY_MEMBER',
             `MOLT Block ${blockId} is not local to NeoBlock ${neoBlock.id}.`,
+            subject,
             path,
           ),
         );
@@ -429,6 +475,7 @@ function validateGeometryMembers(
           errorDiagnostic(
             'LANE_MEMBER_TYPE_MISMATCH',
             `MOLT Block ${blockId} is ${block.type}, but the lane is ${moltType}.`,
+            subject,
             path,
             { blockId, actualType: block.type, expectedType: moltType },
           ),
@@ -444,21 +491,27 @@ function validateBundle(
   indexes: Indexes,
   diagnostics: CompilerDiagnostic[],
 ): void {
+  const bundleSubject: DiagnosticSubject = { kind: 'bundle', id: bundle.id };
   const path = `neoBlocks.${neoBlock.id}.bundles.${bundle.id}`;
-  validateRows(bundle.rows, `${path}.rows`, diagnostics);
-  validateGeometryMembers(neoBlock, bundle.moltType, bundle.rows, indexes, diagnostics, path);
+  validateRows(bundle.rows, `${path}.rows`, diagnostics, bundleSubject);
+  validateGeometryMembers(neoBlock, bundle.moltType, bundle.rows, indexes, diagnostics, path, bundleSubject);
 }
 
 function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: CompilerDiagnostic[]): void {
   const path = `neoBlocks.${neoBlock.id}`;
   const localIds = new Set(neoBlock.moltBlockIds);
+  const neoBlockSubject: DiagnosticSubject = { kind: 'neoblock', id: neoBlock.id };
 
   const duplicateLocalIds = duplicates(neoBlock.moltBlockIds);
   if (duplicateLocalIds.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_LOCAL_MOLT_ID', 'NeoBlock local MOLT IDs must be unique.', `${path}.moltBlockIds`, {
-        duplicateIds: duplicateLocalIds,
-      }),
+      errorDiagnostic(
+        'DUPLICATE_LOCAL_MOLT_ID',
+        'NeoBlock local MOLT IDs must be unique.',
+        neoBlockSubject,
+        `${path}.moltBlockIds`,
+        { duplicateIds: duplicateLocalIds },
+      ),
     );
   }
 
@@ -466,7 +519,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
   for (const id of neoBlock.moltBlockIds) {
     const block = indexes.moltBlocks.get(id);
     if (!block) {
-      diagnostics.push(errorDiagnostic('UNKNOWN_LOCAL_MOLT_BLOCK', `Unknown local MOLT Block ${id}.`, path));
+      diagnostics.push(errorDiagnostic('UNKNOWN_LOCAL_MOLT_BLOCK', `Unknown local MOLT Block ${id}.`, neoBlockSubject, path));
     } else {
       localBlocks.push(block);
     }
@@ -482,6 +535,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'REQUIRED_MOLT_MISSING',
           `NeoBlock ${neoBlock.id} requires at least one ${type} MOLT Block.`,
+          neoBlockSubject,
           path,
           { moltType: type },
         ),
@@ -495,14 +549,23 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'INVALID_PRIME_DIRECTIVE',
         `NeoBlock ${neoBlock.id} must reference one local Directive as primeDirectiveId.`,
+        neoBlockSubject,
         `${path}.primeDirectiveId`,
       ),
     );
   }
 
   for (const [moltType, rows] of Object.entries(neoBlock.baseGeometry) as [MoltType, GeometryRow[]][]) {
-    validateRows(rows, `${path}.baseGeometry.${moltType}`, diagnostics);
-    validateGeometryMembers(neoBlock, moltType, rows, indexes, diagnostics, `${path}.baseGeometry.${moltType}`);
+    validateRows(rows, `${path}.baseGeometry.${moltType}`, diagnostics, neoBlockSubject);
+    validateGeometryMembers(
+      neoBlock,
+      moltType,
+      rows,
+      indexes,
+      diagnostics,
+      `${path}.baseGeometry.${moltType}`,
+      neoBlockSubject,
+    );
   }
 
   for (const requiredType of required) {
@@ -512,6 +575,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'REQUIRED_BASE_LANE_MISSING',
           `NeoBlock ${neoBlock.id} requires Base Geometry for ${requiredType}.`,
+          neoBlockSubject,
           `${path}.baseGeometry.${requiredType}`,
         ),
       );
@@ -530,6 +594,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'DIRECTIVE_BASE_GEOMETRY_CANON_VIOLATION',
         'baseGeometry.directive must contain exactly one row with only the Prime Directive. Secondary Directives must be declared in secondaryDirectives.',
+        neoBlockSubject,
         `${path}.baseGeometry.directive`,
         {
           primeDirectiveId: neoBlock.primeDirectiveId,
@@ -543,9 +608,13 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
   const bundleDupes = duplicates((neoBlock.bundles ?? []).map((bundle) => bundle.id));
   if (bundleDupes.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_BUNDLE_ID', 'Bundle IDs must be unique inside the NeoBlock.', `${path}.bundles`, {
-        duplicateIds: bundleDupes,
-      }),
+      errorDiagnostic(
+        'DUPLICATE_BUNDLE_ID',
+        'Bundle IDs must be unique inside the NeoBlock.',
+        neoBlockSubject,
+        `${path}.bundles`,
+        { duplicateIds: bundleDupes },
+      ),
     );
   }
   for (const bundle of neoBlock.bundles ?? []) validateBundle(neoBlock, bundle, indexes, diagnostics);
@@ -557,6 +626,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'DUPLICATE_SECONDARY_DIRECTIVE_ID',
         'Secondary Directive relation IDs must be unique.',
+        neoBlockSubject,
         `${path}.secondaryDirectives`,
         { duplicateIds: secondaryDupes },
       ),
@@ -566,6 +636,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
   const triggerBindings: string[] = [];
   for (const secondary of neoBlock.secondaryDirectives ?? []) {
     const secondaryPath = `${path}.secondaryDirectives.${secondary.id}`;
+    const secondarySubject: DiagnosticSubject = { kind: 'secondary_directive', id: secondary.id };
     const directiveBlock = indexes.moltBlocks.get(secondary.directiveBlockId);
     const triggerBlock = indexes.moltBlocks.get(secondary.triggerBlockId);
 
@@ -574,6 +645,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'INVALID_SECONDARY_DIRECTIVE_BLOCK',
           `Secondary Directive ${secondary.id} must reference a local Directive block.`,
+          secondarySubject,
           `${secondaryPath}.directiveBlockId`,
         ),
       );
@@ -583,6 +655,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'PRIME_AS_SECONDARY_DIRECTIVE',
           'Prime Directive cannot also be declared as a Secondary Directive.',
+          secondarySubject,
           `${secondaryPath}.directiveBlockId`,
         ),
       );
@@ -592,6 +665,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'INVALID_SECONDARY_TRIGGER_BLOCK',
           `Secondary Directive ${secondary.id} must reference a local Trigger block.`,
+          secondarySubject,
           `${secondaryPath}.triggerBlockId`,
         ),
       );
@@ -602,7 +676,12 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       const bundle = bundleMap.get(bundleId);
       if (!bundle) {
         diagnostics.push(
-          errorDiagnostic('UNKNOWN_BUNDLE_REFERENCE', `Unknown Bundle ${bundleId}.`, `${secondaryPath}.bundles.${moltType}`),
+          errorDiagnostic(
+            'UNKNOWN_BUNDLE_REFERENCE',
+            `Unknown Bundle ${bundleId}.`,
+            secondarySubject,
+            `${secondaryPath}.bundles.${moltType}`,
+          ),
         );
         continue;
       }
@@ -611,6 +690,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
           errorDiagnostic(
             'BUNDLE_REFERENCE_TYPE_MISMATCH',
             `Bundle ${bundleId} is ${bundle.moltType}, not ${moltType}.`,
+            secondarySubject,
             `${secondaryPath}.bundles.${moltType}`,
           ),
         );
@@ -624,6 +704,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'TRIGGER_BOUND_TO_MULTIPLE_SECONDARIES',
         'One Trigger cannot select multiple Secondary Directives in vNext.',
+        neoBlockSubject,
         `${path}.secondaryDirectives`,
         { triggerBlockIds: duplicateTriggerBindings },
       ),
@@ -656,6 +737,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'ORPHAN_LOCAL_DIRECTIVE',
         'Every non-Prime local Directive must participate in a Secondary Directive relation or a Merge declaration.',
+        neoBlockSubject,
         `${path}.moltBlockIds`,
         { directiveBlockIds: orphanLocalDirectives },
       ),
@@ -666,9 +748,13 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
   const mergeDupes = duplicates(mergeIds);
   if (mergeDupes.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_MERGE_ID', 'Merge IDs must be unique inside the NeoBlock.', `${path}.merges`, {
-        duplicateIds: mergeDupes,
-      }),
+      errorDiagnostic(
+        'DUPLICATE_MERGE_ID',
+        'Merge IDs must be unique inside the NeoBlock.',
+        neoBlockSubject,
+        `${path}.merges`,
+        { duplicateIds: mergeDupes },
+      ),
     );
   }
 
@@ -685,6 +771,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'DUPLICATE_MERGE_RESULT',
           `Merge result ${resultBlockId} may be declared by only one Merge inside NeoBlock ${neoBlock.id}.`,
+          neoBlockSubject,
           `${path}.merges`,
           {
             resultBlockId,
@@ -699,24 +786,13 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
 
   for (const merge of neoBlock.merges ?? []) {
     const mergePath = `${path}.merges.${merge.id}`;
-    const sourceDupes = duplicates(merge.sourceBlockIds);
-    if (merge.sourceBlockIds.length < 2) {
-      diagnostics.push(
-        errorDiagnostic('MERGE_TOO_FEW_SOURCES', 'Merge requires at least two unique source blocks.', mergePath),
-      );
-    }
-    if (sourceDupes.length) {
-      diagnostics.push(
-        errorDiagnostic('MERGE_DUPLICATE_SOURCE', 'Merge source IDs must be unique.', mergePath, {
-          duplicateIds: sourceDupes,
-        }),
-      );
-    }
+    const mergeSubject: DiagnosticSubject = { kind: 'merge', id: merge.id };
     if (merge.sourceBlockIds.includes(merge.resultBlockId)) {
       diagnostics.push(
         errorDiagnostic(
           'MERGE_RESULT_IS_SOURCE',
           `Merge ${merge.id} resultBlockId must be distinct from every sourceBlockId.`,
+          mergeSubject,
           `${mergePath}.resultBlockId`,
           { resultBlockId: merge.resultBlockId },
         ),
@@ -729,6 +805,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'INVALID_MERGE_RESULT',
           `Merge ${merge.id} must reference a pre-authored local result MOLT Block.`,
+          mergeSubject,
           `${mergePath}.resultBlockId`,
         ),
       );
@@ -736,7 +813,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
     }
     if (result.type === 'trigger') {
       diagnostics.push(
-        errorDiagnostic('TRIGGER_MERGE_UNSUPPORTED', 'Trigger is outside vNext Merge semantics.', mergePath),
+        errorDiagnostic('TRIGGER_MERGE_UNSUPPORTED', 'Trigger is outside vNext Merge semantics.', mergeSubject, mergePath),
       );
     } else {
       validLocalResultByMergeId.set(merge.id, merge.resultBlockId);
@@ -746,6 +823,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
         errorDiagnostic(
           'MERGE_RESULT_NOT_PLACED',
           `Merge ${merge.id} result ${merge.resultBlockId} must be explicitly placed through Prime/Secondary Directive, Base Geometry, or a Bundle.`,
+          mergeSubject,
           `${mergePath}.resultBlockId`,
           { resultBlockId: merge.resultBlockId },
         ),
@@ -760,6 +838,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
           errorDiagnostic(
             'INVALID_MERGE_SOURCE',
             `Merge source ${sourceId} must be a local MOLT Block in vNext.`,
+            mergeSubject,
             `${mergePath}.sourceBlockIds`,
           ),
         );
@@ -769,7 +848,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
     }
     if (sources.some((source) => source.type === 'trigger')) {
       diagnostics.push(
-        errorDiagnostic('TRIGGER_MERGE_UNSUPPORTED', 'Trigger is outside vNext Merge semantics.', mergePath),
+        errorDiagnostic('TRIGGER_MERGE_UNSUPPORTED', 'Trigger is outside vNext Merge semantics.', mergeSubject, mergePath),
       );
     }
 
@@ -785,6 +864,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
           errorDiagnostic(
             'MERGE_AUTHORITY_ESCALATION',
             `Merge ${merge.id} attempts to create higher MOLT authority than its sources permit.`,
+            mergeSubject,
             mergePath,
             {
               sourceTypes: sources.map((source) => source.type),
@@ -812,6 +892,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'MERGE_CYCLE',
         `NeoBlock ${neoBlock.id} declares a cyclic Merge dependency. compiler-vnext requires Merge dependencies to remain acyclic and non-chained.`,
+        neoBlockSubject,
         `${path}.merges`,
         {
           mergeIds: [...cycleIds].sort(),
@@ -834,6 +915,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       errorDiagnostic(
         'MERGE_CHAIN_UNSUPPORTED',
         `Merge ${merge.id} references the result of another Merge. compiler-vnext does not support Merge chaining.`,
+        { kind: 'merge', id: merge.id },
         `${path}.merges.${merge.id}`,
         {
           dependencyMergeIds: dependencies.map((dependency) => dependency.dependencyMergeId),
@@ -850,6 +932,7 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
       warningDiagnostic(
         'UNREACHABLE_LOCAL_MOLT_BLOCK',
         'Local MOLT Blocks exist but are not reachable through Base Geometry, a Bundle, Secondary Directive, or Merge.',
+        neoBlockSubject,
         path,
         { blockIds: unreachable.sort() },
       ),
@@ -857,10 +940,16 @@ function validateNeoBlock(neoBlock: NeoBlock, indexes: Indexes, diagnostics: Com
   }
 }
 
-function validateScopeRef(scope: ScopeRef, indexes: Indexes, diagnostics: CompilerDiagnostic[], path: string): void {
+function validateScopeRef(
+  scope: ScopeRef,
+  indexes: Indexes,
+  diagnostics: CompilerDiagnostic[],
+  path: string,
+  subject: DiagnosticSubject,
+): void {
   if (scope.kind === 'neostack' && !indexes.neoStacks.has(scope.neoStackId)) {
     diagnostics.push(
-      errorDiagnostic('UNKNOWN_SCOPED_NEOSTACK', `Unknown NeoStack ${scope.neoStackId}.`, path),
+      errorDiagnostic('UNKNOWN_SCOPED_NEOSTACK', `Unknown NeoStack ${scope.neoStackId}.`, subject, path),
     );
   }
 }
@@ -874,9 +963,12 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
     sourceKind: 'scopedMolt' | 'overlay',
     overlayId?: string,
   ): void => {
+    const attachmentSubject: DiagnosticSubject = { kind: 'scoped_attachment', id: attachment.id };
     const block = indexes.moltBlocks.get(attachment.blockId);
     if (!block) {
-      diagnostics.push(errorDiagnostic('UNKNOWN_SCOPED_MOLT_BLOCK', `Unknown MOLT Block ${attachment.blockId}.`, path));
+      diagnostics.push(
+        errorDiagnostic('UNKNOWN_SCOPED_MOLT_BLOCK', `Unknown MOLT Block ${attachment.blockId}.`, attachmentSubject, path),
+      );
       return;
     }
     if (declaredMergeResultOwners.has(attachment.blockId)) {
@@ -884,6 +976,7 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
         errorDiagnostic(
           'MERGE_RESULT_SCOPED_UNSUPPORTED',
           `Merge result ${attachment.blockId} cannot be used through ${sourceKind === 'overlay' ? 'Overlay attachments' : 'scopedMolt'} in compiler-vnext.`,
+          attachmentSubject,
           path,
           {
             blockId: attachment.blockId,
@@ -900,11 +993,12 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
         errorDiagnostic(
           'SCOPED_MOLT_TYPE_UNSUPPORTED',
           `vNext scoped MOLT supports Instruction, Philosophy, and Blueprint only; received ${block.type}.`,
+          attachmentSubject,
           path,
         ),
       );
     }
-    validateScopeRef(attachment.scope, indexes, diagnostics, `${path}.scope`);
+    validateScopeRef(attachment.scope, indexes, diagnostics, `${path}.scope`, attachmentSubject);
   };
 
   (sleeve.scopedMolt ?? []).forEach((attachment, index) =>
@@ -915,7 +1009,7 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
   const overlayDupes = duplicates(overlayIds);
   if (overlayDupes.length) {
     diagnostics.push(
-      errorDiagnostic('DUPLICATE_OVERLAY_ID', 'Overlay IDs must be unique.', 'overlays', {
+      errorDiagnostic('DUPLICATE_OVERLAY_ID', 'Overlay IDs must be unique.', { kind: 'overlay', id: overlayDupes[0] }, 'overlays', {
         duplicateIds: overlayDupes,
       }),
     );
@@ -928,22 +1022,14 @@ function validateScopedAttachments(sleeve: Sleeve, indexes: Indexes, diagnostics
 }
 
 function validateNeoStackRows(stack: NeoStack, diagnostics: CompilerDiagnostic[]): void {
-  validateModuleRows(stack.neoBlockRows, `neoStacks.${stack.id}.neoBlockRows`, diagnostics);
-  validateModuleRows(stack.childStackRows ?? [], `neoStacks.${stack.id}.childStackRows`, diagnostics);
+  const stackSubject: DiagnosticSubject = { kind: 'neostack', id: stack.id };
+  validateModuleRows(stack.neoBlockRows, `neoStacks.${stack.id}.neoBlockRows`, diagnostics, stackSubject);
+  validateModuleRows(stack.childStackRows ?? [], `neoStacks.${stack.id}.childStackRows`, diagnostics, stackSubject);
 }
 
 export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
   const diagnostics: CompilerDiagnostic[] = [];
-
-  if (sleeve.schemaVersion !== 'umg.compiler-vnext.sleeve.v0.1') {
-    diagnostics.push(
-      errorDiagnostic(
-        'UNSUPPORTED_SLEEVE_SCHEMA',
-        `Expected umg.compiler-vnext.sleeve.v0.1; received ${String(sleeve.schemaVersion)}.`,
-        'schemaVersion',
-      ),
-    );
-  }
+  const sleeveSubject: DiagnosticSubject = { kind: 'sleeve', id: sleeve.id };
 
   const indexes = buildIndexes(sleeve, diagnostics);
 
@@ -952,6 +1038,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
       errorDiagnostic(
         'UNKNOWN_CONTROLLER_NEOSTACK',
         `Controller NeoStack ${sleeve.controllerNeoStackId} does not exist.`,
+        sleeveSubject,
         'controllerNeoStackId',
       ),
     );
@@ -961,6 +1048,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
       errorDiagnostic(
         'CONTROLLER_HAS_PARENT',
         'Controller NeoStack must be the apex and cannot have a parent.',
+        sleeveSubject,
         'controllerNeoStackId',
       ),
     );
@@ -976,6 +1064,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
           errorDiagnostic(
             'ORPHAN_NEOSTACK',
             `NeoStack ${stack.id} must have exactly one parent beneath the Controller NeoStack.`,
+            { kind: 'neostack', id: stack.id },
             `neoStacks.${stack.id}`,
             {
               controllerNeoStackId: sleeve.controllerNeoStackId,
@@ -991,6 +1080,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
           errorDiagnostic(
             'ORPHAN_NEOSTACK',
             `NeoStack ${stack.id} is not reachable from Controller NeoStack ${sleeve.controllerNeoStackId}.`,
+            { kind: 'neostack', id: stack.id },
             `neoStacks.${stack.id}`,
             {
               controllerNeoStackId: sleeve.controllerNeoStackId,
@@ -1010,6 +1100,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
         errorDiagnostic(
           'NEOBLOCK_WITHOUT_NEOSTACK',
           `NeoBlock ${neoBlock.id} is not placed in any NeoStack.`,
+          { kind: 'neoblock', id: neoBlock.id },
           `neoBlocks.${neoBlock.id}`,
         ),
       );
@@ -1022,6 +1113,7 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
         errorDiagnostic(
           'GOVERNANCE_RULE_NO_TARGETS',
           `Governance rule ${rule.id} must target at least one NeoStack or NeoBlock.`,
+          { kind: 'governance', id: rule.id },
           `governance.${rule.id}`,
         ),
       );
@@ -1029,14 +1121,24 @@ export function validateCanonicalSleeve(sleeve: Sleeve): ValidationResult {
     for (const id of rule.offNeoStackIds ?? []) {
       if (!indexes.neoStacks.has(id)) {
         diagnostics.push(
-          errorDiagnostic('UNKNOWN_GOVERNANCE_NEOSTACK_TARGET', `Unknown Governance NeoStack target ${id}.`, `governance.${rule.id}`),
+          errorDiagnostic(
+            'UNKNOWN_GOVERNANCE_NEOSTACK_TARGET',
+            `Unknown Governance NeoStack target ${id}.`,
+            { kind: 'governance', id: rule.id },
+            `governance.${rule.id}`,
+          ),
         );
       }
     }
     for (const id of rule.offNeoBlockIds ?? []) {
       if (!indexes.neoBlocks.has(id)) {
         diagnostics.push(
-          errorDiagnostic('UNKNOWN_GOVERNANCE_NEOBLOCK_TARGET', `Unknown Governance NeoBlock target ${id}.`, `governance.${rule.id}`),
+          errorDiagnostic(
+            'UNKNOWN_GOVERNANCE_NEOBLOCK_TARGET',
+            `Unknown Governance NeoBlock target ${id}.`,
+            { kind: 'governance', id: rule.id },
+            `governance.${rule.id}`,
+          ),
         );
       }
     }
@@ -1049,21 +1151,13 @@ export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSel
   const diagnostics: CompilerDiagnostic[] = [];
   const source = validateCanonicalSleeve(sleeve);
   diagnostics.push(...source.diagnostics);
-
-  if (selection.schemaVersion !== 'umg.compiler-vnext.selection.v0.1') {
-    diagnostics.push(
-      errorDiagnostic(
-        'UNSUPPORTED_SELECTION_SCHEMA',
-        `Expected umg.compiler-vnext.selection.v0.1; received ${String(selection.schemaVersion)}.`,
-        'selection.schemaVersion',
-      ),
-    );
-  }
+  const selectionSubject: DiagnosticSubject = { kind: 'selection' };
   if (!selection.compiledAt || Number.isNaN(Date.parse(selection.compiledAt))) {
     diagnostics.push(
       errorDiagnostic(
         'INVALID_COMPILED_AT',
         'Selection compiledAt must be an explicit ISO-8601 timestamp supplied by the caller.',
+        selectionSubject,
         'selection.compiledAt',
       ),
     );
@@ -1078,6 +1172,7 @@ export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSel
       errorDiagnostic(
         'INVALID_ROUTE_RATIONALE',
         'Selection routeRationale must be a JSON object when supplied.',
+        selectionSubject,
         'selection.routeRationale',
       ),
     );
@@ -1089,30 +1184,41 @@ export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSel
   const overlayIds = new Set((sleeve.overlays ?? []).map((overlay) => overlay.id));
   const governanceIds = new Set((sleeve.governance ?? []).map((rule) => rule.id));
 
-  const validateIds = (ids: string[] | undefined, known: Set<string>, code: string, path: string): void => {
+  const validateIds = (
+    ids: string[] | undefined,
+    known: Set<string>,
+    code: DiagnosticCode,
+    path: string,
+    subjectKind: DiagnosticSubject['kind'],
+  ): void => {
     for (const id of ids ?? []) {
-      if (!known.has(id)) diagnostics.push(errorDiagnostic(code, `Unknown ID ${id}.`, path));
+      if (!known.has(id)) diagnostics.push(errorDiagnostic(code, `Unknown ID ${id}.`, { kind: subjectKind, id }, path));
     }
     const dupes = duplicates(ids ?? []);
     if (dupes.length) {
       diagnostics.push(
-        errorDiagnostic('DUPLICATE_SELECTION_ID', 'Selection ID lists must not contain duplicates.', path, {
-          duplicateIds: dupes,
-        }),
+        errorDiagnostic(
+          'DUPLICATE_SELECTION_ID',
+          'Selection ID lists must not contain duplicates.',
+          selectionSubject,
+          path,
+          { duplicateIds: dupes },
+        ),
       );
     }
   };
 
-  validateIds(selection.activeNeoStackIds, stackIds, 'UNKNOWN_ACTIVE_NEOSTACK', 'selection.activeNeoStackIds');
-  validateIds(selection.activeNeoBlockIds, blockIds, 'UNKNOWN_ACTIVE_NEOBLOCK', 'selection.activeNeoBlockIds');
-  validateIds(selection.disabledNeoStackIds, stackIds, 'UNKNOWN_DISABLED_NEOSTACK', 'selection.disabledNeoStackIds');
-  validateIds(selection.disabledNeoBlockIds, blockIds, 'UNKNOWN_DISABLED_NEOBLOCK', 'selection.disabledNeoBlockIds');
-  validateIds(selection.activeOverlayIds, overlayIds, 'UNKNOWN_ACTIVE_OVERLAY', 'selection.activeOverlayIds');
+  validateIds(selection.activeNeoStackIds, stackIds, 'UNKNOWN_ACTIVE_NEOSTACK', 'selection.activeNeoStackIds', 'neostack');
+  validateIds(selection.activeNeoBlockIds, blockIds, 'UNKNOWN_ACTIVE_NEOBLOCK', 'selection.activeNeoBlockIds', 'neoblock');
+  validateIds(selection.disabledNeoStackIds, stackIds, 'UNKNOWN_DISABLED_NEOSTACK', 'selection.disabledNeoStackIds', 'neostack');
+  validateIds(selection.disabledNeoBlockIds, blockIds, 'UNKNOWN_DISABLED_NEOBLOCK', 'selection.disabledNeoBlockIds', 'neoblock');
+  validateIds(selection.activeOverlayIds, overlayIds, 'UNKNOWN_ACTIVE_OVERLAY', 'selection.activeOverlayIds', 'overlay');
   validateIds(
     selection.activeGovernanceRuleIds,
     governanceIds,
     'UNKNOWN_ACTIVE_GOVERNANCE_RULE',
     'selection.activeGovernanceRuleIds',
+    'governance',
   );
 
   for (const triggerId of Object.keys(selection.triggerState).sort()) {
@@ -1122,6 +1228,7 @@ export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSel
         errorDiagnostic(
           'UNKNOWN_TRIGGER_STATE_ID',
           `Trigger state references unknown Trigger ${triggerId}.`,
+          { kind: 'molt_block', id: triggerId },
           `selection.triggerState.${triggerId}`,
         ),
       );
@@ -1132,6 +1239,7 @@ export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSel
         errorDiagnostic(
           'TRIGGER_STATE_TYPE_MISMATCH',
           `Trigger state ID ${triggerId} references ${block.type}, not trigger.`,
+          { kind: 'molt_block', id: triggerId },
           `selection.triggerState.${triggerId}`,
           { actualType: block.type, expectedType: 'trigger' },
         ),
@@ -1144,6 +1252,7 @@ export function validateCanonicalSelection(sleeve: Sleeve, selection: CompileSel
       errorDiagnostic(
         'CONTROLLER_NOT_SELECTED',
         'Every compile selection must explicitly include the Controller NeoStack.',
+        selectionSubject,
         'selection.activeNeoStackIds',
       ),
     );

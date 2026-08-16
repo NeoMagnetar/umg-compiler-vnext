@@ -1,3 +1,10 @@
+import type {
+  DiagnosticCode,
+  DiagnosticLevel,
+  DiagnosticStage,
+  DiagnosticSubject,
+} from './diagnostic-registry.js';
+
 export const MOLT_TYPES = [
   'trigger',
   'directive',
@@ -161,12 +168,21 @@ export interface CompileSelection {
   routeRationale?: RouteRationale;
 }
 
-export type DiagnosticLevel = 'error' | 'warning';
 export type CompileStatus = 'success' | 'failure';
 
+export type {
+  DiagnosticCode,
+  DiagnosticLevel,
+  DiagnosticStage,
+  DiagnosticSubject,
+  DiagnosticSubjectKind,
+} from './diagnostic-registry.js';
+
 export interface CompilerDiagnostic {
-  code: string;
+  code: DiagnosticCode;
   level: DiagnosticLevel;
+  stage: DiagnosticStage;
+  subject: DiagnosticSubject;
   message: string;
   path?: string;
   details?: Record<string, unknown>;

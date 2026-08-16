@@ -136,21 +136,45 @@ assertContractValid(structuralFailure);
 
 {
   const runtime = clone(successResult.runtime);
-  runtime.diagnostics = [{ code: 'FORCED_RUNTIME_ERROR', level: 'error', message: 'forced runtime error' }];
+  runtime.diagnostics = [
+    {
+      code: 'FORCED_RUNTIME_ERROR',
+      level: 'error',
+      stage: 'semantic',
+      subject: { kind: 'selection' },
+      message: 'forced runtime error',
+    },
+  ];
   const validation = validateRuntimeSpecContract(runtime);
   assert.ok(validation.diagnostics.length > 0);
 }
 
 {
   const result = clone(successResult);
-  result.trace.diagnostics = [{ code: 'FORCED_TRACE_WARNING', level: 'warning', message: 'forced trace warning' }];
+  result.trace.diagnostics = [
+    {
+      code: 'FORCED_TRACE_WARNING',
+      level: 'warning',
+      stage: 'semantic',
+      subject: { kind: 'selection' },
+      message: 'forced trace warning',
+    },
+  ];
   const validation = validateCompileResultContract(result);
   assert.ok(validation.diagnostics.length > 0);
 }
 
 {
   const result = clone(successResult);
-  result.runtime.diagnostics = [{ code: 'FORCED_RUNTIME_WARNING', level: 'warning', message: 'forced runtime warning' }];
+  result.runtime.diagnostics = [
+    {
+      code: 'FORCED_RUNTIME_WARNING',
+      level: 'warning',
+      stage: 'semantic',
+      subject: { kind: 'selection' },
+      message: 'forced runtime warning',
+    },
+  ];
   const validation = validateCompileResultContract(result);
   assert.ok(validation.diagnostics.length > 0);
 }
