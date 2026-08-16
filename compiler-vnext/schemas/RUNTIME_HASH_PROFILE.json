@@ -1,0 +1,40 @@
+{
+  "profileVersion": "umg.compiler-vnext.runtime-hash.v0.1",
+  "hashAlgorithm": "SHA-256",
+  "encoding": "UTF-8",
+  "unicodeNormalization": "none",
+  "objectKeyOrderSignificant": false,
+  "arrayOrderSignificant": true,
+  "includedTopLevelFields": [
+    "runtimeSchemaVersion",
+    "sleeveId",
+    "controllerNeoStackId",
+    "activeNeoStackIds",
+    "resolvedNeoBlocks",
+    "promptParts",
+    "resetPlan"
+  ],
+  "excludedMetadata": [
+    "compilerVersion",
+    "sleeveName",
+    "compiledAt",
+    "diagnostics",
+    "runtimeHash"
+  ],
+  "canonicalization": {
+    "objectPropertiesWithUndefined": "omit",
+    "objectKeyComparator": "left < right ? -1 : left > right ? 1 : 0",
+    "arrayOrderPreserved": true,
+    "arrayUndefinedEntries": "reject",
+    "duplicateArrayEntriesPreserved": true,
+    "negativeZero": "serialize_as_0",
+    "unsupportedValues": [
+      "BigInt",
+      "function",
+      "symbol",
+      "NaN",
+      "Infinity",
+      "-Infinity"
+    ]
+  }
+}

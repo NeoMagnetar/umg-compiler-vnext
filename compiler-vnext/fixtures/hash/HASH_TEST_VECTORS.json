@@ -1,0 +1,79 @@
+[
+  {
+    "name": "shuffled-simple-object-keys",
+    "input": {
+      "z": 1,
+      "a": 2,
+      "m": 3
+    },
+    "expectedCanonicalJson": "{\"a\":2,\"m\":3,\"z\":1}",
+    "expectedSha256": "ebba85cfdc0a724b6cc327ecc545faeb38b9fe02eca603b430eb872f5cf75370"
+  },
+  {
+    "name": "nested-object-keys",
+    "input": {
+      "outer": {
+        "z": 1,
+        "a": {
+          "k": true,
+          "b": false
+        }
+      },
+      "alpha": {
+        "d": 4,
+        "c": 3
+      }
+    },
+    "expectedCanonicalJson": "{\"alpha\":{\"c\":3,\"d\":4},\"outer\":{\"a\":{\"b\":false,\"k\":true},\"z\":1}}",
+    "expectedSha256": "0715c560c39bdb460922e0482d33f4ba3d360e7e23d0ae7b46190b7cafe21e77"
+  },
+  {
+    "name": "ordered-array",
+    "input": [
+      "first",
+      "second",
+      "third"
+    ],
+    "expectedCanonicalJson": "[\"first\",\"second\",\"third\"]",
+    "expectedSha256": "ee122432ce1906316c1c0bfc9ca874fcb492ce561af465fc3d39a80456688813"
+  },
+  {
+    "name": "duplicate-array-elements",
+    "input": [
+      "dup",
+      "dup",
+      "unique"
+    ],
+    "expectedCanonicalJson": "[\"dup\",\"dup\",\"unique\"]",
+    "expectedSha256": "447dff5eb34e3e0130062c358853853700d12786c4186f026388271c8d9fb93f"
+  },
+  {
+    "name": "mixed-case-keys",
+    "input": {
+      "b": 2,
+      "A": 1,
+      "a": 3,
+      "B": 4
+    },
+    "expectedCanonicalJson": "{\"A\":1,\"B\":4,\"a\":3,\"b\":2}",
+    "expectedSha256": "2861afff231f6dfa612295d5896aaa477e9ec44c70b37d8dde2e2447dd75b433"
+  },
+  {
+    "name": "unicode-key-and-string",
+    "input": {
+      "éclair": "café",
+      "éclair": "café",
+      "雪": "雪"
+    },
+    "expectedCanonicalJson": "{\"éclair\":\"café\",\"éclair\":\"café\",\"雪\":\"雪\"}",
+    "expectedSha256": "001ca88acd29fa1def3b00cedfb098ba3845bebb50210b3b6f2dfff41a56cd02"
+  },
+  {
+    "name": "negative-zero",
+    "input": {
+      "value": -0
+    },
+    "expectedCanonicalJson": "{\"value\":0}",
+    "expectedSha256": "23d7b286bd429460b92a2a1c21b6afc34110446c5034c17363fda363aa0a7c5d"
+  }
+]

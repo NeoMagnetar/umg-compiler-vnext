@@ -1,16 +1,53 @@
 import { createHash } from 'node:crypto';
 
-function normalize(value: unknown): unknown {
+function compareKeys(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+function unsupportedValue(path: string, reason: string): never {
+  throw new TypeError(`Cannot canonicalize ${path}: ${reason}`);
+}
+
+function normalize(value: unknown, path = '$'): unknown {
+  if (value === undefined) {
+    unsupportedValue(path, 'undefined is not supported');
+  }
+
   if (Array.isArray(value)) {
-    return value.map(normalize);
+    return Array.from({ length: value.length }, (_, index) => {
+      const entry = value[index];
+      if (!(index in value) || entry === undefined) {
+        unsupportedValue(`${path}[${index}]`, 'undefined array entries are invalid');
+      }
+      return normalize(entry, `${path}[${index}]`);
+    });
   }
 
   if (value && typeof value === 'object') {
     const entries = Object.entries(value as Record<string, unknown>)
       .filter(([, child]) => child !== undefined)
-      .sort(([a], [b]) => a.localeCompare(b));
+      .sort(([left], [right]) => compareKeys(left, right));
 
-    return Object.fromEntries(entries.map(([key, child]) => [key, normalize(child)]));
+    return Object.fromEntries(entries.map(([key, child]) => [key, normalize(child, `${path}.${key}`)]));
+  }
+
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      unsupportedValue(path, 'NaN and Infinity are not supported');
+    }
+    return Object.is(value, -0) ? 0 : value;
+  }
+
+  if (typeof value === 'bigint') {
+    unsupportedValue(path, 'BigInt is not supported');
+  }
+
+  if (typeof value === 'function') {
+    unsupportedValue(path, 'function is not supported');
+  }
+
+  if (typeof value === 'symbol') {
+    unsupportedValue(path, 'symbol is not supported');
   }
 
   return value;
