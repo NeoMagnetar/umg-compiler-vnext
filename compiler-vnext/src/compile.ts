@@ -244,6 +244,14 @@ function finalizeCompileResult(
   return candidate;
 }
 
+export function finalizeCompileResultForInternalTest(
+  candidate: CompileResult,
+  sleeve: Sleeve,
+  selection: CompileSelection,
+): CompileResult {
+  return finalizeCompileResult(candidate, sleeve, selection);
+}
+
 function buildFailureCompileResult(
   diagnostics: CompilerDiagnostic[],
   trace: Trace | null,
