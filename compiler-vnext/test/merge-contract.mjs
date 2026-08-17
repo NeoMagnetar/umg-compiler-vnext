@@ -62,6 +62,14 @@ function assertInvalidCompile(sleeve, selection, codes) {
   return result;
 }
 
+function diagnostic(result, code, predicate = () => true) {
+  const match = result.diagnostics.find(
+    (item) => item.code === code && item.level === 'error' && predicate(item),
+  );
+  assert.ok(match, `missing diagnostic ${code}`);
+  return match;
+}
+
 function resolvedLane(runtime, neoBlockId, moltType) {
   const neoBlock = runtime.resolvedNeoBlocks.find((item) => item.id === neoBlockId);
   assert.ok(neoBlock, `missing resolved NeoBlock ${neoBlockId}`);
@@ -138,6 +146,7 @@ assert.equal(promptPart(base.runtime, 'I.MRG.RESULT.BASE').mergeId, 'MRG.MRG.BAS
 assert.equal(promptPart(base.runtime, 'I.MRG.RESULT.DOWN').sourceMode, 'merge');
 assert.equal(promptPart(base.runtime, 'I.MRG.RESULT.REUSE').sourceMode, 'merge');
 assert.ok(!laneIds(base.runtime, 'NB.MRG.CONTRACT', 'instruction').includes('I.MRG.SRC.HIDDEN'));
+assert.equal(base.runtime.promptParts.some((part) => part.id === 'I.MRG.SRC.HIDDEN'), false);
 assert.equal(hasMergeTrace(base, 'MRG.MRG.BUNDLE'), false);
 assert.deepEqual(mergeTrace(base, 'MRG.MRG.BASE.CONTEXT').data, {
   neoBlockId: 'NB.MRG.CONTRACT',
@@ -180,6 +189,15 @@ assert.deepEqual(laneIds(bundle.runtime, 'NB.MRG.CONTRACT', 'instruction'), [
   'I.MRG.BUNDLE.KEEP',
   'I.MRG.RESULT.BUNDLE',
 ]);
+assert.equal(resolvedLane(base.runtime, 'NB.MRG.CONTRACT', 'instruction').geometrySource, 'base');
+assert.equal(resolvedLane(base.runtime, 'NB.MRG.CONTRACT', 'instruction').bundleId, undefined);
+assert.equal(base.runtime.promptParts.some((part) => part.id === 'I.MRG.BUNDLE.KEEP'), false);
+assert.equal(base.runtime.promptParts.some((part) => part.id === 'I.MRG.RESULT.BUNDLE'), false);
+assert.equal(traceEvents(base, 'SECONDARY_DIRECTIVE_SELECTED').length, 0);
+assert.equal(resolvedLane(bundle.runtime, 'NB.MRG.CONTRACT', 'instruction').geometrySource, 'bundle');
+assert.equal(resolvedLane(bundle.runtime, 'NB.MRG.CONTRACT', 'instruction').bundleId, 'B.MRG.INSTRUCTION');
+assert.equal(promptPart(bundle.runtime, 'I.MRG.BUNDLE.KEEP').sourceMode, 'local');
+assert.equal(promptPart(bundle.runtime, 'I.MRG.BUNDLE.KEEP').mergeId, undefined);
 assert.equal(promptPart(bundle.runtime, 'I.MRG.RESULT.BUNDLE').sourceMode, 'merge');
 assert.equal(promptPart(bundle.runtime, 'I.MRG.RESULT.BUNDLE').mergeId, 'MRG.MRG.BUNDLE');
 assert.deepEqual(mergeTrace(bundle, 'MRG.MRG.BUNDLE').data, {
@@ -204,11 +222,56 @@ assert.equal(
   resolvedLane(overlay.runtime, 'NB.MRG.CONTRACT', 'instruction').scoped[1].sourceMode,
   'overlay',
 );
+assert.equal(promptPart(overlay.runtime, 'I.OVERLAY.MRG.NOTE').sourceMode, 'overlay');
+assert.equal(promptPart(overlay.runtime, 'I.OVERLAY.MRG.NOTE').overlayId, 'OVR.MRG.ACTIVE');
+assert.equal(base.runtime.promptParts.some((part) => part.id === 'I.OVERLAY.MRG.NOTE'), false);
 assert.equal(promptPart(overlay.runtime, 'I.MRG.RESULT.BASE').sourceMode, 'merge');
+assert.deepEqual(promptPart(overlay.runtime, 'I.MRG.RESULT.BASE'), promptPart(base.runtime, 'I.MRG.RESULT.BASE'));
+assert.deepEqual(mergeTrace(overlay, 'MRG.MRG.BASE.CONTEXT').data, mergeTrace(base, 'MRG.MRG.BASE.CONTEXT').data);
+assert.equal(
+  mergeTrace(overlay, 'MRG.MRG.BASE.CONTEXT').data.sources.some(
+    (source) => source.blockId === 'I.OVERLAY.MRG.NOTE',
+  ),
+  false,
+);
 assert.deepEqual(
   mergeTrace(overlay, 'MRG.MRG.BASE.CONTEXT').data.sources.map((source) => source.blockId),
   ['I.MRG.SRC.HIDDEN', 'PH.MRG.BASE.CONTEXT'],
 );
+
+{
+  const sleeve = clone(mergeSleeve);
+  sleeve.governance = [
+    {
+      id: 'GOV.MRG.CONTRACT.OFF',
+      name: 'Merge Owner OFF Rule',
+      description: 'Turns the merge owner NeoBlock OFF.',
+      offNeoBlockIds: ['NB.MRG.CONTRACT'],
+    },
+  ];
+  const selection = clone(baseSelection);
+  selection.activeGovernanceRuleIds = ['GOV.MRG.CONTRACT.OFF'];
+  const result = compileSleeve(sleeve, selection);
+  assertFailure(result, { codes: ['SELECTION_TARGET_NOT_EXECUTABLE'], trace: 'present' });
+  const issue = diagnostic(
+    result,
+    'SELECTION_TARGET_NOT_EXECUTABLE',
+    (item) => item.details?.targetId === 'NB.MRG.CONTRACT',
+  );
+  assert.equal(issue.details.effectiveState, 'off');
+  assert.equal(issue.details.blockingSource, 'governance');
+  assert.equal(issue.details.blockingObjectId, 'GOV.MRG.CONTRACT.OFF');
+  assert.deepEqual(issue.details.directGovernanceRuleIds, ['GOV.MRG.CONTRACT.OFF']);
+  assert.equal(result.trace.finalNeoBlockStates['NB.MRG.CONTRACT'], 'off');
+  assert.equal(
+    traceEvents(result, 'GOVERNANCE_RULE_APPLIED', (event) => event.subject?.id === 'GOV.MRG.CONTRACT.OFF').length,
+    1,
+  );
+  assert.equal(
+    traceEvents(result, 'MERGE_VALIDATED', (event) => event.data?.neoBlockId === 'NB.MRG.CONTRACT').length,
+    0,
+  );
+}
 
 const directive = compileSleeve(directiveSleeve, directiveSelection);
 assertSuccess(directive);
