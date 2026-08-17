@@ -16,7 +16,7 @@
     "umg-vnext": "./dist/cli.js"
   },
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "node scripts/clean.mjs",
     "build": "tsc -p tsconfig.json",
     "test:version-compatibility": "npm run build && node test/version-compatibility-contract.mjs",
     "test:runtime-hash": "npm run build && node test/runtime-hash-contract.mjs",
