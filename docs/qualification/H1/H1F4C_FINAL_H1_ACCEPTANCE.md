@@ -28,6 +28,10 @@ CANONICAL_CASES: 13
 
 CANONICAL_CASE_EXECUTION: 13/13 PASS
 
+CANONICAL_ARTIFACT_HASHES: 31/31 PASS
+
+HASH_PROFILE: exact Git blob bytes at executable qualification head
+
 BUILD: PASS
 
 FULL_TEST_SUITE: PASS
@@ -38,5 +42,5 @@ Notes:
 - H1 completion does NOT promote compilerVersion from 0.1.0-experimental.
 - H1 completion does NOT claim general cross-platform byte-identical CompileResult reproducibility beyond ratified DET-006 scope.
 - Corpus v0.1 is a conformance-corpus identity, not a compiler release version.
-- H2 executable conformance runner remains future work.
+- H2 executable conformance remains future work.
 

@@ -10,16 +10,16 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/dealership.sleeve.json",
-        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+        "sha256": "BAC6B15A50E159A0F60C19A771E3959A24D7EF79AFFD6B1EEBC561F792DE4E63"
       },
       "compileSelection": {
         "path": "fixtures/requests/normal.selection.json",
-        "sha256": "1CEABC8C71B86E9F7F602C861E62386210355A9C3F7BE63CC2874A29105A4C14"
+        "sha256": "CE327D3ACE2BBC22A50B855B7E3CB98E571C795103DFE4F4CF92C4BD46D4368C"
       },
       "expectedOutcome": {
         "model": "golden_file",
         "path": "fixtures/expected/normal.compile-result.json",
-        "sha256": "C299E6140B4EDDC43B4F97CA9680A769D7DF08CBB7E1DD65ADA20712F8A9B1C3"
+        "sha256": "332E812C2D75855154E5EE6338D467C9AA6022B1AC6842BD776837E59AB1CC24"
       },
       "primaryRequirementsProven": [
         "UMG-CONF-INPUT-001",
@@ -40,18 +40,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/directive-geometry.sleeve.json",
-        "sha256": "048E4D9E8D4D21F4314206CA140DAD93611DD5E4BCAE5E1762469BA4C5AC0A9B"
+        "sha256": "A6E736B1752FFF113114834966A70084740FFF9552B98E175E422AB92E591036"
       },
       "compileSelection": {
         "path": "fixtures/requests/directive-geometry.selection.json",
-        "sha256": "6F441D07302571E1FAB8A58D10AA2BCC78217706D4B070FC6D8DBC444A497DD6"
+        "sha256": "1449372C316EFD1EB148F82AC1469C406C8AE31B3B4C1875313459660C750000"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/directive-geometry-contract.mjs",
-            "sha256": "77E9456CC095267898DFE69EED16367C95C8B05C803A47C940661A438EC5FB34"
+            "sha256": "271424F1B18CC1BCC995BB97C19C73803B33AD7948E93AE79E7EC5BAE4B5419A"
           }
         ]
       },
@@ -75,18 +75,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/directive-geometry.sleeve.json",
-        "sha256": "048E4D9E8D4D21F4314206CA140DAD93611DD5E4BCAE5E1762469BA4C5AC0A9B"
+        "sha256": "A6E736B1752FFF113114834966A70084740FFF9552B98E175E422AB92E591036"
       },
       "compileSelection": {
         "path": "fixtures/requests/directive-geometry-shuffled.selection.json",
-        "sha256": "74D58A8150CFC365FD290C62D8416116FF5806310C51366AD416F60C2DA0C837"
+        "sha256": "D34A5FC9ECFFD11AFB8DA4DACA59F5DCBE7176B5C4F7B4FDE3E7132E5A7EEE87"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/directive-geometry-contract.mjs",
-            "sha256": "77E9456CC095267898DFE69EED16367C95C8B05C803A47C940661A438EC5FB34"
+            "sha256": "271424F1B18CC1BCC995BB97C19C73803B33AD7948E93AE79E7EC5BAE4B5419A"
           }
         ]
       },
@@ -110,18 +110,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/state-selection.sleeve.json",
-        "sha256": "5A982223FA47B185C5B44954F574E426F7C0D36D94CADB5FE8DBCA2503E44A9E"
+        "sha256": "041B96A2B034766FD62CADE0901DCC2E8496A3DD57A372C897310FACE7D3CC51"
       },
       "compileSelection": {
         "path": "fixtures/requests/state-selection-closed.selection.json",
-        "sha256": "E481275F20C707596E264CADC27305C0AD7DB096CD0E16611E77E624A864B19C"
+        "sha256": "8039D419C3FFFD34160ECCC2EF577F83651ABE9D0ED9042AB5C8E623BDC036D3"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/state-selection-contract.mjs",
-            "sha256": "9B242C4FCC1014B0DEA6089BDB14A9C530FF31D0FF45FAF6EA24FD5518B9D3E5"
+            "sha256": "86DE7274912631E0CD4CE460F0AC9532386D1D2EF012C4DD747D748D93A0CA30"
           }
         ]
       },
@@ -141,16 +141,16 @@
       "successOrFailure": "failure",
       "inputSleeve": {
         "path": "fixtures/dealership.sleeve.json",
-        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+        "sha256": "BAC6B15A50E159A0F60C19A771E3959A24D7EF79AFFD6B1EEBC561F792DE4E63"
       },
       "compileSelection": {
         "path": "fixtures/requests/multi-secondary-error.selection.json",
-        "sha256": "3090D79B405AAAF8C9052799BCAFFAE7A0CEF7498B744249F4F8EEB291A3C13F"
+        "sha256": "40869EC6B2274EFFA1BE223DC5106B0293E523B4127A11757C6B90F79073CE87"
       },
       "expectedOutcome": {
         "model": "golden_file",
         "path": "fixtures/expected/multi-secondary-error.compile-result.json",
-        "sha256": "2644F8A1E850D525366CC81F1E013645F555E431827BACF7A701EEFD2F03D96A"
+        "sha256": "26956592A7586940021C5F779AEB99F6B4818028D7627EAD4A5C0A143835FDBB"
       },
       "primaryRequirementsProven": [
         "UMG-CONF-STATE-006",
@@ -168,16 +168,16 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/dealership.sleeve.json",
-        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+        "sha256": "BAC6B15A50E159A0F60C19A771E3959A24D7EF79AFFD6B1EEBC561F792DE4E63"
       },
       "compileSelection": {
         "path": "fixtures/requests/governance-off.selection.json",
-        "sha256": "1D932247DC798DD50DBFF06980F03831622F56EBC55C61F3E778E49D0606C2F3"
+        "sha256": "D4EA21042A91E2661FC8911E7D681CB97CF5646BCCDADA1DF0E707D31C5E130E"
       },
       "expectedOutcome": {
         "model": "golden_file",
         "path": "fixtures/expected/governance-off.compile-result.json",
-        "sha256": "B82B1D5EFF658102E96A0EDED8C5C29736767DCD2D62F4DB1354936B9590075D"
+        "sha256": "814D6C0636348D2C1FDD9AAAFD6DCDE7FEAA67F7163F8171169240996623AD46"
       },
       "primaryRequirementsProven": [
         "UMG-CONF-GOV-001",
@@ -195,26 +195,26 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/bundle-overlay.sleeve.json",
-        "sha256": "3BDDAC8181CBA29D34C502FBC434F9E501966F09D17886BF50CD369161F1147B"
+        "sha256": "0B162AD703954628E9C26A643A5CCC58E77DF72B39A766C858F826A630E2543F"
       },
       "compileSelection": {
         "path": "fixtures/requests/bundle-overlay-base.selection.json",
-        "sha256": "A9B050C7DB285A3D769CFD42A786FA84D7B389586F38CE60A245DF773E0A66BF"
+        "sha256": "95A381B8E8A576B59038E6D6F4D4E6D2E405154A3A994F1391BD1F500E14C4EE"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/bundle-overlay-contract.mjs",
-            "sha256": "0DBB53F876D8B3C2E2CF59FA133A0D5319A6174901962D3C6E29EDFE2E93C2A2"
+            "sha256": "3EBD27413EFCF47D678CA675C49901F0D24F42ED1D622F4FD50C8F437115A5B9"
           },
           {
             "path": "test/governance-contract.mjs",
-            "sha256": "485687AA664B710EB6B3395F18F40D83F58BD0A8C4980921F45CA449A66DEAAB"
+            "sha256": "10AD41DEB4BAFB4F6B5A56F1F5FBBF260C1874D57C60AEAAA7084FCD1610987D"
           },
           {
             "path": "test/pathological-robustness-contract.mjs",
-            "sha256": "A027C43004BD3D9B9DCB552715DD398EDEB46A452D822F71BEEF64B7ED43E3E3"
+            "sha256": "2A5AFA87F82758A49BBE8F1DAA0D7EE3C49E0827C8D28A696E6612C55BF101D1"
           }
         ]
       },
@@ -233,22 +233,22 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/bundle-overlay.sleeve.json",
-        "sha256": "3BDDAC8181CBA29D34C502FBC434F9E501966F09D17886BF50CD369161F1147B"
+        "sha256": "0B162AD703954628E9C26A643A5CCC58E77DF72B39A766C858F826A630E2543F"
       },
       "compileSelection": {
         "path": "fixtures/requests/bundle-overlay-overlays-ab.selection.json",
-        "sha256": "C970C0A287592F696ECAFBFA91FE5DFC5B2EF7490C73306F7A6CC302C5A3FCD3"
+        "sha256": "4EC71D58FA7952453B8FA4A8FCF1A9830094DEB558676C5D078B74A6993039EF"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/bundle-overlay-contract.mjs",
-            "sha256": "0DBB53F876D8B3C2E2CF59FA133A0D5319A6174901962D3C6E29EDFE2E93C2A2"
+            "sha256": "3EBD27413EFCF47D678CA675C49901F0D24F42ED1D622F4FD50C8F437115A5B9"
           },
           {
             "path": "test/trace-registry-contract.mjs",
-            "sha256": "29B18756185AE3D9103DF22D031C2FE4DA6EA473C1E94D2B243FD9AE38F4FF39"
+            "sha256": "1759EAC8D12ACE3CB69201CF482C567394B7606FC402D23A1DD43160BF3973F0"
           }
         ]
       },
@@ -267,26 +267,26 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/merge-contract.sleeve.json",
-        "sha256": "5C6A71B78A8D3308859C9FDA66848EB8F06EB54D2FAB2B9B0D29C471EEB6D2BD"
+        "sha256": "8D8DBDD17AA41B362C95C4FDD3A6BBC4009C9E76DF0ACC9E6084C97E0627C9C4"
       },
       "compileSelection": {
         "path": "fixtures/requests/merge-contract-base.selection.json",
-        "sha256": "C2C858007150CB8A022078D0AE27658FB84D13932A5335CC68C00AD4E19A1E1B"
+        "sha256": "D5E8503ECF53980070646C5DD01FF00ACF2B9C8613BB364F374A2159C2196FD7"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/merge-contract.mjs",
-            "sha256": "ACD9E1BAE95C110711F8B4A744C001BE3BCCBD290F089EBEA826034C98CB4CCA"
+            "sha256": "5244FA47A5B0B59ED6CB3BFF1D8BEEF4F22036A5232298038B4A080171FBF2A6"
           },
           {
             "path": "test/governance-contract.mjs",
-            "sha256": "485687AA664B710EB6B3395F18F40D83F58BD0A8C4980921F45CA449A66DEAAB"
+            "sha256": "10AD41DEB4BAFB4F6B5A56F1F5FBBF260C1874D57C60AEAAA7084FCD1610987D"
           },
           {
             "path": "test/pathological-robustness-contract.mjs",
-            "sha256": "A027C43004BD3D9B9DCB552715DD398EDEB46A452D822F71BEEF64B7ED43E3E3"
+            "sha256": "2A5AFA87F82758A49BBE8F1DAA0D7EE3C49E0827C8D28A696E6612C55BF101D1"
           }
         ]
       },
@@ -306,18 +306,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/dealership.sleeve.json",
-        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+        "sha256": "BAC6B15A50E159A0F60C19A771E3959A24D7EF79AFFD6B1EEBC561F792DE4E63"
       },
       "compileSelection": {
         "path": "fixtures/requests/secondary-b.selection.json",
-        "sha256": "9C0A82A4FA3109D377B2CD3C47528DA2022BD9F6AB7AAF06DCE8EC5924D7E18D"
+        "sha256": "C855684B260573FC6F2DD6D3B5B28424190D3C2015B7B8FBB763440C86C1A9DB"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/runtime-hash-contract.mjs",
-            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+            "sha256": "69F4913DAD72DF0F23AC09C7B1989EA2D47C66A063A91E73DF6DB42C44F8AB54"
           }
         ]
       },
@@ -334,7 +334,7 @@
       ],
       "runtimeHashVectorFixture": {
         "path": "fixtures/hash/HASH_TEST_VECTORS.json",
-        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+        "sha256": "B74E9B3EB5AC91E7477FB008ADDCEFE9B3E6BA1E70A58D0B9A718FDC479A01BB"
       }
     },
     {
@@ -342,18 +342,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/dealership.sleeve.json",
-        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+        "sha256": "BAC6B15A50E159A0F60C19A771E3959A24D7EF79AFFD6B1EEBC561F792DE4E63"
       },
       "compileSelection": {
         "path": "fixtures/requests/route-rationale.selection.json",
-        "sha256": "B234D8E6F6B023BC57240544619CC6E6EB7B040A6B710BAC8289080C51A62CCF"
+        "sha256": "7D1F22C308A493FE615F6B12240A70CBAABBB79924BCD2BFD393A189134A3283"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/runtime-hash-contract.mjs",
-            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+            "sha256": "69F4913DAD72DF0F23AC09C7B1989EA2D47C66A063A91E73DF6DB42C44F8AB54"
           }
         ]
       },
@@ -366,7 +366,7 @@
       "relatedAuthorityRequirements": [],
       "runtimeHashVectorFixture": {
         "path": "fixtures/hash/HASH_TEST_VECTORS.json",
-        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+        "sha256": "B74E9B3EB5AC91E7477FB008ADDCEFE9B3E6BA1E70A58D0B9A718FDC479A01BB"
       }
     },
     {
@@ -374,18 +374,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/dealership.sleeve.json",
-        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+        "sha256": "BAC6B15A50E159A0F60C19A771E3959A24D7EF79AFFD6B1EEBC561F792DE4E63"
       },
       "compileSelection": {
         "path": "fixtures/requests/secondary-b-overlay.selection.json",
-        "sha256": "9DDD23F62D122C8CEA71C304B664E1B05787F9146FC317C57AA055EAB196B68F"
+        "sha256": "4D96AD2D4424C48DCC2BF887C9D234D098D19708478F3A73860F72E7D1BFFAFB"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/runtime-hash-contract.mjs",
-            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+            "sha256": "69F4913DAD72DF0F23AC09C7B1989EA2D47C66A063A91E73DF6DB42C44F8AB54"
           }
         ]
       },
@@ -399,7 +399,7 @@
       "relatedAuthorityRequirements": [],
       "runtimeHashVectorFixture": {
         "path": "fixtures/hash/HASH_TEST_VECTORS.json",
-        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+        "sha256": "B74E9B3EB5AC91E7477FB008ADDCEFE9B3E6BA1E70A58D0B9A718FDC479A01BB"
       }
     },
     {
@@ -407,18 +407,18 @@
       "successOrFailure": "success",
       "inputSleeve": {
         "path": "fixtures/bundle-reorder-base.sleeve.json",
-        "sha256": "C0821C34A774FB0CEF1E15DD691A68B829F2AEE385DF70F365028531531D7D27"
+        "sha256": "2044219FDAF6CD23B8C25E6E9C2D1E3A94850F7867E1B94E93CF89BD56581FE2"
       },
       "compileSelection": {
         "path": "fixtures/requests/bundle-reorder.selection.json",
-        "sha256": "661BC6DC8DEECAB6012F9B6BA46AEBADAC30C19B93A966195CB8E8B681E7A860"
+        "sha256": "53002214C1B9E0CE4095400F4D54608CB075EF58F32C304E1F33807544BC2B0F"
       },
       "expectedOutcome": {
         "model": "assertion_contract",
         "testFiles": [
           {
             "path": "test/runtime-hash-contract.mjs",
-            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+            "sha256": "69F4913DAD72DF0F23AC09C7B1989EA2D47C66A063A91E73DF6DB42C44F8AB54"
           }
         ]
       },
@@ -432,7 +432,7 @@
       "relatedAuthorityRequirements": [],
       "runtimeHashVectorFixture": {
         "path": "fixtures/hash/HASH_TEST_VECTORS.json",
-        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+        "sha256": "B74E9B3EB5AC91E7477FB008ADDCEFE9B3E6BA1E70A58D0B9A718FDC479A01BB"
       }
     }
   ]
