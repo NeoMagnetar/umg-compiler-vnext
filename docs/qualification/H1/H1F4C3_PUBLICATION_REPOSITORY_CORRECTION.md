@@ -1,0 +1,19 @@
+AUTHORITATIVE_REPOSITORY: NeoMagnetar/umg-compiler-vnext
+
+ACCIDENTAL_PUBLICATION_REPOSITORY: NeoMagnetar/umg-compiler
+
+ACCIDENTAL_PUBLICATION_COMMIT: 4b07aff8ff1e669c585269c759d591b48e3e5cda
+
+EXECUTABLE_QUALIFICATION_HEAD: f1d24e18405c30fab32ee2e05beb29e3832b7e01
+
+CLASSIFICATION: PUBLICATION_PROVENANCE_ERROR
+
+COMPILER_SOURCE_IMPACT: NONE
+
+SEMANTIC_IMPACT: NONE
+
+TEST_EVIDENCE_IMPACT: NONE
+
+CORPUS_ARTIFACT_IMPACT: NONE
+
+The accidental docs-only publication in NeoMagnetar/umg-compiler is historical provenance and is not the authoritative publication location for UMG Compiler vNext H1.

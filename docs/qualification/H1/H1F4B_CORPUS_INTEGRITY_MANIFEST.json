@@ -1,0 +1,439 @@
+{
+  "corpusIdentity": "umg.compiler-vnext.corpus.v0.1",
+  "compilerVersion": "0.1.0-experimental",
+  "semanticBaselineHead": "764ac06fdbb14c74ee5afe5cd799ec261ea047b0",
+  "qualificationHead": "f1d24e18405c30fab32ee2e05beb29e3832b7e01",
+  "caseCount": 13,
+  "cases": [
+    {
+      "caseId": "CC-001",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/dealership.sleeve.json",
+        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/normal.selection.json",
+        "sha256": "1CEABC8C71B86E9F7F602C861E62386210355A9C3F7BE63CC2874A29105A4C14"
+      },
+      "expectedOutcome": {
+        "model": "golden_file",
+        "path": "fixtures/expected/normal.compile-result.json",
+        "sha256": "C299E6140B4EDDC43B4F97CA9680A769D7DF08CBB7E1DD65ADA20712F8A9B1C3"
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-INPUT-001",
+        "UMG-CONF-RUNTIME-001",
+        "UMG-CONF-TRACE-001",
+        "UMG-CONF-HASH-001",
+        "UMG-CONF-OBS-001",
+        "UMG-CONF-COMPAT-001",
+        "UMG-CONF-STRUCT-007"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-STATE-002"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-002A",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/directive-geometry.sleeve.json",
+        "sha256": "048E4D9E8D4D21F4314206CA140DAD93611DD5E4BCAE5E1762469BA4C5AC0A9B"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/directive-geometry.selection.json",
+        "sha256": "6F441D07302571E1FAB8A58D10AA2BCC78217706D4B070FC6D8DBC444A497DD6"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/directive-geometry-contract.mjs",
+            "sha256": "77E9456CC095267898DFE69EED16367C95C8B05C803A47C940661A438EC5FB34"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-DIR-001",
+        "UMG-CONF-DIR-002",
+        "UMG-CONF-GEOM-001",
+        "UMG-CONF-GEOM-002",
+        "UMG-CONF-MOLT-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-GEOM-008",
+        "UMG-CONF-GEOM-009",
+        "UMG-CONF-MOLT-007",
+        "UMG-CONF-MOLT-008"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-002B",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/directive-geometry.sleeve.json",
+        "sha256": "048E4D9E8D4D21F4314206CA140DAD93611DD5E4BCAE5E1762469BA4C5AC0A9B"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/directive-geometry-shuffled.selection.json",
+        "sha256": "74D58A8150CFC365FD290C62D8416116FF5806310C51366AD416F60C2DA0C837"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/directive-geometry-contract.mjs",
+            "sha256": "77E9456CC095267898DFE69EED16367C95C8B05C803A47C940661A438EC5FB34"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-DIR-001",
+        "UMG-CONF-DIR-002",
+        "UMG-CONF-GEOM-001",
+        "UMG-CONF-GEOM-002",
+        "UMG-CONF-MOLT-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-GEOM-008",
+        "UMG-CONF-GEOM-009",
+        "UMG-CONF-MOLT-007",
+        "UMG-CONF-MOLT-008"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-003A",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/state-selection.sleeve.json",
+        "sha256": "5A982223FA47B185C5B44954F574E426F7C0D36D94CADB5FE8DBCA2503E44A9E"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/state-selection-closed.selection.json",
+        "sha256": "E481275F20C707596E264CADC27305C0AD7DB096CD0E16611E77E624A864B19C"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/state-selection-contract.mjs",
+            "sha256": "9B242C4FCC1014B0DEA6089BDB14A9C530FF31D0FF45FAF6EA24FD5518B9D3E5"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-STATE-001",
+        "UMG-CONF-STATE-003",
+        "UMG-CONF-GOV-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-DIR-013",
+        "UMG-CONF-STATE-010"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-004",
+      "successOrFailure": "failure",
+      "inputSleeve": {
+        "path": "fixtures/dealership.sleeve.json",
+        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/multi-secondary-error.selection.json",
+        "sha256": "3090D79B405AAAF8C9052799BCAFFAE7A0CEF7498B744249F4F8EEB291A3C13F"
+      },
+      "expectedOutcome": {
+        "model": "golden_file",
+        "path": "fixtures/expected/multi-secondary-error.compile-result.json",
+        "sha256": "2644F8A1E850D525366CC81F1E013645F555E431827BACF7A701EEFD2F03D96A"
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-STATE-006",
+        "UMG-CONF-FAIL-001",
+        "UMG-CONF-COMPAT-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-DIAG-020",
+        "UMG-CONF-COMPAT-002"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-005",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/dealership.sleeve.json",
+        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/governance-off.selection.json",
+        "sha256": "1D932247DC798DD50DBFF06980F03831622F56EBC55C61F3E778E49D0606C2F3"
+      },
+      "expectedOutcome": {
+        "model": "golden_file",
+        "path": "fixtures/expected/governance-off.compile-result.json",
+        "sha256": "B82B1D5EFF658102E96A0EDED8C5C29736767DCD2D62F4DB1354936B9590075D"
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-GOV-001",
+        "UMG-CONF-GOV-002",
+        "UMG-CONF-GOV-008",
+        "UMG-CONF-STATE-008"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-GOV-009"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-006",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/bundle-overlay.sleeve.json",
+        "sha256": "3BDDAC8181CBA29D34C502FBC434F9E501966F09D17886BF50CD369161F1147B"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/bundle-overlay-base.selection.json",
+        "sha256": "A9B050C7DB285A3D769CFD42A786FA84D7B389586F38CE60A245DF773E0A66BF"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/bundle-overlay-contract.mjs",
+            "sha256": "0DBB53F876D8B3C2E2CF59FA133A0D5319A6174901962D3C6E29EDFE2E93C2A2"
+          },
+          {
+            "path": "test/governance-contract.mjs",
+            "sha256": "485687AA664B710EB6B3395F18F40D83F58BD0A8C4980921F45CA449A66DEAAB"
+          },
+          {
+            "path": "test/pathological-robustness-contract.mjs",
+            "sha256": "A027C43004BD3D9B9DCB552715DD398EDEB46A452D822F71BEEF64B7ED43E3E3"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-BUNDLE-001",
+        "UMG-CONF-BUNDLE-002",
+        "UMG-CONF-OBS-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-GOV-001"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-007",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/bundle-overlay.sleeve.json",
+        "sha256": "3BDDAC8181CBA29D34C502FBC434F9E501966F09D17886BF50CD369161F1147B"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/bundle-overlay-overlays-ab.selection.json",
+        "sha256": "C970C0A287592F696ECAFBFA91FE5DFC5B2EF7490C73306F7A6CC302C5A3FCD3"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/bundle-overlay-contract.mjs",
+            "sha256": "0DBB53F876D8B3C2E2CF59FA133A0D5319A6174901962D3C6E29EDFE2E93C2A2"
+          },
+          {
+            "path": "test/trace-registry-contract.mjs",
+            "sha256": "29B18756185AE3D9103DF22D031C2FE4DA6EA473C1E94D2B243FD9AE38F4FF39"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-BUNDLE-001",
+        "UMG-CONF-TRACE-001",
+        "UMG-CONF-TRACE-007"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-OBS-002"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-008",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/merge-contract.sleeve.json",
+        "sha256": "5C6A71B78A8D3308859C9FDA66848EB8F06EB54D2FAB2B9B0D29C471EEB6D2BD"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/merge-contract-base.selection.json",
+        "sha256": "C2C858007150CB8A022078D0AE27658FB84D13932A5335CC68C00AD4E19A1E1B"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/merge-contract.mjs",
+            "sha256": "ACD9E1BAE95C110711F8B4A744C001BE3BCCBD290F089EBEA826034C98CB4CCA"
+          },
+          {
+            "path": "test/governance-contract.mjs",
+            "sha256": "485687AA664B710EB6B3395F18F40D83F58BD0A8C4980921F45CA449A66DEAAB"
+          },
+          {
+            "path": "test/pathological-robustness-contract.mjs",
+            "sha256": "A027C43004BD3D9B9DCB552715DD398EDEB46A452D822F71BEEF64B7ED43E3E3"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-MERGE-001",
+        "UMG-CONF-MERGE-002",
+        "UMG-CONF-MERGE-003"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-DIR-001",
+        "UMG-CONF-GOV-001"
+      ],
+      "relatedAuthorityRequirements": []
+    },
+    {
+      "caseId": "CC-009B",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/dealership.sleeve.json",
+        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/secondary-b.selection.json",
+        "sha256": "9C0A82A4FA3109D377B2CD3C47528DA2022BD9F6AB7AAF06DCE8EC5924D7E18D"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/runtime-hash-contract.mjs",
+            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-HASH-001",
+        "UMG-CONF-DET-001",
+        "UMG-CONF-RUNTIME-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-HASH-002"
+      ],
+      "relatedAuthorityRequirements": [
+        "UMG-CONF-DET-006"
+      ],
+      "runtimeHashVectorFixture": {
+        "path": "fixtures/hash/HASH_TEST_VECTORS.json",
+        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+      }
+    },
+    {
+      "caseId": "CC-009C",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/dealership.sleeve.json",
+        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/route-rationale.selection.json",
+        "sha256": "B234D8E6F6B023BC57240544619CC6E6EB7B040A6B710BAC8289080C51A62CCF"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/runtime-hash-contract.mjs",
+            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-HASH-001",
+        "UMG-CONF-HASH-002",
+        "UMG-CONF-RUNTIME-001"
+      ],
+      "secondaryRequirementsSupported": [],
+      "relatedAuthorityRequirements": [],
+      "runtimeHashVectorFixture": {
+        "path": "fixtures/hash/HASH_TEST_VECTORS.json",
+        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+      }
+    },
+    {
+      "caseId": "CC-009D",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/dealership.sleeve.json",
+        "sha256": "1DA470ADAEDBBD104C97E3DD195C840EBCD2112E6B1750B872218A097311F284"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/secondary-b-overlay.selection.json",
+        "sha256": "9DDD23F62D122C8CEA71C304B664E1B05787F9146FC317C57AA055EAB196B68F"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/runtime-hash-contract.mjs",
+            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-HASH-001",
+        "UMG-CONF-RUNTIME-001"
+      ],
+      "secondaryRequirementsSupported": [
+        "UMG-CONF-DET-001"
+      ],
+      "relatedAuthorityRequirements": [],
+      "runtimeHashVectorFixture": {
+        "path": "fixtures/hash/HASH_TEST_VECTORS.json",
+        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+      }
+    },
+    {
+      "caseId": "CC-009E",
+      "successOrFailure": "success",
+      "inputSleeve": {
+        "path": "fixtures/bundle-reorder-base.sleeve.json",
+        "sha256": "C0821C34A774FB0CEF1E15DD691A68B829F2AEE385DF70F365028531531D7D27"
+      },
+      "compileSelection": {
+        "path": "fixtures/requests/bundle-reorder.selection.json",
+        "sha256": "661BC6DC8DEECAB6012F9B6BA46AEBADAC30C19B93A966195CB8E8B681E7A860"
+      },
+      "expectedOutcome": {
+        "model": "assertion_contract",
+        "testFiles": [
+          {
+            "path": "test/runtime-hash-contract.mjs",
+            "sha256": "10958055ED5A4C7B3F2AAD0206F1183583FCBE6DA50BC13099C9487DD774DF39"
+          }
+        ]
+      },
+      "primaryRequirementsProven": [
+        "UMG-CONF-HASH-001",
+        "UMG-CONF-HASH-002",
+        "UMG-CONF-RUNTIME-001",
+        "UMG-CONF-TRACE-001"
+      ],
+      "secondaryRequirementsSupported": [],
+      "relatedAuthorityRequirements": [],
+      "runtimeHashVectorFixture": {
+        "path": "fixtures/hash/HASH_TEST_VECTORS.json",
+        "sha256": "06B3A2FBECF3A4A5348A5C0C66C3F9D7D7743FAC69EA67E30944D1651B7BA92F"
+      }
+    }
+  ]
+}
