@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import {
   canonicalize,
@@ -24,7 +25,7 @@ import {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
-const evidenceDir = resolve(root, '..', '..', 'recovery', 'umg-vnext-phase-d2');
+const evidenceDir = resolve(tmpdir(), 'umg-vnext-phase-d2');
 
 const FUZZ_SEEDS = [
   0xd2000001,
