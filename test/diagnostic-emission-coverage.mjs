@@ -210,6 +210,22 @@ function runCase(testCase) {
   testCase.assert?.(diagnostic, diagnostics);
 }
 
+function assertWarningOnlySuccessfulCompile(result, label) {
+  assert.equal(result.status, 'success', `${label} must remain a successful compile`);
+  assert.equal(result.hasErrors, false, `${label} must remain warning-only`);
+  assert.ok(result.runtime, `${label} must retain RuntimeSpec`);
+  assert.ok(result.trace, `${label} must retain trace`);
+  assert.equal(
+    result.diagnostics.some((diagnostic) => diagnostic.level === 'error'),
+    false,
+    `${label} must not include error diagnostics`,
+  );
+  assert.ok(
+    result.diagnostics.some((diagnostic) => diagnostic.level === 'warning'),
+    `${label} must include at least one warning diagnostic`,
+  );
+}
+
 const dealershipSleeve = json('fixtures/dealership.sleeve.json');
 const normalSelection = json('fixtures/requests/normal.selection.json');
 const stateSleeve = json('fixtures/state-selection.sleeve.json');
@@ -221,6 +237,21 @@ const cleanCompile = compileSleeve(dealershipSleeve, normalSelection);
 assert.equal(cleanCompile.status, 'success');
 assert.ok(cleanCompile.runtime);
 assert.ok(cleanCompile.trace);
+const warningOnlyCompile = (() => {
+  const warningSuite = clone(dealershipSleeve);
+  warningSuite.moltBlocks.push(clonedInstructionBlock(warningSuite, 'I.CTRL.INTERPRET', 'I.CTRL.UNUSED'));
+  warningSuite.neoBlocks[0].moltBlockIds.push('I.CTRL.UNUSED');
+  const result = compileSleeve(warningSuite, normalSelection);
+  assertWarningOnlySuccessfulCompile(result, 'warning-only unreachable local MOLT compile');
+  const warning = assertDiagnostic(result.diagnostics, {
+    code: 'UNREACHABLE_LOCAL_MOLT_BLOCK',
+    subjectKind: 'neoblock',
+    subjectId: 'NB.CONTROLLER.INTAKE',
+    details: { blockIds: ['I.CTRL.UNUSED'] },
+  });
+  assert.equal(warning.level, 'warning');
+  return result;
+})();
 
 function clonedInstructionBlock(sleeve, id, newId) {
   const block = sleeve.moltBlocks.find((item) => item.id === id);

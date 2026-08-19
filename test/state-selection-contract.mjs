@@ -292,14 +292,72 @@ assert.equal(offSibling.runtime.runtimeHash, closed.runtime.runtimeHash);
 }
 
 {
-  const result = compileSleeve(dealershipSleeve, multiSecondarySelection);
-  assertFailure(result, { codes: ['MULTIPLE_SECONDARY_DIRECTIVE_MATCH'] });
-  const issue = diagnostic(result, 'MULTIPLE_SECONDARY_DIRECTIVE_MATCH');
+  const baselineResult = compileSleeve(dealershipSleeve, multiSecondarySelection);
+  assertFailure(baselineResult, { codes: ['MULTIPLE_SECONDARY_DIRECTIVE_MATCH'] });
+  const baselineIssue = diagnostic(baselineResult, 'MULTIPLE_SECONDARY_DIRECTIVE_MATCH');
   assert.match(
-    issue.message,
+    baselineIssue.message,
     /does not support implicit coexistence of multiple simultaneously matching Secondary Directives/i,
   );
-  assert.equal(result.trace.finalNeoBlockStates['NB.SERVICE.TRIAGE'], 'ready');
+  assert.equal(baselineResult.trace.finalNeoBlockStates['NB.SERVICE.TRIAGE'], 'ready');
+
+  const reorderedSecondarySelection = clone(dealershipSleeve);
+  const serviceBlock = reorderedSecondarySelection.neoBlocks.find((item) => item.id === 'NB.SERVICE.TRIAGE');
+  assert.ok(serviceBlock);
+  assert.ok(Array.isArray(serviceBlock.secondaryDirectives));
+  serviceBlock.secondaryDirectives = [...serviceBlock.secondaryDirectives].reverse();
+
+  const reorderedResult = compileSleeve(reorderedSecondarySelection, multiSecondarySelection);
+  assertFailure(reorderedResult, { codes: ['MULTIPLE_SECONDARY_DIRECTIVE_MATCH'] });
+  const reorderedIssue = diagnostic(reorderedResult, 'MULTIPLE_SECONDARY_DIRECTIVE_MATCH');
+  assert.match(
+    reorderedIssue.message,
+    /does not support implicit coexistence of multiple simultaneously matching Secondary Directives/i,
+  );
+  assert.equal(reorderedResult.trace.finalNeoBlockStates['NB.SERVICE.TRIAGE'], 'ready');
+  assert.deepEqual(
+    [...(baselineIssue.details?.secondaryDirectiveIds ?? [])].sort(),
+    [...(reorderedIssue.details?.secondaryDirectiveIds ?? [])].sort(),
+  );
+}
+
+{
+  const selectionA = clone(closedSelection);
+  selectionA.activeGovernanceRuleIds = ['GOV.PARENT.RIGHT.OFF'];
+  selectionA.activeNeoStackIds = ['NS.ROOT', 'NS.PARENT'];
+  selectionA.activeNeoBlockIds = ['NB.ROOT.ROUTE', 'NB.PARENT.RIGHT'];
+  selectionA.disabledNeoBlockIds = ['NB.PARENT.RIGHT', 'NB.PARENT.LEFT'];
+  selectionA.triggerState['T.PARENT.RIGHT.DEFAULT'] = true;
+  delete selectionA.triggerState['T.PARENT.LEFT.DEFAULT'];
+  delete selectionA.triggerState['T.CHILD.DEFAULT'];
+
+  const selectionB = clone(selectionA);
+  selectionB.activeNeoStackIds = ['NS.PARENT', 'NS.ROOT'];
+  selectionB.activeNeoBlockIds = ['NB.PARENT.RIGHT', 'NB.ROOT.ROUTE'];
+  selectionB.disabledNeoBlockIds = ['NB.PARENT.LEFT', 'NB.PARENT.RIGHT'];
+
+  const resultA = compileSleeve(stateSleeve, selectionA);
+  const resultB = compileSleeve(stateSleeve, selectionB);
+  assertFailure(resultA, { codes: ['SELECTION_TARGET_NOT_EXECUTABLE'], trace: 'present' });
+  const issueA = diagnostic(
+    resultA,
+    'SELECTION_TARGET_NOT_EXECUTABLE',
+    (item) => item.details?.targetId === 'NB.PARENT.RIGHT' && item.details?.targetKind === 'neoblock',
+  );
+  assert.equal(issueA.details?.effectiveState, 'off');
+  assert.equal(issueA.details?.blockingReason, 'governance_off');
+  assertFailure(resultB, { codes: ['SELECTION_TARGET_NOT_EXECUTABLE'], trace: 'present' });
+  const issueB = diagnostic(
+    resultB,
+    'SELECTION_TARGET_NOT_EXECUTABLE',
+    (item) => item.details?.targetId === 'NB.PARENT.RIGHT' && item.details?.targetKind === 'neoblock',
+  );
+  assert.equal(issueB.details?.effectiveState, 'off');
+  assert.equal(issueB.details?.blockingReason, 'governance_off');
+  assert.equal(resultA.trace.finalNeoBlockStates['NB.PARENT.RIGHT'], 'off');
+  assert.equal(resultB.trace.finalNeoBlockStates['NB.PARENT.RIGHT'], 'off');
+  assert.deepEqual(resultA.trace.finalNeoStackStates, resultB.trace.finalNeoStackStates);
+  assert.deepEqual(resultA.trace.finalNeoBlockStates, resultB.trace.finalNeoBlockStates);
 }
 
 console.log('UMG compiler-vnext state/selection contract tests: PASS');

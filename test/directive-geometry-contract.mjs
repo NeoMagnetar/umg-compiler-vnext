@@ -88,6 +88,12 @@ function findNeoBlock(sleeve, neoBlockId) {
   return neoBlock;
 }
 
+function findMoltBlock(sleeve, moltBlockId) {
+  const moltBlock = sleeve.moltBlocks.find((item) => item.id === moltBlockId);
+  assert.ok(moltBlock, `missing MoltBlock ${moltBlockId}`);
+  return moltBlock;
+}
+
 function assertInvalidCompile(sleeve, selection, { codes = [], trace } = {}) {
   const validation = validateSleeve(sleeve);
   assert.ok(validation.diagnostics.some((item) => item.level === 'error'));
@@ -177,11 +183,18 @@ assert.deepEqual(
   [1, 1, 1, 2, 2],
 );
 assert.ok(rootPeers.every((event) => event.data?.depth === 1));
+assert.ok(rootPeers.every((event) => typeof event.data?.rowInParent === 'number'));
 
 const serviceChild = traceEvent(structural, 'NEOSTACK_ACTIVE', 'NS.WARRANTY');
 assert.equal(serviceChild.data?.parentNeoStackId, 'NS.SERVICE');
 assert.equal(serviceChild.data?.rowInParent, 1);
 assert.equal(serviceChild.data?.depth, 2);
+assert.equal(typeof serviceChild.data?.rowInParent, 'number');
+assert.equal(typeof serviceChild.data?.depth, 'number');
+
+const warrantyAttempt = traceEvent(structural, 'NEOBLOCK_SELECTION_ATTEMPTED', 'NB.WARRANTY.CLAIM');
+assert.equal(warrantyAttempt.data?.rowInNeoStack, 1);
+assert.equal(typeof warrantyAttempt.data?.rowInNeoStack, 'number');
 
 const servicePeers = traceEvents(
   structural,
@@ -196,6 +209,7 @@ assert.deepEqual(
   servicePeers.map((event) => event.data?.rowInNeoStack),
   [1, 1],
 );
+assert.ok(servicePeers.every((event) => typeof event.data?.rowInNeoStack === 'number'));
 
 const structuralShuffled = compileSleeve(structuralSleeve, structuralShuffledSelection);
 assertSuccess(structuralShuffled);
@@ -203,6 +217,11 @@ assert.notDeepEqual(structuralShuffledSelection.activeNeoStackIds, structuralSel
 assert.notDeepEqual(structuralShuffledSelection.activeNeoBlockIds, structuralSelection.activeNeoBlockIds);
 assert.deepEqual(structuralShuffled.runtime.activeNeoStackIds, structural.runtime.activeNeoStackIds);
 assert.deepEqual(resolvedNeoBlockIds(structuralShuffled), resolvedNeoBlockIds(structural));
+assert.deepEqual(
+  structuralShuffled.runtime.promptParts.map((promptPart) => promptPart.id),
+  structural.runtime.promptParts.map((promptPart) => promptPart.id),
+);
+assert.equal(structuralShuffled.runtime.runtimeHash, structural.runtime.runtimeHash);
 
 {
   const sleeve = clone(structuralSleeve);
@@ -244,6 +263,26 @@ assert.deepEqual(resolvedNeoBlockIds(structuralShuffled), resolvedNeoBlockIds(st
   assert.deepEqual(result.trace, oneChild.trace);
   assert.equal(result.runtime.runtimeHash, oneChild.runtime.runtimeHash);
   assert.deepEqual(result.runtime, oneChild.runtime);
+}
+
+for (const invalidType of ['use', 'aim', 'need']) {
+  const sleeve = clone(structuralSleeve);
+  const neoBlock = findNeoBlock(sleeve, 'NB.WARRANTY.CLAIM');
+  findMoltBlock(sleeve, neoBlock.primeDirectiveId).type = invalidType;
+  const validation = validateSleeve(sleeve).diagnostics;
+  assert.ok(errorCodes(validation).includes('INVALID_ENUM_VALUE'));
+  const result = compileSleeve(sleeve, structuralSelection);
+  assertFailure(result, { trace: 'null' });
+}
+
+{
+  const sleeve = clone(structuralSleeve);
+  const neoBlock = findNeoBlock(sleeve, 'NB.WARRANTY.CLAIM');
+  findMoltBlock(sleeve, neoBlock.primeDirectiveId).type = 'persona';
+  const validation = validateSleeve(sleeve).diagnostics;
+  assert.ok(errorCodes(validation).includes('INVALID_ENUM_VALUE'));
+  const result = compileSleeve(sleeve, structuralSelection);
+  assertFailure(result, { trace: 'null' });
 }
 
 {

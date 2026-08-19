@@ -22,6 +22,21 @@ function json(path) {
   return JSON.parse(readFileSync(resolve(root, path), 'utf8'));
 }
 
+const RUNTIME_SPEC_PUBLIC_FIELDS = new Set([
+  'schemaVersion',
+  'compilerVersion',
+  'sleeveId',
+  'sleeveName',
+  'controllerNeoStackId',
+  'compiledAt',
+  'activeNeoStackIds',
+  'resolvedNeoBlocks',
+  'promptParts',
+  'diagnostics',
+  'runtimeHash',
+  'resetPlan',
+]);
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -39,6 +54,15 @@ function assertSchemaValid(result) {
     const traceValidation = structurallyValidateTrace(result.trace);
     assert.equal(traceValidation.ok, true, JSON.stringify(traceValidation.diagnostics, null, 2));
   }
+}
+
+function assertRuntimeSpecPublicBoundary(result, label) {
+  const unexpectedRuntimeKeys = Object.keys(result.runtime).filter((key) => !RUNTIME_SPEC_PUBLIC_FIELDS.has(key));
+  assert.equal(
+    unexpectedRuntimeKeys.length,
+    0,
+    `${label} runtime contains non-public fields: ${unexpectedRuntimeKeys.join(', ')}`,
+  );
 }
 
 function assertContractValid(result) {
@@ -63,6 +87,7 @@ for (const testCase of successCases) {
   assert.equal(expected.trace !== null, true, `${testCase.name} should retain Trace`);
   assertSchemaValid(expected);
   assertContractValid(expected);
+  assertRuntimeSpecPublicBoundary(expected, `${testCase.name} fixture`);
 }
 
 const failureCases = compileCases.filter((testCase) => json(testCase.expectedPath).status === 'failure');
@@ -81,6 +106,7 @@ const multiSecondarySelection = json('fixtures/requests/multi-secondary-error.se
 const successResult = compileSleeve(dealershipSleeve, secondaryBSelection);
 assert.equal(successResult.status, 'success');
 assertContractValid(successResult);
+assertRuntimeSpecPublicBoundary(successResult, 'dealership secondary-b selection');
 
 const semanticFailure = compileSleeve(dealershipSleeve, multiSecondarySelection);
 assert.equal(semanticFailure.status, 'failure');

@@ -46,6 +46,14 @@ function assertStructuralUnsupported(result, code, label) {
   assert.ok(unsupportedCodes(result).includes(code), `${label} should include ${code}`);
 }
 
+function assertNoInferredCompatibility(candidateVersion, label) {
+  assert.equal(
+    getCompilerCompatibility(candidateVersion),
+    undefined,
+    `${label} must not be inferred compatible`,
+  );
+}
+
 const packageJson = json('package.json');
 const compatibilityMatrix = json('schemas/COMPATIBILITY_MATRIX.json');
 const rootSchema = json('schemas/umg-compiler-vnext.schema.json');
@@ -157,9 +165,13 @@ for (const [schemaVersion, label] of [
   );
 }
 
-assert.equal(getCompilerCompatibility('0.1.0'), undefined);
-assert.equal(getCompilerCompatibility('0.1.1'), undefined);
-assert.equal(getCompilerCompatibility('0.1.0-rc.1'), undefined);
+assertNoInferredCompatibility('0.1.0', 'near-match-patch-zero');
+assertNoInferredCompatibility('0.1.1', 'near-match-next-patch');
+assertNoInferredCompatibility('0.1.0-rc.1', 'near-match-rc');
+assertNoInferredCompatibility('v0.1.0-experimental', 'near-match-v-prefix');
+assertNoInferredCompatibility('0.1', 'near-match-prefix');
+assertNoInferredCompatibility('0.1.0-experimental.1', 'near-match-patch-extension');
+assertNoInferredCompatibility('0.1.0-experimental-hotfix', 'near-match-suffix');
 assert.equal(getCompilerCompatibility(COMPILER_VERSION), compilerEntry);
 
 console.log('UMG compiler-vnext version compatibility contract tests: PASS');

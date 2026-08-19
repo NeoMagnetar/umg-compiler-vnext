@@ -90,11 +90,16 @@ function assertContiguousSeq(trace) {
   });
 }
 
-function assertStageMonotonic(trace) {
+function assertTraceStageOrderingInvariant(trace, sourceLabel = '') {
+  const label = sourceLabel ? ` (${sourceLabel})` : '';
   let previous = -1;
   trace.events.forEach((event, index) => {
     const current = TRACE_STAGE_ORDER[event.stage];
-    assert.ok(current >= previous, `stage order regressed at event index ${index}`);
+    assert.notEqual(current, undefined, `TRACE-014 requires registered trace stage at event index ${index}${label}`);
+    assert.ok(
+      current >= previous,
+      `TRACE-014 stage order regressed at event index ${index}${label}`,
+    );
     previous = current;
   });
 }
@@ -244,7 +249,7 @@ for (const fixture of [
   assertTraceContract(fixture.result);
   assertRegistryConformance(fixture.result.trace);
   assertContiguousSeq(fixture.result.trace);
-  assertStageMonotonic(fixture.result.trace);
+  assertTraceStageOrderingInvariant(fixture.result.trace, fixture.name);
   assertStateMapCoverage(fixture.result, fixture.sleeve);
 }
 
