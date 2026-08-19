@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
 import {
   MOLT_TYPES,
   canonicalize,
@@ -25,7 +26,7 @@ import {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
-const evidenceDir = resolve(root, '..', '..', 'recovery', 'umg-vnext-phase-d3');
+const evidenceDir = mkdtempSync(resolve(tmpdir(), 'umg-vnext-phase-d3-'));
 
 const EXPECTED_HASHES = {
   normal: 'c3e18535479cf39938c8e7993db73f4c1b5135529ba20d9d8a2ccadf298498fd',
