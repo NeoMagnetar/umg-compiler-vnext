@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -87,8 +88,34 @@ function spawnChecked(command, args, options = {}) {
   };
 }
 
+function spawnNpm(args, options = {}) {
+  if (process.platform === 'win32') {
+    const shell = process.env.ComSpec ?? 'cmd.exe';
+    return spawnChecked(shell, ['/d', '/s', '/c', `npm ${args.join(' ')}`], options);
+  }
+  return spawnChecked('npm', args, options);
+}
+
 function hashText(text) {
   return sha256BufferUpper(Buffer.from(text, 'utf8'));
+}
+
+function canonicalResultProjection(result) {
+  const {
+    generatedAt: _generatedAt,
+    subject: { root: _subjectRoot, ...subject },
+    corpus: { root: _corpusRoot, ...corpus },
+    ...normative
+  } = result;
+  return {
+    ...normative,
+    subject,
+    corpus,
+  };
+}
+
+function canonicalResultFingerprint(result) {
+  return hashText(canonicalize(canonicalResultProjection(result)));
 }
 
 async function runPositive(context) {
@@ -101,7 +128,7 @@ async function runDeterminism(context, runs = 10) {
   const summaries = [];
   for (let index = 0; index < runs; index += 1) {
     const result = await runSuite(context);
-    fingerprints.push(hashText(canonicalize(result)));
+    fingerprints.push(canonicalResultFingerprint(result));
     summaries.push({
       run: index + 1,
       conformant: result.summary.conformant,
@@ -114,6 +141,7 @@ async function runDeterminism(context, runs = 10) {
   return {
     completeRuns: runs,
     identical,
+    canonicalProjectionExcludes: ['generatedAt', 'subject.root', 'corpus.root'],
     fingerprints,
     summaries,
   };
@@ -237,12 +265,18 @@ async function runCrossPlatform(subjectRoot) {
   const windows = await runSuite(windowsContext);
   if (windowsContext.contractWorkspace) windowsContext.contractWorkspace.cleanup();
 
-  const wslProbe = spawnChecked('wsl.exe', ['bash', '-lc', 'command -v node >/dev/null && command -v npm >/dev/null && command -v git >/dev/null']);
+  const linuxToolSetup =
+    'if [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh"; nvm use default >/dev/null; fi';
+  const wslProbe = spawnChecked('wsl.exe', [
+    'bash',
+    '-lc',
+    `${linuxToolSetup}; command -v node >/dev/null && command -v npm >/dev/null && command -v git >/dev/null`,
+  ]);
   if (!wslProbe.ok) {
     return {
       windows: {
         available: true,
-        fingerprint: hashText(canonicalize(windows)),
+        fingerprint: canonicalResultFingerprint(windows),
         conformant: windows.summary.conformant,
         summary: windows.summary,
       },
@@ -254,9 +288,28 @@ async function runCrossPlatform(subjectRoot) {
     };
   }
 
+  const wslRepoPath = spawnChecked('wsl.exe', ['wslpath', '-a', subjectRoot.replaceAll('\\', '/')]);
+  if (!wslRepoPath.ok || wslRepoPath.stdout.trim().length === 0) {
+    return {
+      windows: {
+        available: true,
+        fingerprint: canonicalResultFingerprint(windows),
+        conformant: windows.summary.conformant,
+        summary: windows.summary,
+      },
+      linux: {
+        available: true,
+        conformant: false,
+        reason: 'wsl_repository_path_conversion_failed',
+      },
+      semanticMismatches: ['linux_repository_path_conversion_failed'],
+    };
+  }
+
   const script = [
     'set -euo pipefail',
-    'repo_root="$(wslpath -a "$REPO_WIN_ROOT")"',
+    linuxToolSetup,
+    'repo_root="$1"',
     'workdir="$(mktemp -d)"',
     'trap \'rm -rf "$workdir"\' EXIT',
     'git clone --quiet "$repo_root" "$workdir/repo"',
@@ -264,20 +317,17 @@ async function runCrossPlatform(subjectRoot) {
     'npm ci --silent',
     'npm run build --silent',
     'node h2/conformance/runner.mjs --json',
-  ].join('; ');
+  ].join('\n');
 
-  const linuxRun = spawnChecked('wsl.exe', ['bash', '-lc', script], {
-    env: {
-      ...process.env,
-      REPO_WIN_ROOT: subjectRoot,
-    },
+  const linuxRun = spawnChecked('wsl.exe', ['bash', '-s', '--', wslRepoPath.stdout.trim()], {
+    input: script,
   });
 
   if (!linuxRun.ok) {
     return {
       windows: {
         available: true,
-        fingerprint: hashText(canonicalize(windows)),
+        fingerprint: canonicalResultFingerprint(windows),
         conformant: windows.summary.conformant,
         summary: windows.summary,
       },
@@ -297,13 +347,14 @@ async function runCrossPlatform(subjectRoot) {
   return {
     windows: {
       available: true,
-      fingerprint: hashText(canonicalize(windows)),
+      fingerprint: canonicalResultFingerprint(windows),
       conformant: windows.summary.conformant,
       summary: windows.summary,
     },
     linux: {
       available: true,
-      fingerprint: hashText(canonicalize(linuxResult)),
+      filesystem: 'WSL2 Linux-native temporary filesystem',
+      fingerprint: canonicalResultFingerprint(linuxResult),
       conformant: linuxResult.summary.conformant,
       summary: linuxResult.summary,
     },
@@ -329,14 +380,50 @@ async function runFreshClone(subjectRoot) {
     };
   }
 
-  const npmCi = spawnChecked('npm', ['ci'], { cwd: tempCloneRoot });
-  const build = spawnChecked('npm', ['run', 'build'], { cwd: tempCloneRoot });
-  const tests = spawnChecked('npm', ['test'], { cwd: tempCloneRoot });
+  const npmCi = spawnNpm(['ci'], { cwd: tempCloneRoot });
+  const build = spawnNpm(['run', 'build'], { cwd: tempCloneRoot });
+  const tests = spawnNpm(['test'], { cwd: tempCloneRoot });
+
+  if (!npmCi.ok || !build.ok || !tests.ok) {
+    const failure = {
+      cloneRoot: tempCloneRoot,
+      head: gitRevParse(tempCloneRoot, 'HEAD'),
+      clone: cloneResult,
+      npm_ci: npmCi,
+      build,
+      existing_tests: tests,
+      conformance: { conformant: false },
+      working_tree_clean: false,
+      corpus_unchanged: false,
+      clean: { ok: false },
+      failure_reason: 'fresh-clone bootstrap failed before conformance execution',
+    };
+    rmSync(tempCloneRoot, { recursive: true, force: true });
+    return failure;
+  }
+
+  if (!existsSync(resolve(tempCloneRoot, 'dist', 'index.js'))) {
+    const failure = {
+      cloneRoot: tempCloneRoot,
+      head: gitRevParse(tempCloneRoot, 'HEAD'),
+      clone: cloneResult,
+      npm_ci: npmCi,
+      build,
+      existing_tests: tests,
+      conformance: { conformant: false },
+      working_tree_clean: false,
+      corpus_unchanged: false,
+      clean: { ok: false },
+      failure_reason: 'fresh-clone build did not materialize dist/index.js',
+    };
+    rmSync(tempCloneRoot, { recursive: true, force: true });
+    return failure;
+  }
 
   const freshContext = await createContext({ corpusRoot: tempCloneRoot, subjectRoot: tempCloneRoot });
   const conformance = await runSuite(freshContext);
   if (freshContext.contractWorkspace) freshContext.contractWorkspace.cleanup();
-  const clean = spawnChecked('npm', ['run', 'clean'], { cwd: tempCloneRoot });
+  const clean = spawnNpm(['run', 'clean'], { cwd: tempCloneRoot });
   const status = gitStatusPorcelain(tempCloneRoot);
   const head = gitRevParse(tempCloneRoot, 'HEAD');
 
@@ -364,8 +451,8 @@ async function runFreshClone(subjectRoot) {
 function hashManifestForFiles(files) {
   return files
     .map((file) => {
-      const text = readFileSync(file, 'utf8');
-      return `${sha256BufferUpper(Buffer.from(text, 'utf8'))}  ${file}`;
+      const manifestPath = relative(repoRoot, file).replaceAll('\\', '/');
+      return `${sha256BufferUpper(readFileSync(file))}  ${manifestPath}`;
     })
     .join('\n');
 }

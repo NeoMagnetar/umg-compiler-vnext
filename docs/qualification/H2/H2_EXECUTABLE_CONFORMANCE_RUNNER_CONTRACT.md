@@ -118,6 +118,18 @@ The qualified H2 workflow must include:
 - fresh-clone verification
 - a hash manifest for the generated evidence artifacts
 
+## Canonical Evidence Projection
+
+Determinism and cross-platform fingerprints canonicalize the complete result after excluding only these explicitly non-normative execution-environment fields:
+
+- `generatedAt`
+- `subject.root`
+- `corpus.root`
+
+All case outcomes, requirement IDs, integrity hashes, expected and actual canonical result hashes, protected runtime hashes, diagnostic comparisons, trace comparisons, runtime projections, manifest content, subject commit identity, and summary fields remain in the canonical fingerprint.
+
+The Linux parity run clones the repository into a WSL2 Linux-native temporary filesystem. It does not execute the corpus from the Windows-mounted checkout.
+
 ## Non-Goals
 
 H2 must not:
@@ -129,4 +141,3 @@ H2 must not:
 - modify frozen corpus artifacts
 - modify expected outputs
 - modify schemas
-
