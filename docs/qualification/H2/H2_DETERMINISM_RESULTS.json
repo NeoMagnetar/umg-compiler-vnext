@@ -1,0 +1,93 @@
+{
+  "completeRuns": 10,
+  "identical": true,
+  "canonicalProjectionExcludes": [
+    "generatedAt",
+    "subject.root",
+    "corpus.root"
+  ],
+  "fingerprints": [
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD"
+  ],
+  "summaries": [
+    {
+      "run": 1,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 2,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 3,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 4,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 5,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 6,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 7,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 8,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 9,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    },
+    {
+      "run": 10,
+      "conformant": true,
+      "passed": 13,
+      "failed": 0,
+      "total": 13
+    }
+  ]
+}

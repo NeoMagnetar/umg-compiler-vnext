@@ -1,0 +1,28 @@
+{
+  "windows": {
+    "available": true,
+    "fingerprint": "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "conformant": true,
+    "summary": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "conformant": true
+    }
+  },
+  "linux": {
+    "available": true,
+    "filesystem": "WSL2 Linux-native temporary filesystem",
+    "fingerprint": "40BE823855EAB8B29C1CAB9B6C4298F6E0BA5C715D2D690F6E19F677CE943FFD",
+    "conformant": true,
+    "summary": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "conformant": true
+    }
+  },
+  "semanticMismatches": []
+}
