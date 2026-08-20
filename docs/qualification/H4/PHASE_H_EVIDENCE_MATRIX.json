@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "PHASE_H_EVIDENCE_MATRIX.v0.1",
+  "repository": "NeoMagnetar/umg-compiler-vnext",
+  "qualificationInputHead": "d3796e1afe0c9fc84fff06c3fa0b19b754a436c9",
+  "environment": {
+    "node": "v24.15.0",
+    "npm": "11.12.1",
+    "platform": "win32",
+    "arch": "x64",
+    "osRelease": "10.0.19045"
+  },
+  "H1": {
+    "specification": "docs/qualification/H1/",
+    "corpus": "umg.compiler-vnext.corpus.v0.1",
+    "cases": 13,
+    "directRequirementCount": 246,
+    "authorityOnlyRequirementCount": 6,
+    "executableUniqueRequirementIds": 39,
+    "hashMethod": "SHA-256 over exact Git blob content bytes at HEAD",
+    "hashes": {
+      "total": 31,
+      "passed": 31,
+      "failed": 0
+    },
+    "frozen": true,
+    "verifiedComplete": true
+  },
+  "H2": {
+    "runner": "h2/conformance/runner.mjs",
+    "resultContract": "UMG_VNEXT_CONFORMANCE_RESULT.v0.1",
+    "cases": 13,
+    "passed": 13,
+    "uniqueRequirementIds": 39,
+    "negativeControls": {
+      "total": 5,
+      "detected": 5
+    },
+    "h4Determinism": {
+      "completeRuns": 3,
+      "conformantRuns": 3,
+      "canonicalProjectionExcludes": [
+        "generatedAt",
+        "subject.root",
+        "corpus.root"
+      ],
+      "fingerprints": [
+        "AA0C970F1262FF69C075E39C1C18057F2C3BA3C4F9760B290A57EAA563923D55",
+        "AA0C970F1262FF69C075E39C1C18057F2C3BA3C4F9760B290A57EAA563923D55",
+        "AA0C970F1262FF69C075E39C1C18057F2C3BA3C4F9760B290A57EAA563923D55"
+      ],
+      "identical": true,
+      "summaries": [
+        {
+          "run": 1,
+          "total": 13,
+          "passed": 13,
+          "failed": 0,
+          "skipped": 0,
+          "conformant": true
+        },
+        {
+          "run": 2,
+          "total": 13,
+          "passed": 13,
+          "failed": 0,
+          "skipped": 0,
+          "conformant": true
+        },
+        {
+          "run": 3,
+          "total": 13,
+          "passed": 13,
+          "failed": 0,
+          "skipped": 0,
+          "conformant": true
+        }
+      ]
+    },
+    "historicalDeterminism": {
+      "completeRuns": 10,
+      "identical": true,
+      "preserved": true
+    },
+    "crossPlatformEvidence": true
+  },
+  "H3": {
+    "documentation": [
+      {
+        "path": "docs/integration/H3_INTEGRATION_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_JAVASCRIPT_API_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_TYPESCRIPT_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_CLI_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_CONFORMANCE_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_SERVER_ADAPTER_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_STUDIO_INTEGRATION_GUIDE.md",
+        "present": true
+      },
+      {
+        "path": "docs/integration/H3_AUTHORING_GUIDANCE.md",
+        "present": true
+      }
+    ],
+    "examples": {
+      "total": 5,
+      "passed": 5
+    },
+    "serverAdapter": true,
+    "studioIntegrationGuidance": true
+  },
+  "preservedEvidence": {
+    "H1": {
+      "valid": true,
+      "total": 31,
+      "passed": 31,
+      "failed": 0
+    },
+    "H2": {
+      "total": 16,
+      "passed": 16,
+      "failed": 0
+    },
+    "H3": {
+      "total": 28,
+      "passed": 28,
+      "failed": 0
+    }
+  }
+}

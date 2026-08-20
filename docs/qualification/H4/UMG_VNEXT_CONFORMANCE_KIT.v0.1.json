@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "UMG_VNEXT_CONFORMANCE_KIT.v0.1",
+  "repository": "NeoMagnetar/umg-compiler-vnext",
+  "qualifiedComponentCommit": "d3796e1afe0c9fc84fff06c3fa0b19b754a436c9",
+  "freezeCommitIdentity": {
+    "resolution": "the commit containing this document, tagged by compiler-vnext-v0.1.0-experimental-h4-qualified",
+    "qualificationTag": "compiler-vnext-v0.1.0-experimental-h4-qualified"
+  },
+  "compilerVersion": "0.1.0-experimental",
+  "components": {
+    "H1": {
+      "specification": "docs/qualification/H1/",
+      "corpusManifest": "docs/qualification/H1/H1F4B_CORPUS_INTEGRITY_MANIFEST.json",
+      "corpusIdentity": "umg.compiler-vnext.corpus.v0.1",
+      "cases": 13,
+      "canonicalArtifactHashes": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0
+      }
+    },
+    "H2": {
+      "executableRunner": "h2/conformance/runner.mjs",
+      "resultContract": "UMG_VNEXT_CONFORMANCE_RESULT.v0.1",
+      "qualificationEvidence": "docs/qualification/H2/"
+    },
+    "H3": {
+      "integrationDocumentation": "docs/integration/",
+      "runnableExamples": "examples/",
+      "qualificationEvidence": "docs/qualification/H3/"
+    }
+  },
+  "conformance_kit_qualified": true,
+  "meaning": "The frozen H package provides a deterministic specification, canonical test corpus, executable conformance runner, and verified integration documentation and examples for compiler-vNext.",
+  "exclusions": {
+    "externalProductIntegrationQualified": false,
+    "phaseForExternalProductIntegration": "Phase I",
+    "npmRegistryPublished": false,
+    "browserNativeRuntimeQualified": false,
+    "commonJsQualified": false,
+    "macOsQualified": false,
+    "armQualified": false,
+    "everyNode20PlusReleaseQualified": false,
+    "allThirdPartyIntegrationsQualified": false,
+    "productionSla": false,
+    "stableOrRcRelease": false,
+    "integration_ready": false
+  }
+}

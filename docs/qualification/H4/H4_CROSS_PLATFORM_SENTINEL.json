@@ -1,0 +1,165 @@
+{
+  "windows": {
+    "platform": "Windows",
+    "head": "d3796e1afe0c9fc84fff06c3fa0b19b754a436c9",
+    "h2": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "conformant": true
+    },
+    "javascript": {
+      "passed": true
+    },
+    "server": {
+      "passed": true
+    }
+  },
+  "linux": {
+    "head": "d3796e1afe0c9fc84fff06c3fa0b19b754a436c9",
+    "filesystem": "Ubuntu WSL2 Linux-native temporary filesystem",
+    "node": "v24.15.0",
+    "h2": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "conformant": true
+    },
+    "cases": [
+      {
+        "caseId": "CC-001",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "628DF886226AAE01CB98B64581AB904809771C8B4BF7505B48A5B8B06BC9913B",
+        "actualCanonicalResultHash": "628DF886226AAE01CB98B64581AB904809771C8B4BF7505B48A5B8B06BC9913B",
+        "expectedRuntimeHash": "c3e18535479cf39938c8e7993db73f4c1b5135529ba20d9d8a2ccadf298498fd",
+        "actualRuntimeHash": "c3e18535479cf39938c8e7993db73f4c1b5135529ba20d9d8a2ccadf298498fd"
+      },
+      {
+        "caseId": "CC-002A",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": null,
+        "actualCanonicalResultHash": "F41E8BE30051AE782277E791BB9975B26BD5E2D6BB2A98AEE757036B78BE00EA",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": "d3c296cb14f521ed79213015adf1c7df94c44c3facda549d2312685fc61186d0"
+      },
+      {
+        "caseId": "CC-002B",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": null,
+        "actualCanonicalResultHash": "33B2CBD3B85292DF5248C5187E138FDECC2F59C86D173068DF8E62A7C4D1D34D",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": "d3c296cb14f521ed79213015adf1c7df94c44c3facda549d2312685fc61186d0"
+      },
+      {
+        "caseId": "CC-003A",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": null,
+        "actualCanonicalResultHash": "C03DB1A4BB11B793EDE379D9C2C8089150B56276EC2C720F1B67C09C7DCB98EC",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": "650d3ddf15a15d170bd5b1ad9bec9cf910f465d6876fa2a13182b2b97b040d54"
+      },
+      {
+        "caseId": "CC-004",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "EBF3A26A3062EA38E5FE92988B18A14267270C110429669081A06BF0C7A11092",
+        "actualCanonicalResultHash": "EBF3A26A3062EA38E5FE92988B18A14267270C110429669081A06BF0C7A11092",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": null
+      },
+      {
+        "caseId": "CC-005",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "A650087C50533D5D7CECF47D4F98F546519C8406B760A8B1B557CAAB3413F5DC",
+        "actualCanonicalResultHash": "A650087C50533D5D7CECF47D4F98F546519C8406B760A8B1B557CAAB3413F5DC",
+        "expectedRuntimeHash": "0b65ac8d7955628c5544cc93704d3acffc7036c2e9d52dffba8c24e1bd26d7cd",
+        "actualRuntimeHash": "0b65ac8d7955628c5544cc93704d3acffc7036c2e9d52dffba8c24e1bd26d7cd"
+      },
+      {
+        "caseId": "CC-006",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": null,
+        "actualCanonicalResultHash": "58D1C28468815FFCE69EC63BF1C2CF15EFC1CD2EB54CD58D6AEE1FC1C135A06D",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": "59472dd857d9fb47efb85b70f6792485fff627cdf662f47becc0797e36b47189"
+      },
+      {
+        "caseId": "CC-007",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": null,
+        "actualCanonicalResultHash": "93DEEF469282850FA2FCA79685513E02DC81A93C4ED5B2D3DAE6A0BDE1F63F73",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": "900fc53c747150bd17c22b52209d5dc808774b6d4e66a6aae83c2a52405d25ec"
+      },
+      {
+        "caseId": "CC-008",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": null,
+        "actualCanonicalResultHash": "0C4465C7868B3779DC82DE2345F8B70AEA8BE21C9C23014A73063535D6A52E2B",
+        "expectedRuntimeHash": null,
+        "actualRuntimeHash": "d5fdf8594e83a967c00ad35f3d8d0f720765dc7b5bc5d860a03e69bb575c3de0"
+      },
+      {
+        "caseId": "CC-009B",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "BEEA694DAA5102B000288DDC6BF6A9EA6758D1E0E671B9AF19E26CB8795FA597",
+        "actualCanonicalResultHash": "BEEA694DAA5102B000288DDC6BF6A9EA6758D1E0E671B9AF19E26CB8795FA597",
+        "expectedRuntimeHash": "0b65ac8d7955628c5544cc93704d3acffc7036c2e9d52dffba8c24e1bd26d7cd",
+        "actualRuntimeHash": "0b65ac8d7955628c5544cc93704d3acffc7036c2e9d52dffba8c24e1bd26d7cd"
+      },
+      {
+        "caseId": "CC-009C",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "21E12015CF72B0AA91B5BF338C8B8B94144E3112FA260BFAF6B5182FA9E67B94",
+        "actualCanonicalResultHash": "21E12015CF72B0AA91B5BF338C8B8B94144E3112FA260BFAF6B5182FA9E67B94",
+        "expectedRuntimeHash": "0b65ac8d7955628c5544cc93704d3acffc7036c2e9d52dffba8c24e1bd26d7cd",
+        "actualRuntimeHash": "0b65ac8d7955628c5544cc93704d3acffc7036c2e9d52dffba8c24e1bd26d7cd"
+      },
+      {
+        "caseId": "CC-009D",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "C75668ED051B949A873B0E749328CD4BCCA11D2DE9CE0B06A070DB30715A746A",
+        "actualCanonicalResultHash": "C75668ED051B949A873B0E749328CD4BCCA11D2DE9CE0B06A070DB30715A746A",
+        "expectedRuntimeHash": "fece1d92f5a40cad8236a5aff880399d472c04ddd149fdcf2d0141d01acc47cd",
+        "actualRuntimeHash": "fece1d92f5a40cad8236a5aff880399d472c04ddd149fdcf2d0141d01acc47cd"
+      },
+      {
+        "caseId": "CC-009E",
+        "executionStatus": "passed",
+        "expectedCanonicalResultHash": "BE25BCF3D97880C43F771F09EFF90DEFB4F5ECE365C37DF567EA2B61ADC36E85",
+        "actualCanonicalResultHash": "BE25BCF3D97880C43F771F09EFF90DEFB4F5ECE365C37DF567EA2B61ADC36E85",
+        "expectedRuntimeHash": "da1b566a0d2a57d0cbdc3879e1eeda93f1de9458bd24b0824a80cbfb427a645a",
+        "actualRuntimeHash": "da1b566a0d2a57d0cbdc3879e1eeda93f1de9458bd24b0824a80cbfb427a645a"
+      }
+    ],
+    "javascript": {
+      "status": "success",
+      "compilerVersion": "0.1.0-experimental",
+      "runtimeHash": "a0669db4fa67208b5a9f5ce93b5d86a135010b706f6b4caf5a24e2eb97af634e",
+      "activeNeoStackIds": [
+        "NS.EXAMPLE.ROOT"
+      ],
+      "promptPartCount": 5,
+      "diagnosticCount": 0,
+      "traceTerminalStage": "post_run",
+      "traceEventCount": 19,
+      "hashProfileVersion": "umg.compiler-vnext.runtime-hash.v0.1"
+    },
+    "server": {
+      "health": "ok",
+      "compilerVersion": "0.1.0-experimental",
+      "validationDiagnostics": 0,
+      "compileStatus": "success",
+      "runtimeHash": "a0669db4fa67208b5a9f5ce93b5d86a135010b706f6b4caf5a24e2eb97af634e"
+    }
+  },
+  "linuxExecution": {
+    "status": 0,
+    "signal": null,
+    "stderr": "",
+    "ok": true
+  },
+  "semanticMismatches": [],
+  "passed": true
+}

@@ -1,0 +1,52 @@
+{
+  "normativeNonNormative": {
+    "normativeSources": [
+      "compiler public contract",
+      "frozen schemas",
+      "frozen Diagnostic and Trace Registries",
+      "H1 requirement definitions"
+    ],
+    "authoringGuideLabelsNormative": true,
+    "authoringGuideLabelsNonNormative": true,
+    "topics": [
+      {
+        "topic": "Prime Directive",
+        "present": true
+      },
+      {
+        "topic": "Secondary Directives",
+        "present": true
+      },
+      {
+        "topic": "Overlay",
+        "present": true
+      },
+      {
+        "topic": "Scoped MOLT",
+        "present": true
+      },
+      {
+        "topic": "Governance",
+        "present": true
+      },
+      {
+        "topic": "Merge and Authority Non-Escalation",
+        "present": true
+      }
+    ],
+    "semanticInflationDetected": false
+  },
+  "publicIntegrationBoundary": {
+    "privateImports": [],
+    "publicApiOnly": true,
+    "serverUsesPublicPackageRoot": true,
+    "serverReturnsCompileResultDirectly": true,
+    "serverModelCalls": false,
+    "serverCompilerV0Translation": false,
+    "serverSemanticRewriting": false,
+    "studioManualFallback": true,
+    "studioWorkflow": true,
+    "studioDirectModification": false
+  },
+  "passed": true
+}
