@@ -18,19 +18,19 @@ Create only:
 
 ### `UMG-CONF-CORPUS-001`
 - **Normative Statement:** H1 requirements remain the semantic authority; canonical corpus cases are evidence artifacts and cannot redefine normative requirements.
-- **Authority:** `H1C1` §§31 and `H1D2` ratification of family/ID usage.
+- **Authority:** `H1C1` sections 31 and `H1D2` ratification of family/ID usage.
 - **Observable Conformance Evidence:** Evidence map entries from A/B/C must remain traceable to their originating normative requirement IDs.
 - **Notes/Exclusions:** A normative requirement omitted from corpus does not become invalid.
 
 ### `UMG-CONF-CORPUS-002`
 - **Normative Statement:** A corpus case must explicitly identify minimum identity fields and provenance of its fixture/selection context.
-- **Authority:** `H1C1` §§27, 31 and public contract evidence structure from A/B/C.
+- **Authority:** `H1C1` sections 27, 31 and public contract evidence structure from A/B/C.
 - **Observable Conformance Evidence:** Case records include `CASE_ID`, optional `INPUT_SLEEVE`, optional `COMPILE_SELECTION`, and explicit outcome class.
 - **Notes/Exclusions:** Sleeve/selection pair is required only when the artifact under test depends on both.
 
 ### `UMG-CONF-CORPUS-003`
 - **Normative Statement:** Canonical success cases must define explicit expected public outcomes for at least one frozen public object model.
-- **Authority:** `H1C1` §§31, normative contract sections for public output.
+- **Authority:** `H1C1` sections 31, normative contract sections for public output.
 - **Observable Conformance Evidence:** Success case includes explicit `EXPECTED_RESULT` and marks one-or-more of `CompileResult`, `RuntimeSpec`, `Trace`, `Diagnostics`, `runtimeHash` as asserted.
 - **Notes/Exclusions:** No requirement to assert every public object in every case.
 
@@ -42,7 +42,7 @@ Create only:
 
 ### `UMG-CONF-CORPUS-005`
 - **Normative Statement:** Canonical case linkage to requirements must be evidence-based and explicit.
-- **Authority:** `H1C1` §§27, 31 plus evidence-map source-of-truth rules in H1E1E.
+- **Authority:** `H1C1` sections 27, 31 plus evidence-map source-of-truth rules in H1E1E.
 - **Observable Conformance Evidence:** Each case records `PRIMARY_REQUIREMENTS_PROVEN` and may include `SECONDARY_REQUIREMENTS_PROVEN` with rationale tied to observed artifact outputs.
 - **Notes/Exclusions:** Family similarity alone is insufficient for linkage.
 
@@ -143,10 +143,6 @@ The following examples describe reusable evidence points from current artifacts 
 
 ## DEFERRED ITEMS
 
-- final corpus scenario selection
-- corpus version/freeze identity if not currently authoritative
-- fixture identity integrity manifest
-- P0/P1 evidence remediation
 - H2 runner implementation and transport binding
 - CLI-specific corpus and cross-implementation runner execution policy
 
@@ -154,4 +150,4 @@ The following examples describe reusable evidence points from current artifacts 
 
 - **CORPUS REQUIREMENT COUNT:** 8
 - **CORPUS AUTHORITY MODEL:** normative-binding + evidence-only evidenceing
-- **CORPUS VERSION IDENTITY STATUS:** `NOT_YET_RATIFIED`
+- **CORPUS VERSION IDENTITY STATUS:** `RATIFIED`

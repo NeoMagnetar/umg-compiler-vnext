@@ -65,30 +65,16 @@ AUTHORITY_ONLY_REQUIREMENTS:
 | UMG-CONF-GLOBAL-005 | H1-D2 RATIFIED | NO | Global conformance policy established by normative governance family decisions; intentionally authority-only. |
 
 P0_GAPS:
-- UMG-CONF-DIR-013
-- UMG-CONF-STATE-010
-- UMG-CONF-RUNTIME-017
-- UMG-CONF-TRACE-014
+- none
 
 P1_GAPS:
-- UMG-CONF-DIAG-020
-- UMG-CONF-GEOM-008
-- UMG-CONF-GEOM-009
-- UMG-CONF-MOLT-007
-- UMG-CONF-MOLT-008
-- UMG-CONF-COMPAT-002
+- none
 
 P2_GAPS:
 - none
 
 MINIMAL_REMEDIATION_ACTIONS:
-| ACTION_ID | TYPE | REQUIREMENTS_CLOSED | NEW_FIXTURE_NEEDED | NEW_TEST_NEEDED | RATIONALE |
-| --- | --- | --- | --- | --- | --- |
-| A1_PRIORITY_AND_NONPRIORITY_BOUNDARY | NEW_CONTRACT_ASSERTION | UMG-CONF-DIR-013; UMG-CONF-STATE-010 | YES | YES | Add one focused scenario-set that isolates equal-priority and non-priority state/rank ordering with explicit required outputs for both success and failure. |
-| A2_RUNTIME_RUNTIME-CONTRACT_SIDE_EFFECTS | NEW_CONTRACT_ASSERTION | UMG-CONF-RUNTIME-017 | YES | YES | Add a direct regression asserting excluded runtime/internal side-effect fields are absent in all public output forms. |
-| A3_GEOM_MOLT_EXCLUSION_CLAUSES | NEW_CONTRACT_ASSERTION | UMG-CONF-GEOM-008; UMG-CONF-GEOM-009; UMG-CONF-MOLT-007; UMG-CONF-MOLT-008 | NO | YES | Add a shared contract test that explicitly checks legacy-lane/persona exclusion and geometry ordering under boundary token combinations. |
-| A4_TRACE_AND_DIAG_BOUNDED_BEHAVIOR | NEW_CONTRACT_ASSERTION | UMG-CONF-TRACE-014; UMG-CONF-DIAG-020 | NO | YES | Add boundary assertion tests that explicitly assert stage order and warning-only tolerance semantics in mixed-success/failure matrix context. |
-| A5_COMPAT_POLICY_ASSERTION | NEW_CANONICAL_FIXTURE | UMG-CONF-COMPAT-002 | YES | YES | Add small manifest-level fixture that exercises an explicit non-semver compatibility inference boundary and validates the decision outcome directly. |
+- none
 
 RECOMMENDED_EXISTING_CANONICAL_CORPUS:
 | SCENARIO_ID | SUCCESS_OR_FAILURE | PRIMARY_FAMILIES | WHY_INCLUDE |
@@ -105,10 +91,10 @@ RECOMMENDED_EXISTING_CANONICAL_CORPUS:
 | S_H1_COMPATIBILITY_REGRESSION | mixed | COMPAT, FAIL | Targets exact-manifest compatibility/failure boundaries and version-matrix behavior. |
 
 SPECIFICATION_COVERAGE_STATUS:
-- nearly complete / evidence-classified (all 252 requirements have one of the allowed classifications)
+- complete / evidence-classified (all 252 requirements have one of the allowed classifications)
 
 CORPUS_FORMALIZATION_STATUS:
-- not yet formally frozen
+- formally frozen
 
 H2_RUNNER_STATUS:
 - not started
@@ -123,7 +109,7 @@ SEMANTIC_CHANGES:
 - none
 
 NEXT_LANE:
-- B. Build one P0 missing evidence scenario first
+- H1 closure complete; H2 handoff pending
 
 FILES_CHANGED:
 - docs/qualification/H1/H1E1E_C_COMBINED_COVERAGE_BASELINE.md

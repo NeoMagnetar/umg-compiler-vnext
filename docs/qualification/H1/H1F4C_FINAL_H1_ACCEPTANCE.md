@@ -38,6 +38,9 @@ FULL_TEST_SUITE: PASS
 
 SEMANTIC_CHANGE_DURING_F4: NONE
 
+SAFE_TO_BEGIN_H2: YES
+REMAINING_GATES_BEFORE_H2: none
+
 Notes:
 - H1 completion does NOT promote compilerVersion from 0.1.0-experimental.
 - H1 completion does NOT claim general cross-platform byte-identical CompileResult reproducibility beyond ratified DET-006 scope.
