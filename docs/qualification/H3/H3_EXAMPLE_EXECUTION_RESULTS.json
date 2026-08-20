@@ -1,0 +1,104 @@
+{
+  "total": 5,
+  "passed": 5,
+  "failed": 0,
+  "allPassed": true,
+  "groups": [
+    {
+      "id": "javascript",
+      "passed": true,
+      "executions": [
+        {
+          "command": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "examples/javascript/basic-compile/index.mjs"
+          ],
+          "status": 0,
+          "signal": null,
+          "stdout": "{\n  \"status\": \"success\",\n  \"compilerVersion\": \"0.1.0-experimental\",\n  \"runtimeHash\": \"a0669db4fa67208b5a9f5ce93b5d86a135010b706f6b4caf5a24e2eb97af634e\",\n  \"activeNeoStackIds\": [\n    \"NS.EXAMPLE.ROOT\"\n  ],\n  \"promptPartCount\": 5,\n  \"diagnosticCount\": 0,\n  \"traceTerminalStage\": \"post_run\",\n  \"traceEventCount\": 19,\n  \"hashProfileVersion\": \"umg.compiler-vnext.runtime-hash.v0.1\"\n}\n",
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "command": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "examples/javascript/basic-compile/failure-handling.mjs"
+          ],
+          "status": 0,
+          "signal": null,
+          "stdout": "{\n  \"structural\": {\n    \"status\": \"failure\",\n    \"runtime\": null,\n    \"trace\": null,\n    \"stages\": [\n      \"structural\"\n    ]\n  },\n  \"semantic\": {\n    \"status\": \"failure\",\n    \"runtime\": null,\n    \"traceTerminalStage\": \"semantic\",\n    \"codes\": [\n      \"INVALID_PRIME_DIRECTIVE\",\n      \"DIRECTIVE_BASE_GEOMETRY_CANON_VIOLATION\",\n      \"ORPHAN_LOCAL_DIRECTIVE\"\n    ]\n  },\n  \"multipleSecondary\": {\n    \"status\": \"failure\",\n    \"runtime\": null,\n    \"traceTerminalStage\": \"resolution\",\n    \"codes\": [\n      \"MULTIPLE_SECONDARY_DIRECTIVE_MATCH\"\n    ]\n  }\n}\n",
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "typescript",
+      "passed": true,
+      "executions": [
+        {
+          "command": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "examples/typescript/basic-compile/run.mjs"
+          ],
+          "status": 0,
+          "signal": null,
+          "stdout": "{\n  \"status\": \"success\",\n  \"runtimeHash\": \"a0669db4fa67208b5a9f5ce93b5d86a135010b706f6b4caf5a24e2eb97af634e\",\n  \"resolvedNeoBlocks\": 1,\n  \"promptParts\": 5,\n  \"traceEvents\": 19,\n  \"diagnostics\": 0\n}\n",
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "cli",
+      "passed": true,
+      "executions": [
+        {
+          "command": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "examples/cli/run.mjs"
+          ],
+          "status": 0,
+          "signal": null,
+          "stdout": "{\n  \"exitStatus\": {\n    \"validate\": 0,\n    \"compile\": 0,\n    \"compilerFailure\": 1,\n    \"toolingFailure\": 2\n  },\n  \"outputFileStatus\": \"success\",\n  \"failureRuntime\": null,\n  \"failureCodes\": [\n    \"MULTIPLE_SECONDARY_DIRECTIVE_MATCH\"\n  ]\n}\n",
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "conformance",
+      "passed": true,
+      "executions": [
+        {
+          "command": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "examples/conformance/run.mjs"
+          ],
+          "status": 0,
+          "signal": null,
+          "stdout": "{\n  \"schemaVersion\": \"UMG_VNEXT_CONFORMANCE_RESULT.v0.1\",\n  \"cases\": 13,\n  \"passed\": 13,\n  \"uniqueRequirementIds\": 39,\n  \"conformant\": true\n}\n",
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "server_adapter",
+      "passed": true,
+      "executions": [
+        {
+          "command": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "examples/server-adapter/smoke-test.mjs"
+          ],
+          "status": 0,
+          "signal": null,
+          "stdout": "{\n  \"health\": \"ok\",\n  \"compilerVersion\": \"0.1.0-experimental\",\n  \"validationDiagnostics\": 0,\n  \"compileStatus\": \"success\",\n  \"runtimeHash\": \"a0669db4fa67208b5a9f5ce93b5d86a135010b706f6b4caf5a24e2eb97af634e\"\n}\n",
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

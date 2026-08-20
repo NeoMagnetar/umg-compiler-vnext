@@ -1,0 +1,21 @@
+{
+  "startingHead": "29cb63900dbfd35c64e076b0af72c5fbac71b9f1",
+  "currentHead": "9c80cd1941091dc3b4b4ec9445dda84a3701417e",
+  "protectedPaths": [
+    "src",
+    "test",
+    "fixtures",
+    "schemas",
+    "docs/qualification/H1",
+    "package.json",
+    "package-lock.json"
+  ],
+  "changedFiles": [],
+  "compilerSourceChanged": false,
+  "testsChanged": false,
+  "h1CorpusChanged": false,
+  "expectedOutputsChanged": false,
+  "schemasChanged": false,
+  "packageChanged": false,
+  "unchanged": true
+}
