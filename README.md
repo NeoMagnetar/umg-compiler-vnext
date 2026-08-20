@@ -47,3 +47,7 @@ node dist/cli.js compile \
 ## Important boundary
 
 The compiler does not interpret natural language and does not invent Trigger state or route rationale. The caller supplies explicit `triggerState`, active NeoStacks, active NeoBlocks, optional `routeRationale`, Overlays, Governance rules, and human-disabled modules.
+
+## Integration documentation
+
+The qualified external integration package starts at [H3_INTEGRATION_GUIDE.md](docs/integration/H3_INTEGRATION_GUIDE.md). Runnable public-interface examples are under `examples/`.

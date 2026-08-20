@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "umg.compiler-vnext.selection.v0.1",
+  "compiledAt": "2026-08-20T00:00:00.000Z",
+  "activeNeoStackIds": [
+    "NS.EXAMPLE.ROOT"
+  ],
+  "activeNeoBlockIds": [
+    "NB.EXAMPLE.BASIC"
+  ],
+  "triggerState": {
+    "T.EXAMPLE.DEFAULT": true,
+    "T.EXAMPLE.FOCUSED": false,
+    "T.EXAMPLE.SAFE": false
+  },
+  "activeOverlayIds": [],
+  "activeGovernanceRuleIds": [],
+  "disabledNeoStackIds": [],
+  "disabledNeoBlockIds": [],
+  "routeRationale": {
+    "source": "h3-example",
+    "reason": "explicit basic route"
+  }
+}

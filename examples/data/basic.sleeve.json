@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "umg.compiler-vnext.sleeve.v0.1",
+  "id": "SLV.EXAMPLE.BASIC.v0.1",
+  "name": "Basic Integration Example",
+  "description": "Small self-contained Sleeve used by the H3 public integration examples.",
+  "controllerNeoStackId": "NS.EXAMPLE.ROOT",
+  "moltBlocks": [
+    {
+      "id": "T.EXAMPLE.DEFAULT",
+      "type": "trigger",
+      "content": "The default route is active."
+    },
+    {
+      "id": "T.EXAMPLE.FOCUSED",
+      "type": "trigger",
+      "content": "Focused operating mode is active."
+    },
+    {
+      "id": "T.EXAMPLE.SAFE",
+      "type": "trigger",
+      "content": "Safe operating mode is active."
+    },
+    {
+      "id": "D.EXAMPLE.PRIME",
+      "type": "directive",
+      "content": "Answer the explicit request accurately."
+    },
+    {
+      "id": "D.EXAMPLE.FOCUSED",
+      "type": "directive",
+      "content": "Prefer a concise focused response."
+    },
+    {
+      "id": "D.EXAMPLE.SAFE",
+      "type": "directive",
+      "content": "Prefer a conservative response when uncertainty remains."
+    },
+    {
+      "id": "I.EXAMPLE.STEP",
+      "type": "instruction",
+      "content": "State the result before supporting detail."
+    },
+    {
+      "id": "S.EXAMPLE.REQUEST",
+      "type": "subject",
+      "content": "The caller-provided request."
+    },
+    {
+      "id": "P.EXAMPLE.GOAL",
+      "type": "primary",
+      "content": "Produce a useful deterministic cognition plan."
+    }
+  ],
+  "neoBlocks": [
+    {
+      "id": "NB.EXAMPLE.BASIC",
+      "name": "Basic Example Block",
+      "moltBlockIds": [
+        "T.EXAMPLE.DEFAULT",
+        "T.EXAMPLE.FOCUSED",
+        "T.EXAMPLE.SAFE",
+        "D.EXAMPLE.PRIME",
+        "D.EXAMPLE.FOCUSED",
+        "D.EXAMPLE.SAFE",
+        "I.EXAMPLE.STEP",
+        "S.EXAMPLE.REQUEST",
+        "P.EXAMPLE.GOAL"
+      ],
+      "primeDirectiveId": "D.EXAMPLE.PRIME",
+      "secondaryDirectives": [
+        {
+          "id": "SD.EXAMPLE.FOCUSED",
+          "directiveBlockId": "D.EXAMPLE.FOCUSED",
+          "triggerBlockId": "T.EXAMPLE.FOCUSED"
+        },
+        {
+          "id": "SD.EXAMPLE.SAFE",
+          "directiveBlockId": "D.EXAMPLE.SAFE",
+          "triggerBlockId": "T.EXAMPLE.SAFE"
+        }
+      ],
+      "baseGeometry": {
+        "trigger": [
+          {
+            "row": 1,
+            "blockIds": [
+              "T.EXAMPLE.DEFAULT",
+              "T.EXAMPLE.FOCUSED",
+              "T.EXAMPLE.SAFE"
+            ]
+          }
+        ],
+        "directive": [
+          {
+            "row": 1,
+            "blockIds": [
+              "D.EXAMPLE.PRIME"
+            ]
+          }
+        ],
+        "instruction": [
+          {
+            "row": 1,
+            "blockIds": [
+              "I.EXAMPLE.STEP"
+            ]
+          }
+        ],
+        "subject": [
+          {
+            "row": 1,
+            "blockIds": [
+              "S.EXAMPLE.REQUEST"
+            ]
+          }
+        ],
+        "primary": [
+          {
+            "row": 1,
+            "blockIds": [
+              "P.EXAMPLE.GOAL"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "neoStacks": [
+    {
+      "id": "NS.EXAMPLE.ROOT",
+      "name": "Basic Example Root",
+      "skill": "Routes the self-contained H3 integration example.",
+      "neoBlockRows": [
+        {
+          "row": 1,
+          "neoBlockIds": [
+            "NB.EXAMPLE.BASIC"
+          ]
+        }
+      ]
+    }
+  ]
+}
